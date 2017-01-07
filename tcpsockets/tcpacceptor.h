@@ -32,10 +32,10 @@ using namespace std;
 
 class TCPAcceptor
 {
-    int    m_lsd;
-    int    m_port;
-    string m_address;
-    bool   m_listening;
+    int    m_lsd;				
+    int    m_port;				//listening socket's TCP port #
+    string m_address;			//listening socket's IP address
+    bool   m_listening;			//Have we started listening yet??
     
   public:
     TCPAcceptor(int port, const char* address="");
