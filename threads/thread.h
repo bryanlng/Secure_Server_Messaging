@@ -2,6 +2,8 @@
    thread.h
 
    Header for a Java style thread class in C++.
+   Basically, we're abstracting pthreads to function
+   like their counterpart methods in Java
 
    ------------------------------------------
 
@@ -29,19 +31,19 @@ class Thread
 {
   public:
     Thread();
-    virtual ~Thread();
+    virtual ~Thread();		
 
     int start();
     int join();
     int detach();
     pthread_t self();
     
-    virtual void* run() = 0;
+    virtual void* run() = 0;	//needs to be overriden
     
   private:
-    pthread_t  m_tid;
-    int        m_running;
-    int        m_detached;
+    pthread_t  m_tid;			//ID of thread
+    int        m_running;		//0: not running, 1: running
+    int        m_detached;		//0: not detached, 1: detached
 };
 
 #endif
