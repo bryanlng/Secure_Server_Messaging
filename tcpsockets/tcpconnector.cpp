@@ -142,6 +142,7 @@ TCPStream* TCPConnector::connect(const char* server, int port, int timeout)
 		//Means that socket is nonblocking, and the connection can't be completed immediately
         if (errno == EINPROGRESS)
         {
+			//same code as TCPStream's waitForReadEvent()
             tv.tv_sec = timeout;
             tv.tv_usec = 0;
             FD_ZERO(&sdset);			//make the file descriptor sdset have zero bits

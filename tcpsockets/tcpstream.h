@@ -33,12 +33,12 @@ using namespace std;
 
 class TCPStream
 {
-    int     m_sd;	
-    string  m_peerIP;
+    int     m_sd;					//socket descriptor
+    string  m_peerIP;				
     int     m_peerPort;
 
-  public:
-    friend class TCPAcceptor;			
+  public:		//TCPStream objects can only be created by TCPAcceptor and TCPConnector objects
+    friend class TCPAcceptor;		
     friend class TCPConnector;
 
     ~TCPStream();
