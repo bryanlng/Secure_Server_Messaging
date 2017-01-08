@@ -40,12 +40,19 @@ class WorkItem
     int getNumber() { return m_number; }
 };
 
+
+
 class ConsumerThread : public Thread
 {
     wqueue<WorkItem*>& m_queue;
  
   public:
-    ConsumerThread(wqueue<WorkItem*>& queue) : m_queue(queue) {}
+	  /*
+		Constructor
+		WorkQueue is created outside (in main()), and is passed in
+		to the Thread
+	  */
+	  ConsumerThread(wqueue<WorkItem*>& queue) : m_queue(queue) {}
  
     void* run() {
         // Remove 1 item at a time and process it. Blocks if no items are 
@@ -76,11 +83,12 @@ int main(int argc, char** argv)
  
     // Create the queue and consumer (worker) threads
     wqueue<WorkItem*>  queue;
-    ConsumerThread* thread1 = new ConsumerThread(queue);
+    ConsumerThread* thread1 = new ConsumerThread(queue);	
     ConsumerThread* thread2 = new ConsumerThread(queue);
     thread1->start();
     thread2->start();
  
+	// At this point, threads above should have blocked
     // Add items to the queue
     WorkItem* item;
     for (int i = 0; i < iterations; i++) {
