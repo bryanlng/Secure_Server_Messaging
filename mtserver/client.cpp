@@ -27,7 +27,9 @@
 
 int main(int argc, char** argv)
 {
-    if (argc != 3) {
+	//Given: Ex: ./client 9999 localhost
+	//Mine:  ./client 9999 localhost <message>
+    if (argc != 4) {
         printf("usage: %s <port> <ip>\n", argv[0]);
         exit(1);
     }
@@ -40,7 +42,8 @@ int main(int argc, char** argv)
     if (stream) {
 		int x = 0;
 		while (x < 20) {
-			message = "Is there life on Mars?";
+			//message = "Is there life on Mars?";
+			message = std::string(argv[3]);
 			stream->send(message.c_str(), message.size());
 			printf("sent - %s\n", message.c_str());
 			len = stream->receive(line, sizeof(line));
