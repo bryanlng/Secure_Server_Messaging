@@ -47,7 +47,7 @@ class ConnectionHandler : public Thread
   public:
     ConnectionHandler(wqueue<WorkItem*>& queue, std::string n) : m_queue(queue) 
 	{
-		set_name(n);
+		this.set_name(n);
 	}
  
     void* run() {
