@@ -24,17 +24,21 @@
 #define __thread_h__
 
 #include <pthread.h>
+#include <string>
 
 class Thread
 {
   public:
     Thread();
+	Thread(std::string n);
     virtual ~Thread();
 
     int start();
     int join();
     int detach();
     pthread_t self();
+	std::string thread_name();
+	void set_name(std::string n);
     
     virtual void* run() = 0;
     
@@ -42,6 +46,7 @@ class Thread
     pthread_t  m_tid;
     int        m_running;
     int        m_detached;
+	std::string	   name;
 };
 
 #endif

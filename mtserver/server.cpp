@@ -18,6 +18,8 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+   (long unsigned int)self()
 */
 
 #include <stdio.h>
@@ -43,17 +45,20 @@ class ConnectionHandler : public Thread
     wqueue<WorkItem*>& m_queue;
  
   public:
-    ConnectionHandler(wqueue<WorkItem*>& queue) : m_queue(queue) {}
+    ConnectionHandler(wqueue<WorkItem*>& queue, std::string n) : m_queue(queue) 
+	{
+		set_name(n);
+	}
  
     void* run() {
         // Remove 1 item at a time and process it. Blocks if no items are 
         // available to process.
         for (int i = 0;; i++) {
-            printf("thread %lu, loop %d - waiting for item...\n", 
-                   (long unsigned int)self(), i);
+            printf("thread %s, loop %d - waiting for item...\n", 
+                   thread_name(), i);
             WorkItem* item = m_queue.remove();
-            printf("thread %lu, loop %d - got one item\n", 
-                   (long unsigned int)self(), i);
+            printf("thread %s loop %d - got one item\n", 
+				thread_name(), i);
             TCPStream* stream = item->getStream();
 
             // Echo messages back the client until the connection is 
@@ -63,8 +68,8 @@ class ConnectionHandler : public Thread
             while ((len = stream->receive(input, sizeof(input)-1)) > 0 ){
                 input[len] = NULL;
                 stream->send(input, len);
-                printf("thread %lu, echoed '%s' back to the client\n", 
-                       (long unsigned int)self(), input);
+                printf("thread %s, echoed '%s' back to the client\n", 
+					thread_name(), input);
             }
             delete item; 
         }
@@ -91,7 +96,7 @@ int main(int argc, char** argv)
     // Create the queue and consumer (worker) threads
     wqueue<WorkItem*>  queue;
     for (int i = 0; i < workers; i++) {
-        ConnectionHandler* handler = new ConnectionHandler(queue);
+        ConnectionHandler* handler = new ConnectionHandler(queue, "cows");
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);

@@ -27,7 +27,8 @@ static void* runThread(void* arg)
     return ((Thread*)arg)->run();
 }
 
-Thread::Thread() : m_tid(0), m_running(0), m_detached(0) {}
+Thread::Thread() : m_tid(0), m_running(0), m_detached(0){}
+Thread::Thread(std::string n) : m_tid(0), m_running(0), m_detached(0), name(n) {}
 
 Thread::~Thread()
 {
@@ -74,4 +75,12 @@ int Thread::detach()
 
 pthread_t Thread::self() {
     return m_tid;
+}
+
+std::string Thread::thread_name() {
+	return name;
+}
+
+void Thread::set_name(std::string n) {
+	name = n;
 }

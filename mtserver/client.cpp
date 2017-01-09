@@ -25,8 +25,6 @@
 #include <string>
 #include "tcpconnector.h"
 
-using namespace std;
-
 int main(int argc, char** argv)
 {
     if (argc != 3) {
@@ -40,13 +38,19 @@ int main(int argc, char** argv)
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
     if (stream) {
-        message = "Is there life on Mars?";
-        stream->send(message.c_str(), message.size());
-        printf("sent - %s\n", message.c_str());
-        len = stream->receive(line, sizeof(line));
-        line[len] = NULL;
-        printf("received - %s\n", line);
-        delete stream;
+		int x = 0;
+		while (x < 20) {
+			message = "Is there life on Mars?";
+			stream->send(message.c_str(), message.size());
+			printf("sent - %s\n", message.c_str());
+			len = stream->receive(line, sizeof(line));
+			line[len] = NULL;
+			printf("received - %s\n", line);
+			sleep(1);
+			x++;
+			//delete stream;
+		}
+        
     }
 
     stream = connector->connect(argv[2], atoi(argv[1]));
