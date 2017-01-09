@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sstream>
+#include <iostream>
 #include "thread.h"
 #include "wqueue.h"
 #include "tcpacceptor.h"
@@ -45,20 +47,15 @@ class ConnectionHandler : public Thread
     wqueue<WorkItem*>& m_queue;
  
   public:
-    ConnectionHandler(wqueue<WorkItem*>& queue, std::string n) : m_queue(queue) 
-	{
-		this.set_name(n);
-	}
+    ConnectionHandler(wqueue<WorkItem*>& queue) : m_queue(queue) {}
  
     void* run() {
         // Remove 1 item at a time and process it. Blocks if no items are 
         // available to process.
         for (int i = 0;; i++) {
-            printf("thread %s, loop %d - waiting for item...\n", 
-                   thread_name(), i);
+			std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
             WorkItem* item = m_queue.remove();
-            printf("thread %s loop %d - got one item\n", 
-				thread_name(), i);
+			std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
             TCPStream* stream = item->getStream();
 
             // Echo messages back the client until the connection is 
@@ -68,8 +65,7 @@ class ConnectionHandler : public Thread
             while ((len = stream->receive(input, sizeof(input)-1)) > 0 ){
                 input[len] = NULL;
                 stream->send(input, len);
-                printf("thread %s, echoed '%s' back to the client\n", 
-					thread_name(), input);
+				std::cout << thread_name() << ", echoed " << input << " back to the client..." << std::endl;
             }
             delete item; 
         }
@@ -96,7 +92,11 @@ int main(int argc, char** argv)
     // Create the queue and consumer (worker) threads
     wqueue<WorkItem*>  queue;
     for (int i = 0; i < workers; i++) {
-        ConnectionHandler* handler = new ConnectionHandler(queue, "cows");
+		std::stringstream sstm;
+		sstm << "thread" << i;
+		std::string name = sstm.str();
+        ConnectionHandler* handler = new ConnectionHandler(queue);
+		handler->set_name(name);
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);

@@ -30,7 +30,6 @@ class Thread
 {
   public:
     Thread();
-	Thread(std::string n);
     virtual ~Thread();
 
     int start();
