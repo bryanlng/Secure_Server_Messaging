@@ -47,7 +47,10 @@ class ConnectionHandler : public Thread
     wqueue<WorkItem*>& m_queue;
  
   public:
-    ConnectionHandler(wqueue<WorkItem*>& queue) : m_queue(queue) {}
+    ConnectionHandler(wqueue<WorkItem*>& queue, std::string n) : m_queue(queue) 
+	{
+		set_name(n);
+	}
  
     void* run() {
         // Remove 1 item at a time and process it. Blocks if no items are 
@@ -95,8 +98,7 @@ int main(int argc, char** argv)
 		std::stringstream sstm;
 		sstm << "thread" << i;
 		std::string name = sstm.str();
-        ConnectionHandler* handler = new ConnectionHandler(queue);
-		handler->set_name(name);
+        ConnectionHandler* handler = new ConnectionHandler(queue,name);
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);
