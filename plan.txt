@@ -1,0 +1,49 @@
+Plan for new functionality:
+I. Goal:
+	-Be able to function out a group chat
+	-That way, when one person sends out a message ==> everyone else gets it
+
+II. Issues to think about:
+	-What if 2 people send a message at same time?
+	-What if 1 person is severely behind (like a few hours)? How will they 
+	 see the messages that will be sent?
+
+III. Design plan:
+	-Have both:
+		1) Another work queue
+		2) Master log of the conversation
+	1. Another work queue:
+		-solves the problem of 2 people sending a message at the same time
+		-when a person sends a message ==> create an item and add it to the work queue
+		-I guess we can have 1 Thread be specifically delegated to work on this queue
+		-Like the other Threads, it will block initially because it's empty, then upon an item
+		 entering the queue:
+			1) Grab the item and remove it from the queue
+			2) Extract the string out
+			3) Write it to the master log
+			4) Then (somehow) broadcast it out to the other connections
+	2. Master log:
+		-solves the problem of 1 person being behind
+		-Make every message have the following credentials:
+			-Sender of message
+			-Timestamp of time sent
+			-Actual message
+		-Write stuff to the master log using Step 3) from above
+			-Need to remember to lock here
+		-Also, on the client side, keep a long that represents the timestamp of the last message received
+		-Also, on the server side, keep a long that represents the timestamp of the most recent message
+		 of the group chat
+		-Thus, if the person is behind ==> client's timestamp < server timestamp, then:
+			-Starting at the last instance of that timestamp, read messages from master log into client
+
+IV. In total, all the data structures we have: 
+	I. Server side:
+		-Producer Thread
+		-(x) # of Consumer Threads, which manage the connections
+		-Work Queue 1, that manages the Consumer Threads 
+		-Work Queue 2, which manages the messages
+		-1 Thread to specifically manage Work Queue 2
+		-Master log, which keeps track of all message sent
+	II. Client side:
+		
+		
