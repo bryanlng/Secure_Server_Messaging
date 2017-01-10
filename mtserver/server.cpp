@@ -44,19 +44,19 @@ class WorkItem
 };
 
 
-//class MessageItem
-//{
-//	string message;
-//	long timestamp;
-//	string date_formatted;
-//	TCPStream* m_stream;
-//
-//public:
-//	MessageItem(TCPStream* stream) : m_stream(stream) {}
-//	~MessageItem() { delete m_stream; }
-//
-//	TCPStream* getStream() { return m_stream; }
-//};
+class MessageItem
+{
+	string message;
+	long timestamp;
+	string date_formatted;
+	TCPStream* m_stream;
+
+public:
+	MessageItem(TCPStream* stream) : m_stream(stream) {}
+	~MessageItem() { delete m_stream; }
+
+	TCPStream* getStream() { return m_stream; }
+};
 
 
 
