@@ -28,6 +28,7 @@ III. Design plan:
 			-Sender of message
 			-Timestamp of time sent
 			-Actual message
+			-TCPStream*  (so that we're able to send and receive stuff)
 		-Write stuff to the master log using Step 3) from above
 			-Need to remember to lock here
 		-Also, on the client side, keep a long that represents the timestamp of the last message received
@@ -45,5 +46,17 @@ IV. In total, all the data structures we have:
 		-1 Thread to specifically manage Work Queue 2
 		-Master log, which keeps track of all message sent
 	II. Client side:
+
+
+Problems:
+	1. How to broadcast?
+		-Means that every TCPStream* calls send()
+		-Means that we need access to every Consumer Thread
+			-Put them inside a list
+			-So it would be a list of ConnectionHandler*
+
+	2. Sending and receiving messages:
+		-Case 1: Server receives message from client:
+			-in what format should the stuff received be in???
 		
 		

@@ -56,7 +56,7 @@ int main(int argc, char** argv)
         
     }
 
-    stream = connector->connect(argv[2], atoi(argv[1]));
+   /* stream = connector->connect(argv[2], atoi(argv[1]));
     if (stream) {
         message = "Why is there air?";
         stream->send(message.c_str(), message.size());
@@ -66,5 +66,5 @@ int main(int argc, char** argv)
         printf("received - %s\n", line);
         delete stream;
     }
-    exit(0);
+    exit(0);*/
 }

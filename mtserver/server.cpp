@@ -42,12 +42,30 @@ class WorkItem
     TCPStream* getStream() { return m_stream; }
 };
 
+
+//class MessageItem
+//{
+//	string message;
+//	long timestamp;
+//	string date_formatted;
+//	TCPStream* m_stream;
+//
+//public:
+//	MessageItem(TCPStream* stream) : m_stream(stream) {}
+//	~MessageItem() { delete m_stream; }
+//
+//	TCPStream* getStream() { return m_stream; }
+//};
+
+
+
 class ConnectionHandler : public Thread
 {
-    wqueue<WorkItem*>& m_queue;
+    wqueue<WorkItem*>& w_queue;
+	//wqueue<MessgeItem*>& m_queue;
  
   public:
-    ConnectionHandler(wqueue<WorkItem*>& queue, std::string n) : m_queue(queue) 
+    ConnectionHandler(wqueue<WorkItem*>& queue, std::string n) : w_queue(queue)
 	{
 		set_name(n);
 	}
@@ -57,7 +75,7 @@ class ConnectionHandler : public Thread
         // available to process.
         for (int i = 0;; i++) {
 			std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
-            WorkItem* item = m_queue.remove();
+            WorkItem* item = w_queue.remove();
 			std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
             TCPStream* stream = item->getStream();
 
@@ -76,6 +94,10 @@ class ConnectionHandler : public Thread
         // Should never get here
         return NULL;
     }
+
+	void send_message(TCPStream* stream, ) {
+
+	}
 };
 
 int main(int argc, char** argv)
@@ -93,12 +115,13 @@ int main(int argc, char** argv)
     }
  
     // Create the queue and consumer (worker) threads
-    wqueue<WorkItem*>  queue;
+    wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
+	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
     for (int i = 0; i < workers; i++) {
 		std::stringstream sstm;
 		sstm << "thread" << i;
 		std::string name = sstm.str();
-        ConnectionHandler* handler = new ConnectionHandler(queue,name);
+        ConnectionHandler* handler = new ConnectionHandler(work_queue,name);
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);
@@ -132,7 +155,7 @@ int main(int argc, char** argv)
             printf("Could not create work item a connection\n");
             continue;
         }
-        queue.add(item);
+		work_queue.add(item);
     }
  
     // Should never get here
