@@ -27,6 +27,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <list>
 #include "thread.h"
 #include "wqueue.h"
 #include "tcpacceptor.h"
@@ -61,11 +62,13 @@ class WorkItem
 
 class ConnectionHandler : public Thread
 {
+	list<ConnectionHandler*>& all_connections;
     wqueue<WorkItem*>& w_queue;
 	//wqueue<MessgeItem*>& m_queue;
  
   public:
-    ConnectionHandler(wqueue<WorkItem*>& queue, std::string n) : w_queue(queue)
+    ConnectionHandler(wqueue<WorkItem*>& queue, list<ConnectionHandler*>& connections, std::string n) 
+		: w_queue(queue), all_connections(connections)
 	{
 		set_name(n);
 	}
@@ -89,15 +92,16 @@ class ConnectionHandler : public Thread
 				std::cout << thread_name() << ", echoed " << input << " back to the client..." << std::endl;
             }
             delete item; 
+
         }
 
         // Should never get here
         return NULL;
     }
 
-	void send_message(TCPStream* stream, ) {
+	/*void send_message(TCPStream* stream, ) {
 
-	}
+	}*/
 };
 
 int main(int argc, char** argv)
@@ -115,17 +119,19 @@ int main(int argc, char** argv)
     }
  
     // Create the queue and consumer (worker) threads
+	list<ConnectionHandler*> all_connections;
     wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
-	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
+	//wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
     for (int i = 0; i < workers; i++) {
 		std::stringstream sstm;
 		sstm << "thread" << i;
 		std::string name = sstm.str();
-        ConnectionHandler* handler = new ConnectionHandler(work_queue,name);
+        ConnectionHandler* handler = new ConnectionHandler(work_queue, all_connections, name);
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);
         } 
+		all_connections.push_back(handler);
         handler->start();
     }
  

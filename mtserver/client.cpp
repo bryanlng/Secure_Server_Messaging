@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
     if (stream) {
 		int x = 0;
-		while (x < 20) {
+		while (x < 3) {
 			//message = "Is there life on Mars?";
 			message = std::string(argv[3]);
 			stream->send(message.c_str(), message.size());

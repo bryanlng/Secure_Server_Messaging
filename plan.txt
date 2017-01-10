@@ -58,5 +58,13 @@ Problems:
 	2. Sending and receiving messages:
 		-Case 1: Server receives message from client:
 			-in what format should the stuff received be in???
+			-because it'll be different between platforms (Java, C++, Android)
+			-possibly change write()??:
+				http://man7.org/linux/man-pages/man2/write.2.html
+				-because TCPStream's send() is actually calling write()
+				-but write(int fd, const void *buf, size_t count) takes in a const void*,
+				 it doesn't just have to be a const char* 
+				-So we could make it point to a struct*, filled with all our stuff??
+				-But the problem is, Java and Android don't have pointers
 		
 		
