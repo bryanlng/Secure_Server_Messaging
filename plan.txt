@@ -66,5 +66,28 @@ Problems:
 				 it doesn't just have to be a const char* 
 				-So we could make it point to a struct*, filled with all our stuff??
 				-But the problem is, Java and Android don't have pointers
+			-Janky way of solving problem:
+				-Send a HUGE long string of all our information in it
+				-Need to have some sort of super unique delimiter
+					-Ex: ::&$*@^$^$(@(::
+				-At this point, this is kind of a vulnerability, because there is a chance that
+				 someone could type in this exact text, and now we can't string split
+	3. Connections are temporary:
+		-For example, in the case that the client sends a message to the server, after we
+		 send the message, the connection is severed.
+		-Thus, we now need to approach the sending/receiving differently
+		-Need to think about keeping "contacts", now:
+			-Keep track of every client's:
+				-IP address
+				-Port #
+		-Sample situation:
+			-Person A sends a message to his group chat, which has 4 people (B,C,D) including himself
+			-Thus, we need to:
+				1) Establish connection between A and Server
+				2) A sends message to server, then stop connection
+				3) Server establishes connections with B,C,D
+				4) Server relays A's message to B,C,D
+			-
+			
 		
 		
