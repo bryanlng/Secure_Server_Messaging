@@ -55,7 +55,7 @@ class MessageItem
 	// Delimiter:  ::&$*@^$^$(@(::
 	/*
 		Format of message:
-		timestamp <delimiter> date_formatted <delimiter> message
+		timestamp <delimiter> date_formatted <delimiter> message <delimiter>
 	*/
 	private:
 		string raw;
@@ -96,6 +96,7 @@ class ConnectionHandler : public Thread
             // 1. Parse contents into their fields ==> then put into a MessageItem object
 			// Delimiter will be: ::&$*@^$^$(@(::
 			// Delimiter will not be seen by the user
+
 			//Fields for receiving the message
 			char* input;
 			input = (char*)malloc(sizeof(char) * MAX_MESSAGE_SIZE);
@@ -115,14 +116,13 @@ class ConnectionHandler : public Thread
 
 				//Fields for parsing the string
 				string delimiter = "::&$*@^$^$(@(::";
-				int current_index = 0;
 				int delimiter_pos = 0;
 				int which_one = 0;
 				string current_item;
 
-				//Parsing the string
+				//Parsing the string. String is "eaten" along the way
 				while ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
-					current_item = raw.substr(current_index, delimiter_pos);
+					current_item = raw.substr(0, delimiter_pos);
 					std::cout << "Item found: " << current_item << std::endl;
 					switch (which_one) {
 						case 0:		//timestamp
@@ -140,12 +140,12 @@ class ConnectionHandler : public Thread
 					}
 					
 					//update fields
-					current_index = delimiter_pos + delimiter.length();
-					raw = raw.substr(current_index, raw.size());
+					int next_index = delimiter_pos + delimiter.length();
+					raw = raw.substr(next_index, raw.size());
 					++which_one;
 				}
 
-				//Create a new message and add it to the message queue
+				//Create a new message item and add it to the message queue
 				message_item = new MessageItem(raw_message, timestamp, date_formatted, message);
 				m_queue.add(message_item);
             }
@@ -163,48 +163,38 @@ class ConnectionHandler : public Thread
 	}*/
 };
 
-//class MessageHandler : public Thread
-//{
-//	list<ConnectionHandler*>& all_connections;
-//	//wqueue<MessgeItem*>& m_queue;
-//
-//public:
-//	ConnectionHandler(wqueue<WorkItem*>& queue, list<ConnectionHandler*>& connections, std::string n)
-//		: w_queue(queue), all_connections(connections)
-//	{
-//		set_name(n);
-//	}
-//
-//	void* run() {
-//		// Remove 1 item at a time and process it. Blocks if no items are 
-//		// available to process.
-//		for (int i = 0;; i++) {
-//			std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
-//			WorkItem* item = w_queue.remove();
-//			std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
-//			TCPStream* stream = item->getStream();
-//
-//			// Echo messages back the client until the connection is 
-//			// closed
-//			char input[256];
-//			int len;
-//			while ((len = stream->receive(input, sizeof(input) - 1)) > 0) {
-//				input[len] = NULL;
-//				stream->send(input, len);
-//				std::cout << thread_name() << ", echoed " << input << " back to the client..." << std::endl;
-//			}
-//			delete item;
-//
-//		}
-//
-//		// Should never get here
-//		return NULL;
-//	}
-//
-//	/*void send_message(TCPStream* stream, ) {
-//
-//	}*/
-//};
+class MessageHandler : public Thread
+{
+	list<ConnectionHandler*>& all_connections;
+	wqueue<MessgeItem*>& m_queue;
+
+public:
+	ConnectionHandler(list<ConnectionHandler*>& connections, wqueue<MessgeItem*>& queue, std::string n)
+		: all_connections(connections), m_queue(queue)
+	{
+		set_name(n);
+	}
+
+	void* run() {
+		// Remove 1 item at a time and process it. Blocks if no items are 
+		// available to process.
+		for (int i = 0;; i++) {
+			std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
+			MessgeItem* item = m_queue.remove();
+			std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
+			TCPStream* stream = item->getStream();
+
+			
+		}
+
+		// Should never get here
+		return NULL;
+	}
+
+	/*void send_message(TCPStream* stream, ) {
+
+	}*/
+};
 
 int main(int argc, char** argv)
 {
