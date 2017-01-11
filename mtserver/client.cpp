@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 {
 	//Given: Ex: ./client 9999 localhost
 	//Mine:  ./client 9999 localhost <message>
-    if (argc != 4) {
+    if (argc < 3 || argc > 4) {
         printf("usage: %s <port> <ip>\n", argv[0]);
         exit(1);
     }
@@ -70,22 +70,26 @@ int main(int argc, char** argv)
     int len;
     string message;
 	string delimiter = ":";
-	string temp(argv[3]);
-	string test = (temp, delimiter);
-	std::cout << "Test: " << test << std::endl;
 	string formatted;
     char line[256];
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
-    if (stream) {
-		message = std::string(argv[3]);
-		//message = (message, delimiter);
-		stream->send(message.c_str(), message.size());
-		printf("sent - %s\n", message.c_str());
+    while (stream) {
+
+		//Sending messages
+		if (argc == 4) {
+			message = std::string(argv[3]);
+			//message = (message, delimiter);
+			stream->send(message.c_str(), message.size());
+			printf("sent - %s\n", message.c_str());
+		}
+
 		len = stream->receive(line, sizeof(line));
 		line[len] = '\0';
 		printf("received - %s\n", line);
 		sleep(1);
+		
+		
    }
 
    /* stream = connector->connect(argv[2], atoi(argv[1]));
