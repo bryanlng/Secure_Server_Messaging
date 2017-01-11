@@ -57,25 +57,25 @@ class MessageItem
 	/*
 		Format of message:
 		timestamp <delimiter> date_formatted <delimiter> message <delimiter>
-		length is ignored, as that field is filled out and taken from stream->receive(input, len)
+		thread_id is ignored, as that field is taken from the thread itself
 	*/
 	private:
-		string raw;
-		long timestamp;
-		string date_formatted;
-		string message;
-		int length;
+		string raw;					//raw form of the message, not split yet
+		long timestamp;				//timestamp of when the message was sent, in milliseconds
+		string date_formatted;		//Formatted date of when the message of sent
+		string message;				//Actual message
+		string thread_id;			//ID of thread (which held the connection) which sent the message
 
 	public:
-		MessageItem(std::string full, long time, std::string date, std::string mes, int len) :
-			raw(full), timestamp(time), date_formatted(date), message(mes), length(len) {}
+		MessageItem(std::string full, long time, std::string date, std::string mes, std::string tid) :
+			raw(full), timestamp(time), date_formatted(date), message(mes), thread_id(tid)  {}
 
 		string getRawMessage() {
 			return raw;
 		}
 
-		int getLength() {
-			return length;
+		string getThreadID() {
+			return thread_id;
 		}
 
 };
@@ -84,16 +84,18 @@ class MessageItem
 
 class ConnectionHandler : public Thread
 {
-	list<ConnectionHandler*>& connections;
-	wqueue<WorkItem*>& w_queue;
-	wqueue<MessageItem*>& m_queue;
-	TCPStream* stream;
+	list<ConnectionHandler*>& connections;		//list of all ConnectionHandler
+	wqueue<WorkItem*>& w_queue;					//reference to the work queue that manages all the ConnectionHandler
+	wqueue<MessageItem*>& m_queue;				//reference to the message queue that manages all the messages
+	TCPStream* stream;							//TCPStream that the ConnectionHandler is managing
+	bool connected;						//Does the Thread currently have a connection?
  
   public:
     ConnectionHandler(list<ConnectionHandler*>& connects, wqueue<WorkItem*>& queue, wqueue<MessageItem*>& message_queue, std::string n)
 		: connections(connects), w_queue(queue), m_queue(message_queue)
 	{
 		set_name(n);
+		connected = false;
 	}
  
     void* run() {
@@ -105,6 +107,7 @@ class ConnectionHandler : public Thread
 			std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
             TCPStream* stream = item->getStream();
 			setStream(stream);
+			connected = true;
 
             // 1. Parse contents into their fields ==> then put into a MessageItem object
 			// Delimiter will be: ::&$*@^$^$(@(::
@@ -120,14 +123,12 @@ class ConnectionHandler : public Thread
 			long timestamp;
 			string date_formatted;
 			string message;
-			int length;
 
 			MessageItem* message_item;
 			while ((len = stream->receive(input, MAX_MESSAGE_SIZE-1) > 0 )){
 				std::cout << "Raw message received from client: " << input << std::endl;
 				string raw(input);
 				raw_message = raw;
-				length = len;
 
 				//Fields for parsing the string
 				string delimiter = ":";	//"::&$*@^$^$(@(::";
@@ -163,11 +164,12 @@ class ConnectionHandler : public Thread
 				}
 
 				//Create a new message item and add it to the message queue
-				message_item = new MessageItem(raw_message, timestamp, date_formatted, message, length);
+				message_item = new MessageItem(raw_message, timestamp, date_formatted, message, thread_name());
 				m_queue.add(message_item);
             }
 			free(input);
             delete item; 
+			connected = false;
 
         }
 
@@ -183,18 +185,24 @@ class ConnectionHandler : public Thread
 		stream = s;
 	}
 
+	bool hasAConnection() {
+		return connected;
+	}
+
 	void send_message(MessageItem* message_item) {
 		TCPStream* stream = getStream();
 		string raw_message = message_item->getRawMessage();
-		
+		std::cout << "send_message(): Raw message being sent: " << raw_message << std::endl;
+
 		//Convert message from string --> c-style string, since send() only accepts a char*
 		char* c_string = new char[raw_message.size() + 1];
 		std::copy(raw_message.begin(), raw_message.end(), c_string);
 		c_string[raw_message.size()] = '\0';
 
+		printf("c_string: %s\n", c_string);
 		//Send message, then free temp buffer
-		stream->send(const_cast<const char*>(c_string), message_item->getLength());
-		delete(c_string);
+		stream->send(const_cast<const char*>(c_string), raw_message.size());
+		//delete(c_string);
 	}
 };
 
@@ -219,12 +227,20 @@ public:
 			std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
 
 			//Broadcast message by relaying the MessageItem to each of the other connections
-			//Broadcast to everyone except for the sender
 			std::list<ConnectionHandler*>::const_iterator iterator;
+			string sender = item->getThreadID();
+			std::cout << "Sender of message: " << sender << std::endl;
 			for (iterator = connections.begin(); iterator != connections.end(); ++iterator) {
 				ConnectionHandler* connection = *iterator;
-				connection->send_message(item);
+				std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
+
+				//Broadcast to everyone who has a connection AND is not the sender of the message
+				if (connection->hasAConnection() && sender.compare(connection->thread_name())) {
+					connection->send_message(item);
+				}
 			}
+
+			delete item;
 			
 		}
 
@@ -255,7 +271,8 @@ int main(int argc, char** argv)
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
 
 	// Create the sole Message Thread, which is responsible for broadcasting messages
-	MessageHandler* messenger = new MessageHandler(all_connections, message_queue, "message_handler");
+	string message_id = "message_handler";
+	MessageHandler* messenger = new MessageHandler(connections, message_queue, message_id);
 	messenger->start();
 
 	// Create the Consumer Threads, which take in and accept Connections
@@ -263,12 +280,13 @@ int main(int argc, char** argv)
 		std::stringstream sstm;
 		sstm << "thread" << i;
 		std::string name = sstm.str();
-        ConnectionHandler* handler = new ConnectionHandler(all_connections, work_queue, message_queue, name);
+        ConnectionHandler* handler = new ConnectionHandler(connections, work_queue, message_queue, name);
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);
         } 
 		connections.push_back(handler);
+		std::cout << "New length of connections list: " << connections.size() << std::endl;
         handler->start();
     }
  

@@ -40,21 +40,14 @@ int main(int argc, char** argv)
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
     if (stream) {
-		int x = 0;
-		while (x < 3) {
-			//message = "Is there life on Mars?";
-			message = std::string(argv[3]);
-			stream->send(message.c_str(), message.size());
-			printf("sent - %s\n", message.c_str());
-			len = stream->receive(line, sizeof(line));
-			line[len] = NULL;
-			printf("received - %s\n", line);
-			sleep(1);
-			x++;
-			//delete stream;
-		}
-        
-    }
+		message = std::string(argv[3]);
+		stream->send(message.c_str(), message.size());
+		printf("sent - %s\n", message.c_str());
+		len = stream->receive(line, sizeof(line));
+		line[len] = '\0';
+		printf("received - %s\n", line);
+		sleep(1);
+   }
 
    /* stream = connector->connect(argv[2], atoi(argv[1]));
     if (stream) {
