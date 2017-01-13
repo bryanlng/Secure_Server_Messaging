@@ -69,7 +69,8 @@ int main(int argc, char** argv)
 	MessageHandler* messenger = new MessageHandler(connections, message_queue, message_id);
 	messenger->start();
 
-	// Create the Consumer Threads, which take in and accept Connections
+	// Create the Consumer Threads, which take in and accept Connections. Then start them
+	// Also, add these Consumer Threads to the list of consumer threads
     for (int i = 0; i < workers; i++) {
 		std::stringstream sstm;
 		sstm << "thread" << i;

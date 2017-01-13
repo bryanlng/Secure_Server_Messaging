@@ -88,6 +88,43 @@ Problems:
 				2) A sends message to server, then stop connection
 				3) Server relays A's message to B,C,D
 			-
+
+Master log:
+	-Represented by a file
+	-Since master log is a shared resouce --> NEED LOCKS
+	-Check if we need to update BEFORE sending a message
+	-TO send message, just call ConnectionHandler's send_message()
+
+	The field of the most recent message:
+		-Every ConnectionHandler needs to be able to access it
+		-However, it needs to be able to last past the server executable's life
+		-Thus, it needs to be in a file
+
+	Supporting data structures:
+		-another wqueue Queue of MessageItem objects
+		-UpdateMessages Thread, which extends Thread
+		-File to represent the master log
+		-File to represent the timestamp of the most recent message in the group
+
+	Process:
+		1) Inside a ConnectionHandler object, after we've done all the parsing, c
+		   Check if we need to update:
+			-Read the most recent timestamp from the file that contains it
+			-If the timestamp of the last message received < timestamp of most recent message, 
+			 then the connection is clearly behind
+		2) Then, put that onto the UpdateRequest queue
+		3) Upon the UpdateRequest queue having a new item, the UpdateMessages Thread will 
+		   grab and remove it
+		4) Then, the UpdateMessages Thread will do the following:
+			1) Extract the contents out of the UpdateRequest object
+			2) Read the most recent timestamp from the file that contains it.
+			   The only reason we do this twice is because the most recent timestamp
+			   MAY have changed between the time that we first checked it
+			3) Read the master log:
+			     -Starting at the time of the last message received --> latest timestamp:
+					1) Extract message
+					2) Call the ConnectionHandler's send_message()
+
 			
 		
 		

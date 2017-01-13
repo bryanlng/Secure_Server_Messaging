@@ -43,12 +43,17 @@ void* ConnectionHandler::run() {
 		//Fields to put inside the Message item
 		string raw_message;
 		long timestamp;
+		//long time_of_last_received;		//used to check whether we need to pull from log
 		string date_formatted;
 		string message;
 
-		//Upon receiving a message, parse it, then put contents into a MessageItem
+		//Upon receiving a message, parse it, then put contents into 
+		//a MessageItem
 		//Format of message from client:
-		//timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+		/*
+			timestamp <delimiter> timestamp of the last message received<delimiter> 
+			date_formatted <delimiter> message <delimiter>
+		*/
 		MessageItem* message_item;
 		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 			std::cout << "Raw message received from client: " << input << std::endl;
@@ -66,18 +71,33 @@ void* ConnectionHandler::run() {
 				current_item = raw.substr(0, delimiter_pos);
 				std::cout << "Item found: " << current_item << std::endl;
 				switch (which_one) {
-				case 0:		//timestamp
-					timestamp = atol(current_item.c_str());
-					break;
-				case 1:		//formatted date
-					date_formatted = current_item;
-					break;
-				case 2:		//actual message
-					message = current_item;
-					break;
-				default:
-					std::cout << "Field is not used" << std::endl;
-					break;
+					case 0:		//timestamp
+						timestamp = atol(current_item.c_str());
+						break;
+					case 1:		//formatted date
+						date_formatted = current_item;
+						break;
+					case 2:		//actual message
+						message = current_item;
+						break;
+					default:
+						std::cout << "Field is not used" << std::endl;
+						break;
+					//case 0:		//timestamp
+					//	timestamp = atol(current_item.c_str());
+					//	break;
+					//case 1:		//timestamp of the last message received
+					//	time_of_last_received = atol(current_item.c_str());
+					//	break;
+					//case 2:		//formatted date
+					//	date_formatted = current_item;
+					//	break;
+					//case 3:		//actual message
+					//	message = current_item;
+					//	break;
+					//default:
+					//	std::cout << "Field is not used" << std::endl;
+					//	break;
 				}
 
 				//update fields
@@ -86,8 +106,13 @@ void* ConnectionHandler::run() {
 				++which_one;
 			}
 
-			//Create a new message item and add it to the message queue
+			//Create a new message item
 			message_item = new MessageItem(raw_message, timestamp, date_formatted, message, thread_name());
+			
+			//First check if connection is behind. AKA, do we need to download messages
+			//from the master log?
+
+			//Add the new message item to the message queue
 			m_queue.add(message_item);
 		}
 
@@ -139,8 +164,13 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	std::copy(raw_message.begin(), raw_message.end(), c_string);
 	c_string[raw_message.size()] = '\0';
 
-	printf("c_string: %s\n", c_string);
 	//Send message, then free temp buffer
+	printf("c_string: %s\n", c_string);
 	stream->send(const_cast<const char*>(c_string), raw_message.size());
 	//delete(c_string);
+
+	//Update the most recent timestamp file to be the timestamp of the message,
+	//as this message will be the most recent message sent
+	
+
 }
