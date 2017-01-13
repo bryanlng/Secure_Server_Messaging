@@ -74,22 +74,22 @@ int main(int argc, char** argv)
     char line[256];
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
+	int x = 0;
     while (stream) {
 
 		//Sending messages
-		if (argc == 4) {
+		if (argc == 4 && x == 0) {
 			message = std::string(argv[3]);
 			//message = (message, delimiter);
 			stream->send(message.c_str(), message.size());
 			printf("sent - %s\n", message.c_str());
+			x++;
 		}
 
 		len = stream->receive(line, sizeof(line));
 		line[len] = '\0';
 		printf("received - %s\n", line);
-		sleep(1);
-		
-		
+		sleep(1);		
    }
 
    /* stream = connector->connect(argv[2], atoi(argv[1]));
