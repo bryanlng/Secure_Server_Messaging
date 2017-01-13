@@ -9,6 +9,17 @@ ConnectionHandler::ConnectionHandler(list<ConnectionHandler*>& connects, wqueue<
 	connected = false;
 }
 
+/*
+	Function:
+	1. Consumer threads remove and grab a WorkItem from the work queue, then get 
+	   their TCPStream --> then get their message, which is a string demarcated 
+	   by some delimiter. 
+	2. After parsing the contents of the string into fields, we put all the data 
+	   into a MessageItem, then put it onto the message queue.
+
+	If there's no WorkItems in the work queue (like in the beginning), the 
+	ConnectionHandler blocks.
+*/
 void* ConnectionHandler::run() {
 	// Remove 1 item at a time and process it. Blocks if no items are 
 	// available to process.
@@ -35,6 +46,9 @@ void* ConnectionHandler::run() {
 		string date_formatted;
 		string message;
 
+		//Upon receiving a message, parse it, then put contents into a MessageItem
+		//Format of message from client:
+		//timestamp <delimiter> date_formatted <delimiter> message <delimiter>
 		MessageItem* message_item;
 		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 			std::cout << "Raw message received from client: " << input << std::endl;
@@ -61,10 +75,8 @@ void* ConnectionHandler::run() {
 				case 2:		//actual message
 					message = current_item;
 					break;
-				case 3:
-					break;
 				default:
-					std::cout << "Should not get here" << std::endl;
+					std::cout << "Field is not used" << std::endl;
 					break;
 				}
 
@@ -78,6 +90,8 @@ void* ConnectionHandler::run() {
 			message_item = new MessageItem(raw_message, timestamp, date_formatted, message, thread_name());
 			m_queue.add(message_item);
 		}
+
+		//Free and update fields
 		free(input);
 		delete item;
 		connected = false;
@@ -88,18 +102,33 @@ void* ConnectionHandler::run() {
 	return NULL;
 }
 
+/*
+	Gets the TCPStream* that represents the connection
+*/
 TCPStream* ConnectionHandler::getStream() {
 	return stream;
 }
 
+/*
+	Sets the TCPStream* that represents the connection
+*/
 void ConnectionHandler::setStream(TCPStream* s) {
 	stream = s;
 }
 
+/*
+	Returns whether or not the ConnectionHandler has a connection
+	In other words, have we successfully pulled a WorkItem from the work queue?
+*/
 bool ConnectionHandler::hasAConnection() {
 	return connected;
 }
 
+/*
+	Sends a message back to the client connection, which is defined
+	by the TCPStream* that we got from the WorkItem that we pulled
+	off the work queue in run()
+*/
 void ConnectionHandler::send_message(MessageItem* message_item) {
 	TCPStream* stream = getStream();
 	string raw_message = message_item->getRawMessage();

@@ -9,6 +9,20 @@
 #include <list>
 #include <stdio.h>
 
+/*
+	Class that represents a "Consumer Thread"
+	The server creates a specified number of Consumer Threads at the beginning.
+
+	Function:
+	1. Consumer threads remove and grab a WorkItem from the work queue, then get 
+	   their TCPStream --> then get their message, which is a string demarcated 
+	   by some delimiter. 
+	2. After parsing the contents of the string into fields, we put all the data 
+	   into a MessageItem, then put it onto the message queue.
+
+	If there's no WorkItems in the work queue (like in the beginning), the 
+	ConnectionHandler blocks.
+*/
 class ConnectionHandler : public Thread
 {
 private:
