@@ -84,9 +84,9 @@ int main(int argc, char** argv)
 
 	// Create the sole Update Thread, which is responsible for updating a Connection
 	// in case it was behind on messages
-	//string update_id = "update_handler";
-	//MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
-	//updater->start();
+	string update_id = "update_handler";
+	MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
+	updater->start();
 
 	// Create the Consumer Threads, which take in and accept Connections. Then start them
 	// Also, add these Consumer Threads to the list of consumer threads
