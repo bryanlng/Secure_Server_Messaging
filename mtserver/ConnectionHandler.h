@@ -29,11 +29,12 @@ private:
 	list<ConnectionHandler*>& connections;		//list of all ConnectionHandler
 	wqueue<WorkItem*>& w_queue;					//reference to the work queue that manages all the ConnectionHandler
 	wqueue<MessageItem*>& m_queue;				//reference to the message queue that manages all the messages
+	wqueue<MessageItem*>& update_queue;			//reference to the update queue, which manages requests to update
 	TCPStream* stream;							//TCPStream that the ConnectionHandler is managing
 	bool connected;								//Does the Thread currently have a connection?
 
 public:
-	ConnectionHandler(list<ConnectionHandler*>& connects, wqueue<WorkItem*>& queue, wqueue<MessageItem*>& message_queue, std::string n);
+	ConnectionHandler(list<ConnectionHandler*>& connects, wqueue<WorkItem*>& queue, wqueue<MessageItem*>& message_queue, wqueue<MessageItem*>& update_queue, std::string n);
 	void* run();
 	TCPStream* getStream();
 	void setStream(TCPStream* s);

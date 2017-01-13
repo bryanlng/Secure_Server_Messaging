@@ -104,10 +104,12 @@ Master log:
 		-another wqueue Queue of MessageItem objects
 		-UpdateMessages Thread, which extends Thread
 		-File to represent the master log
+			-called master_log.txt
 		-File to represent the timestamp of the most recent message in the group
+			-called timestamp.txt
 
 	Process:
-		1) Inside a ConnectionHandler object, after we've done all the parsing, c
+		1) Inside a ConnectionHandler object, after we've done all the parsing...
 		   Check if we need to update:
 			-Read the most recent timestamp from the file that contains it
 			-If the timestamp of the last message received < timestamp of most recent message, 

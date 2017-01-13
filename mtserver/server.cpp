@@ -24,6 +24,7 @@
    //char input[25600];
    http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
    http://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
+   http://stackoverflow.com/questions/17818099/how-to-check-if-a-file-exists-before-creating-a-new-file
 */
 
 /*
@@ -40,10 +41,11 @@ Previous stuff that is all included in ConnectionHandler.h, which MessageHandler
 #include "ConnectionHandler.h"
 */
 
-
-#include "thread.h"
 #include <sstream>
+#include <fstream>
+#include "thread.h"
 #include "MessageHandler.h"
+
 
 int main(int argc, char** argv)
 {
@@ -63,11 +65,28 @@ int main(int argc, char** argv)
 	list<ConnectionHandler*> connections;
     wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
+	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
+
+	//Check if the files for the 1) master log, and 2) most recent timestamp exist
+	//If they don't, create them right now
+	/*ofstream master_log;
+	ofstream timestamp;
+	if (!std::ifstream("master_log.txt")) {
+
+	}*/
+
+
 
 	// Create the sole Message Thread, which is responsible for broadcasting messages
 	string message_id = "message_handler";
 	MessageHandler* messenger = new MessageHandler(connections, message_queue, message_id);
 	messenger->start();
+
+	// Create the sole Update Thread, which is responsible for updating a Connection
+	// in case it was behind on messages
+	//string update_id = "update_handler";
+	//MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
+	//updater->start();
 
 	// Create the Consumer Threads, which take in and accept Connections. Then start them
 	// Also, add these Consumer Threads to the list of consumer threads
@@ -75,7 +94,7 @@ int main(int argc, char** argv)
 		std::stringstream sstm;
 		sstm << "thread" << i;
 		std::string name = sstm.str();
-        ConnectionHandler* handler = new ConnectionHandler(connections, work_queue, message_queue, name);
+        ConnectionHandler* handler = new ConnectionHandler(connections, work_queue, message_queue, update_queue, name);
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);

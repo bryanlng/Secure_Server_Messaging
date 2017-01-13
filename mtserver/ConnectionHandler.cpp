@@ -2,8 +2,10 @@
 #define MAX_MESSAGE_SIZE 25600
 
 
-ConnectionHandler::ConnectionHandler(list<ConnectionHandler*>& connects, wqueue<WorkItem*>& queue, wqueue<MessageItem*>& message_queue, std::string n)
-	: connections(connects), w_queue(queue), m_queue(message_queue)
+ConnectionHandler::ConnectionHandler(list<ConnectionHandler*>& connects, 
+	wqueue<WorkItem*>& queue, wqueue<MessageItem*>& message_queue, 
+	wqueue<MessageItem*>& u_queue, std::string n)
+	: connections(connects), w_queue(queue), m_queue(message_queue), update_queue(u_queue)
 {
 	set_name(n);
 	connected = false;
