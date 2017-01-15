@@ -90,6 +90,15 @@ Problems:
 			-
 
 Master log:
+	1) Why we want it:
+	2) Big picture, how it's intended to work:
+		-User gets connected
+		-Once user is connected, it automatically checks if it needs to update, then updates
+		-It's stupid to have to make the user send a message in order to update
+		-But the problem is, once we make a connection, that's it. We don't communicate anything else.
+		 We just get stuck on the "while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {" line
+		 in ConnectionHandler.cpp. 
+
 	-Represented by a file
 	-Since master log is a shared resouce --> NEED LOCKS
 	-Check if we need to update BEFORE sending a message

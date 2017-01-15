@@ -45,8 +45,6 @@ Previous stuff that is all included in ConnectionHandler.h, which MessageHandler
 #include <fstream>
 #include "thread.h"
 #include "MessageHandler.h"
-#include "UpdateRequestHandler.h"
-
 
 int main(int argc, char** argv)
 {
@@ -66,7 +64,7 @@ int main(int argc, char** argv)
 	list<ConnectionHandler*> connections;
     wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
-	wqueue<UpdateItem*> update_queue;		//work queue 3, for catching up on old messages
+	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
 
 	//Check if the files for the 1) master log, and 2) most recent timestamp exist
 	//If they don't, create them right now
@@ -82,12 +80,6 @@ int main(int argc, char** argv)
 	string message_id = "message_handler";
 	MessageHandler* messenger = new MessageHandler(connections, message_queue, message_id);
 	messenger->start();
-
-	// Create the sole Update Thread, which is responsible for updating a Connection
-	// in case it was behind on messages
-	string update_id = "update_handler";
-	UpdateRequestHandler* updater = new UpdateRequestHandler(connections, update_queue, update_id);
-	updater->start();
 
 	// Create the Consumer Threads, which take in and accept Connections. Then start them
 	// Also, add these Consumer Threads to the list of consumer threads
