@@ -60,6 +60,12 @@ void* ConnectionHandler::run() {
 			string raw(input);
 			raw_message = raw;
 
+			//First check if the message is the "timestamp" message
+			string timestamp_delimiter = ":";	//"::&$*@^$^$(@(::";
+
+
+
+			//Else, it's got to be just a regular message
 			//Fields for parsing the string
 			string delimiter = ":";	//"::&$*@^$^$(@(::";
 			int delimiter_pos = 0;

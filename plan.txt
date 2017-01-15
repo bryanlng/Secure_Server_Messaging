@@ -91,18 +91,33 @@ Problems:
 
 Master log:
 	1) Why we want it:
+		-what if a user is super behind on messages?
+		-we want it so that once they connect, all the messages that they missed will come flooding in
 	2) Big picture, how it's intended to work:
 		-User gets connected
 		-Once user is connected, it automatically checks if it needs to update, then updates
 		-It's stupid to have to make the user send a message in order to update
 		-But the problem is, once we make a connection, that's it. We don't communicate anything else.
 		 We just get stuck on the "while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {" line
-		 in ConnectionHandler.cpp. 
+		 in ConnectionHandler.cpp.  
+		-Solution:
+			-We're going to have to send 2 messages, seperately
+				1) Message 1:	Timestamp of the last message received
+					-This will automatically be sent when we first connect
+					-This is sent on the client side
+				2) Message 2:	The actual message 
+					-When the user sends a message
+					-Also client side
+			-Thus, need to check if it's the "timestamp" message, or an actual "message"
+			-How to differentiate between the two?
+				-Have different delimiters
+				-AKA, have a special delimiter for the "timestamp message"
 
-	-Represented by a file
-	-Since master log is a shared resouce --> NEED LOCKS
-	-Check if we need to update BEFORE sending a message
-	-TO send message, just call ConnectionHandler's send_message()
+	3) Details of the Master log
+		-Represented by a file
+		-Since master log is a shared resouce --> NEED LOCKS
+		-Check if we need to update BEFORE sending a message
+		-TO send message, just call ConnectionHandler's send_message()
 
 	The field of the most recent message:
 		-Every ConnectionHandler needs to be able to access it
@@ -110,23 +125,24 @@ Master log:
 		-Thus, it needs to be in a file
 
 	Supporting data structures:
-		-another wqueue Queue of MessageItem objects
-		-UpdateMessages Thread, which extends Thread
+		-another wqueue Queue of MessageItem objects, called the UpdateRequest queue
 		-File to represent the master log
 			-called master_log.txt
 		-File to represent the timestamp of the most recent message in the group
 			-called timestamp.txt
 
 	Process:
-		1) Inside a ConnectionHandler object, after we've done all the parsing...
-		   Check if we need to update:
+		1) Inside a ConnectionHandler object, check if the string received is the "timestamp" message
+			-If it is, then extract the timestamp out.
+			-This timestamp will be considered as the "timestamp of the last message received"
+		2) Check if we need to update:
 			-Read the most recent timestamp from the file that contains it
 			-If the timestamp of the last message received < timestamp of most recent message, 
 			 then the connection is clearly behind
 		2) Then, put that onto the UpdateRequest queue
-		3) Upon the UpdateRequest queue having a new item, the UpdateMessages Thread will 
+		3) Upon the UpdateRequest queue having a new item, the MessageHandler Thread waiting on it will 
 		   grab and remove it
-		4) Then, the UpdateMessages Thread will do the following:
+		4) Then, the MessageHandler Thread will do the following:
 			1) Extract the contents out of the UpdateRequest object
 			2) Read the most recent timestamp from the file that contains it.
 			   The only reason we do this twice is because the most recent timestamp
