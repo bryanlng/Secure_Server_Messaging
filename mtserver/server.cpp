@@ -45,6 +45,7 @@ Previous stuff that is all included in ConnectionHandler.h, which MessageHandler
 #include <fstream>
 #include "thread.h"
 #include "MessageHandler.h"
+#include "UpdateRequestHandler.h"
 
 
 int main(int argc, char** argv)
@@ -65,7 +66,7 @@ int main(int argc, char** argv)
 	list<ConnectionHandler*> connections;
     wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
-	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
+	wqueue<UpdateItem*> update_queue;		//work queue 3, for catching up on old messages
 
 	//Check if the files for the 1) master log, and 2) most recent timestamp exist
 	//If they don't, create them right now
@@ -85,7 +86,7 @@ int main(int argc, char** argv)
 	// Create the sole Update Thread, which is responsible for updating a Connection
 	// in case it was behind on messages
 	string update_id = "update_handler";
-	MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
+	UpdateRequestHandler* updater = new UpdateRequestHandler(connections, update_queue, update_id);
 	updater->start();
 
 	// Create the Consumer Threads, which take in and accept Connections. Then start them
@@ -94,7 +95,7 @@ int main(int argc, char** argv)
 		std::stringstream sstm;
 		sstm << "thread" << i;
 		std::string name = sstm.str();
-        ConnectionHandler* handler = new ConnectionHandler(connections, work_queue, message_queue, update_queue, name);
+        ConnectionHandler* handler = new ConnectionHandler(work_queue, message_queue, update_queue, name);
         if (!handler) {
             printf("Could not create ConnectionHandler %d\n", i);
             exit(1);

@@ -1,6 +1,4 @@
 #include "ConnectionHandler.h"
-
-
 /*
 	Class that represents the Message Handler
 	Takes a message and broadcasts it to all the Consumer Threads that:
