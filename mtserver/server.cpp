@@ -75,12 +75,15 @@ int main(int argc, char** argv)
 
 	}*/
 
-
-
-	// Create the sole Message Thread, which is responsible for broadcasting messages
+	// Create the first Message Thread, which is responsible for broadcasting messages
 	string message_id = "message_handler";
 	MessageHandler* messenger = new MessageHandler(connections, message_queue, message_id);
 	messenger->start();
+
+	// Create the second Message Thread, which is responsible for updating a client who's really behind
+	string update_id = "update_handler";
+	MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
+	updater->start();
 
 	// Create the Consumer Threads, which take in and accept Connections. Then start them
 	// Also, add these Consumer Threads to the list of consumer threads

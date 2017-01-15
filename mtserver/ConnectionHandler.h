@@ -1,8 +1,7 @@
 #include "WorkItem.h"
 #include "wqueue.h"
 #include "thread.h"
-//#include "MessageItem.h"	//this is defined in UpdateItem.h
-#include "UpdateItem.h"
+#include "MessageItem.h"
 #include <iostream>
 #include <stdlib.h>
 #include <cstdlib>
