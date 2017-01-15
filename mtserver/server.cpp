@@ -26,6 +26,7 @@
    http://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
    http://stackoverflow.com/questions/17818099/how-to-check-if-a-file-exists-before-creating-a-new-file
    http://stackoverflow.com/questions/3903587/how-to-check-if-a-stdstring-is-set-or-not
+   http://www.cplusplus.com/doc/tutorial/files/
 */
 
 /*
@@ -67,13 +68,20 @@ int main(int argc, char** argv)
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
 	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
 
-	//Check if the files for the 1) master log, and 2) most recent timestamp exist
+	//Check if the files for the master log and the most recent timestamp exist
 	//If they don't, create them right now
-	/*ofstream master_log;
+	ofstream master_log;
 	ofstream timestamp;
 	if (!std::ifstream("master_log.txt")) {
-
-	}*/
+		std::cout << "Created master_log.txt b/c it didn't exist" << std::endl;
+		master_log.open("master_log.txt");
+		master_log.close();
+	}
+	if (!std::ifstream("timestamp.txt")) {
+		std::cout << "Created timestamp.txt b/c it didn't exist" << std::endl;
+		timestamp.open("timestamp.txt");
+		timestamp.close();
+	}
 
 	// Create the first Message Thread, which is responsible for broadcasting messages
 	string message_id = "message_handler";

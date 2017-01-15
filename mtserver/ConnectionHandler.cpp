@@ -111,8 +111,13 @@ void* ConnectionHandler::run() {
 			//Create a new message item
 			message_item = new MessageItem(raw_message, time_of_last_received, timestamp, date_formatted, message, thread_name());
 			
-			//Add the new message item to the message queue
-			m_queue.add(message_item);
+			//Add the new message item to the appropriate message queue
+			if (message_item->isUpdateRequest()) {
+				update_queue.add(message_item);
+			}
+			else {
+				m_queue.add(message_item);
+			}
 		}
 
 		//Free and update fields
