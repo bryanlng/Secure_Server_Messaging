@@ -29,19 +29,29 @@ void* MessageHandler::run() {
 		MessageItem* item = m_queue.remove();
 		std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
 
-		//Broadcast message by relaying the MessageItem to each of the other connections
-		std::list<ConnectionHandler*>::const_iterator iterator;
-		string sender = item->getThreadID();
-		std::cout << "Sender of message: " << sender << std::endl;
-		for (iterator = connections.begin(); iterator != connections.end(); ++iterator) {
-			ConnectionHandler* connection = *iterator;
-			std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
+		//Case 1: MessageItem is an update request
+		if (item->isUpdateRequest()) {
+			cout << "stuff to be done here" << endl;
+		}
 
-			//Broadcast to everyone who has a connection AND is not the sender of the message
-			if (connection->hasAConnection() && sender.compare(connection->thread_name())) {
-				connection->send_message(item);
+		//Else, Case 2: MessageItem contains an actual message, and needs to be requested
+		else {
+			//Broadcast message by relaying the MessageItem to each of the other connections
+			std::list<ConnectionHandler*>::const_iterator iterator;
+			string sender = item->getThreadID();
+			std::cout << "Sender of message: " << sender << std::endl;
+			for (iterator = connections.begin(); iterator != connections.end(); ++iterator) {
+				ConnectionHandler* connection = *iterator;
+				std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
+
+				//Broadcast to everyone who has a connection AND is not the sender of the message
+				if (connection->hasAConnection() && sender.compare(connection->thread_name())) {
+					connection->send_message(item);
+				}
 			}
 		}
+
+		
 
 		//Free fields
 		delete item;

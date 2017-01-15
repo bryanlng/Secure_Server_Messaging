@@ -42,8 +42,8 @@ void* ConnectionHandler::run() {
 
 		//Fields to put inside the Message item
 		string raw_message;
-		long timestamp;
-		//long time_of_last_received;		//used to check whether we need to pull from log
+		long time_of_last_received = -1;		//used to check whether we need to pull from log
+		long timestamp = -1;
 		string date_formatted;
 		string message;
 
@@ -51,8 +51,12 @@ void* ConnectionHandler::run() {
 		//a MessageItem
 		//Format of message from client:
 		/*
-			timestamp <delimiter> timestamp of the last message received<delimiter> 
-			date_formatted <delimiter> message <delimiter>
+			Case 1. Timestamp message
+			timestamp <special delimiter>
+
+			Case 2. Regular message
+			timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+
 		*/
 		MessageItem* message_item;
 		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
@@ -60,64 +64,53 @@ void* ConnectionHandler::run() {
 			string raw(input);
 			raw_message = raw;
 
-			//First check if the message is the "timestamp" message
-			string timestamp_delimiter = ":";	//"::&$*@^$^$(@(::";
-
-
-
-			//Else, it's got to be just a regular message
 			//Fields for parsing the string
-			string delimiter = ":";	//"::&$*@^$^$(@(::";
 			int delimiter_pos = 0;
 			int which_one = 0;
 			string current_item;
 
-			//Parsing the string. String is "eaten" along the way
-			while ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
+			//First check if the message is the "timestamp" message
+			string delimiter = "??";	//"::Timestamp!!!!!::";
+			if ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
 				current_item = raw.substr(0, delimiter_pos);
-				std::cout << "Item found: " << current_item << std::endl;
-				switch (which_one) {
-					case 0:		//timestamp
-						timestamp = atol(current_item.c_str());
-						break;
-					case 1:		//formatted date
-						date_formatted = current_item;
-						break;
-					case 2:		//actual message
-						message = current_item;
-						break;
-					default:
-						std::cout << "Field is not used" << std::endl;
-						break;
-					//case 0:		//timestamp
-					//	timestamp = atol(current_item.c_str());
-					//	break;
-					//case 1:		//timestamp of the last message received
-					//	time_of_last_received = atol(current_item.c_str());
-					//	break;
-					//case 2:		//formatted date
-					//	date_formatted = current_item;
-					//	break;
-					//case 3:		//actual message
-					//	message = current_item;
-					//	break;
-					//default:
-					//	std::cout << "Field is not used" << std::endl;
-					//	break;
+				std::cout << "Timestamp message, Item found: " << current_item << std::endl;
+				time_of_last_received = atol(current_item.c_str());
+			}
+
+			//Else, it's got to be just a regular message
+			else {
+				delimiter = ":";	//"::&$*@^$^$(@(::";
+
+				//Parsing the string. String is "eaten" along the way
+				while ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
+					current_item = raw.substr(0, delimiter_pos);
+					std::cout << "Regular message, Item found: " << current_item << std::endl;
+					switch (which_one) {
+						case 0:		//timestamp
+							timestamp = atol(current_item.c_str());
+							break;
+						case 1:		//formatted date
+							date_formatted = current_item;
+							break;
+						case 2:		//actual message
+							message = current_item;
+							break;
+						default:
+							std::cout << "Field is not used" << std::endl;
+							break;
+					}
+
+					//update fields
+					int next_index = delimiter_pos + delimiter.length();
+					raw = raw.substr(next_index, raw.size());
+					++which_one;
 				}
 
-				//update fields
-				int next_index = delimiter_pos + delimiter.length();
-				raw = raw.substr(next_index, raw.size());
-				++which_one;
 			}
 
 			//Create a new message item
-			message_item = new MessageItem(raw_message, timestamp, date_formatted, message, thread_name());
+			message_item = new MessageItem(raw_message, time_of_last_received, timestamp, date_formatted, message, thread_name());
 			
-			//First check if connection is behind. AKA, do we need to download messages
-			//from the master log?
-
 			//Add the new message item to the message queue
 			m_queue.add(message_item);
 		}

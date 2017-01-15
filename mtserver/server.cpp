@@ -25,6 +25,7 @@
    http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
    http://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
    http://stackoverflow.com/questions/17818099/how-to-check-if-a-file-exists-before-creating-a-new-file
+   http://stackoverflow.com/questions/3903587/how-to-check-if-a-stdstring-is-set-or-not
 */
 
 /*

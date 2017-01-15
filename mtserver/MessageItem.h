@@ -9,10 +9,23 @@
 	clients as well as outgoing messages to clients will be in the form of strings.
 
 	Format of message:
-	timestamp <delimiter> date_formatted <delimiter> message <delimiter>
-	thread_id is ignored, as that field is taken from the thread itself
+	Case 1: Regular message
+		-timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+		-thread_id is ignored, as that field is taken from the thread itself
+		-Delimiter:  ::&$*@^$^$(@(::
+		-time_of_last_received = -1
 
-	Delimiter:  ::&$*@^$^$(@(::
+	Case 2: Timestamp message
+		-timestamp <special delimiter>
+		-Delimiter:	 ::Timestamp!!!!!::
+		-time_of_last_received != -1
+		-timestamp = -1
+		-All string fields are ""
+
+	Timestamp of last message received:
+		-special message sent by client
+		-If it's just a regular message, time_of_last_received = -1
+		-Else, time_of_last_received != -1
 
 */
 
@@ -20,6 +33,7 @@ class MessageItem
 {
 	private:
 		string raw;					//raw form of the message, not split yet
+		long time_of_last_received; //Timestamp of the last message the CLIENT received
 		long timestamp;				//timestamp of when the message was sent, in milliseconds
 		string date_formatted;		//Formatted date of when the message of sent
 		string message;				//Actual message
@@ -27,8 +41,9 @@ class MessageItem
 									//Used for broadcasting 
 
 	public:
-		MessageItem(std::string full, long time, std::string date, std::string mes, std::string tid) :
-			raw(full), timestamp(time), date_formatted(date), message(mes), thread_id(tid) {}
+		MessageItem(std::string full, long last_received, long time, std::string date, std::string mes, std::string tid) :
+			raw(full), time_of_last_received(last_received) ,timestamp(time), 
+			date_formatted(date), message(mes), thread_id(tid) {}
 
 		string getRawMessage() {
 			return raw;
@@ -36,6 +51,10 @@ class MessageItem
 
 		string getThreadID() {
 			return thread_id;
+		}
+
+		bool isUpdateRequest() {
+			return (time_of_last_received == -1);
 		}
 
 };
