@@ -5,7 +5,7 @@
 	Constructor
 	set_name() is a method from Thread
 */
-MessageHandler::MessageHandler(list<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n)
+MessageHandler::MessageHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n)
 	: connections(connects), m_queue(queue)
 {
 	set_name(n);
@@ -31,13 +31,38 @@ void* MessageHandler::run() {
 
 		//Case 1: MessageItem is an update request
 		if (item->isUpdateRequest()) {
-			cout << "stuff to be done here" << endl;
+			
+
+
+
+
+			//Supporting fields for finding the ConnectionHandler* of the sender
+			ConnectionHandler* client;
+			string sender = item->getThreadID();
+			bool senderFound = false;
+			std::cout << "Sender of message: " << sender << std::endl;
+
+			//Find the ConnectionHandler* of the sender, then stop when
+			std::vector<ConnectionHandler*>::const_iterator iterator = connections.begin();
+			while (!senderFound && iterator != connections.end()) {
+				ConnectionHandler* connection = *iterator;
+				std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
+				if (!sender.compare(connection->thread_name())) {
+					client = connection;
+					senderFound = true;
+				}
+
+				++iterator;
+			}				
+
+			//Send each message back to the client
+
 		}
 
 		//Else, Case 2: MessageItem contains an actual message, and needs to be requested
 		else {
 			//Broadcast message by relaying the MessageItem to each of the other connections
-			std::list<ConnectionHandler*>::const_iterator iterator;
+			std::vector<ConnectionHandler*>::const_iterator iterator;
 			string sender = item->getThreadID();
 			std::cout << "Sender of message: " << sender << std::endl;
 			for (iterator = connections.begin(); iterator != connections.end(); ++iterator) {
@@ -49,6 +74,9 @@ void* MessageHandler::run() {
 					connection->send_message(item);
 				}
 			}
+
+			//Update the master log and the file for the most recent timestamp file
+
 		}
 
 		

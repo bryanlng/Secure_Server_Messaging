@@ -22,6 +22,9 @@
    (long unsigned int)self()
    //stream->send(input, len);
    //char input[25600];
+   //for (iterator = connections.begin(); iterator != connections.end(); ++iterator) {
+   //
+   //}
    http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
    http://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
    http://stackoverflow.com/questions/17818099/how-to-check-if-a-file-exists-before-creating-a-new-file
@@ -63,7 +66,7 @@ int main(int argc, char** argv)
     }
  
     // Create the queues and consumer (worker) threads
-	list<ConnectionHandler*> connections;
+	vector<ConnectionHandler*> connections;
     wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
 	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
