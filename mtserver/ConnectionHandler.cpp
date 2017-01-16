@@ -113,6 +113,8 @@ void* ConnectionHandler::run() {
 			
 			//Add the new message item to the appropriate message queue
 			if (message_item->isUpdateRequest()) {
+				//Only add it to the update queue if the timestamp < most recent message timestamp from file
+				
 				update_queue.add(message_item);
 			}
 			else {
