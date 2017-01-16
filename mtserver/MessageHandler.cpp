@@ -33,6 +33,7 @@ void* MessageHandler::run() {
 		if (item->isUpdateRequest()) {
 			//Open up timestamp.txt and read the timestamp of the most recent message of the chat
 
+
 			//
 
 
