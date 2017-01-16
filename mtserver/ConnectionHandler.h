@@ -2,6 +2,7 @@
 #include "wqueue.h"
 #include "thread.h"
 #include "MessageItem.h"
+#include "ThreadSafeFile.h"
 #include <iostream>
 #include <stdlib.h>
 #include <cstdlib>

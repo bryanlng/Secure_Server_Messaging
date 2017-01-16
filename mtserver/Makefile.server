@@ -1,7 +1,7 @@
 CC		= g++
 CFLAGS		= -c -Wall
 LDFLAGS		= -lpthread
-SOURCES		= server.cpp ConnectionHandler.cpp MessageHandler.cpp ../threads/thread.cpp ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpstream.cpp
+SOURCES		= server.cpp ConnectionHandler.cpp MessageHandler.cpp ThreadSafeFile.cpp ../threads/thread.cpp ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpstream.cpp
 INCLUDES	= -I../threads -I../wqueue -I../tcpsockets
 OBJECTS		= $(SOURCES:.cpp=.o)
 TARGET		= server

@@ -58,6 +58,8 @@ void* MessageHandler::run() {
 				++iterator;
 			}				
 
+			//Send the updated timestamp back to the client
+
 			//Send each message back to the client
 
 		}
