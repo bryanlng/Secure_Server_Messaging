@@ -23,7 +23,11 @@ void ThreadSafeFile::open(const char* filename) {
 	pthread_mutex_unlock(&lock);
 }
 
-void ThreadSafeFile::read() {
+/*
+	Reads every line of the file, puts them all
+	into a vector, then returns that vector
+*/
+std::vector<std::string>& ThreadSafeFile::read() {
 	pthread_mutex_lock(&lock);		//always lock before doing anything
 
 	//Part 1: Begin read
@@ -38,6 +42,7 @@ void ThreadSafeFile::read() {
 
 	//Part 2: The actual read operation
 
+
 	//Part 3: End read
 	if (--active_readers == 0) {
 		pthread_cond_signal(&write_cond_var);
@@ -46,7 +51,10 @@ void ThreadSafeFile::read() {
 	pthread_mutex_unlock(&lock);	//always unlock after doing operations
 }
 
-void ThreadSafeFile::write() {
+/*
+	Writes the string to the end of the file
+*/
+void ThreadSafeFile::write(std::string item) {
 	pthread_mutex_lock(&lock);		//always lock before doing anything
 
 	//Part 1: Begin write
@@ -56,15 +64,23 @@ void ThreadSafeFile::write() {
 		--waiting_writers;
 	}
 
-	++active_writers;
+	//++active_writers;
+	active_writers = 1;		//set to 1, as there can only be 1 writer
+							//at a time
 	
 	//Part 2: The actual write operation
 
+
 	//Part 3: End write
-	--active_writers;
-	if (waiting_readers) {
+	//--active_writers;		
+	active_writers = 0;		//set back to 0
+
+	//If there are waiting readers, signal one of them
+	if (waiting_readers) {	
 		pthread_cond_signal(&read_cond_var);
 	}
+
+	//Else, signal a waiting writer
 	else {
 		pthread_cond_signal(&write_cond_var);
 	}
