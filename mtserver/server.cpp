@@ -53,6 +53,7 @@ Previous stuff that is all included in ConnectionHandler.h, which MessageHandler
 
 int main(int argc, char** argv)
 {
+	// Ex: ./server 5 9999 localhost
     // Process command line arguments
     if ( argc < 3 || argc > 4 ) {
         printf("usage: %s <workers> <port> <ip>\n", argv[0]);

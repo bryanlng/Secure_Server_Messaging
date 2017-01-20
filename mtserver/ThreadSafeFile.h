@@ -1,5 +1,6 @@
 #include <vector>
 #include <fstream>
+#include <algorithm>
 /*
 	Abstraction over C++'s file operations that allows multiple threads to 
 	open, read, write, and close the file
@@ -83,12 +84,14 @@
 	http://www.cplusplus.com/doc/tutorial/files/
 	http://stackoverflow.com/questions/9658720/ofstream-as-function-argument
 	http://stackoverflow.com/questions/7868936/read-file-line-by-line
-
+	http://stackoverflow.com/questions/15822062/c-reading-file-backwards-from-the-end-of-the-file
+	http://stackoverflow.com/questions/29495546/reading-file-backwards-c-ifstream
 */
 
 class ThreadSafeFile {
 	private:
 		std::ofstream&	 file;			//the ofstream that represents the file
+		std::string		 name;			//name of the file. Either "master_log.txt", or "timestamp.txt"
 		pthread_mutex_t  lock;			//Lock, so that only 1 Thread can edit a File at a time
 		pthread_cond_t   read_cond_var;	//Condition variable, to signal a waiting Thread that they can
 										//now use the file
@@ -102,11 +105,11 @@ class ThreadSafeFile {
 
 
 	public:
-		ThreadSafeFile(std::ofstream& ofs);
+		ThreadSafeFile(std::ofstream& ofs, std::string n);
 		~ThreadSafeFile();
 		std::ofstream& getFileStream();
 		void open(const char* filename);
-		std::vector<std::string>& read();
+		std::vector<std::string>& read(long timestamp);
 		void write(std::string item);
 		void close();
 };
