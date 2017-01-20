@@ -43,10 +43,13 @@ void* MessageHandler::run() {
 			//Get the string from the vector of strings
 			//Since there should only be 1 string in the vector, we can use front()
 			std::string message = messages.front();
-			std::cout << "Message from timestamp: " << message << std::endl;
+			std::cout << "Message from read(): " << message << std::endl;
 
 			//Convert timestamp into a long
 			long latest_timestamp = atol(message.c_str());
+
+			//Delete the file, since we don't need it anymore
+			delete file;
 
 			//Part 2: Reading from master log
 			
@@ -71,8 +74,15 @@ void* MessageHandler::run() {
 			}				
 
 			//Send the updated timestamp back to the client
+			string dummy_fields;
+			MessageItem* time_message = new MessageItem(latest_timestamp);
+			client->send_message(time_message);
 
 			//Send each message back to the client
+
+
+			//Free fields
+			delete time_message;
 
 		}
 

@@ -14,6 +14,7 @@
 		-thread_id is ignored, as that field is taken from the thread itself
 		-Delimiter:  ::&$*@^$^$(@(::
 		-time_of_last_received = -1
+		-Constructor 1 takes care of this
 
 	Case 2: Timestamp message
 		-timestamp <special delimiter>
@@ -21,6 +22,7 @@
 		-time_of_last_received != -1
 		-timestamp = -1
 		-All string fields are ""
+		-Constructor 2 takes care of this
 
 	Timestamp of last message received:
 		-special message sent by client
@@ -44,6 +46,8 @@ class MessageItem
 		MessageItem(std::string full, long last_received, long time, std::string date, std::string mes, std::string tid) :
 			raw(full), time_of_last_received(last_received) ,timestamp(time), 
 			date_formatted(date), message(mes), thread_id(tid) {}
+
+		MessageItem(long last_received) : time_of_last_received(last_received) {}
 
 		string getRawMessage() {
 			return raw;

@@ -4,6 +4,7 @@
 #include "MessageItem.h"
 #include "ThreadSafeFile.h"
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 #include <cstdlib>
 #include <string>

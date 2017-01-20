@@ -162,24 +162,43 @@ bool ConnectionHandler::hasAConnection() {
 	Sends a message back to the client connection, which is defined
 	by the TCPStream* that we got from the WorkItem that we pulled
 	off the work queue in run()
+
+	Case 1: Updated timestamp message
+	Convert the message from long --> string --> char*, then send it
+	using TCPStream's send()
+
+	Case 2: Regular message
+	Convert the message from string --> char*, then send it
+	using TCPStream's send()
 */
 void ConnectionHandler::send_message(MessageItem* message_item) {
 	TCPStream* stream = getStream();
-	string raw_message = message_item->getRawMessage();
-	std::cout << "send_message(): Raw message being sent: " << raw_message << std::endl;
+	string message;
+	if (message_item->isUpdateRequest()) {
+		std::stringstream sstm;
+		sstm << message_item->getTimeOfLastReceived();
+		message = sstm.str();
+	}
+
+	else {
+		message = message_item->getRawMessage();
+		std::cout << "send_message(): Raw message being sent: " << message << std::endl;
+	}
 
 	//Convert message from string --> c-style string, since send() only accepts a char*
-	char* c_string = new char[raw_message.size() + 1];
-	std::copy(raw_message.begin(), raw_message.end(), c_string);
-	c_string[raw_message.size()] = '\0';
+	char* c_string = new char[message.size() + 1];
+	std::copy(message.begin(), message.end(), c_string);
+	c_string[message.size()] = '\0';
 
 	//Send message, then free temp buffer
 	printf("c_string: %s\n", c_string);
-	stream->send(const_cast<const char*>(c_string), raw_message.size());
+	stream->send(const_cast<const char*>(c_string), message.size());
 	//delete(c_string);
 
 	//Update the most recent timestamp file to be the timestamp of the message,
 	//as this message will be the most recent message sent
+	
+	
 	
 
 }
