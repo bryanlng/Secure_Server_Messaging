@@ -54,7 +54,11 @@ class MessageItem
 		}
 
 		bool isUpdateRequest() {
-			return (time_of_last_received == -1);
+			return !(time_of_last_received == -1);
+		}
+
+		long getTimeOfLastReceived() {
+			return time_of_last_received;
 		}
 
 };

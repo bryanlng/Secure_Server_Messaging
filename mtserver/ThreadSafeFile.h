@@ -1,5 +1,6 @@
-#include <vector>
+#include <iostream>
 #include <fstream>
+#include <vector>
 #include <algorithm>
 /*
 	Abstraction over C++'s file operations that allows multiple threads to 
@@ -109,7 +110,7 @@ class ThreadSafeFile {
 		~ThreadSafeFile();
 		std::ofstream& getFileStream();
 		void open(const char* filename);
-		std::vector<std::string>& read(long timestamp);
+		void read(std::vector<std::string>& messages, long timestamp);
 		void write(std::string item);
 		void close();
 };

@@ -27,6 +27,9 @@ void ThreadSafeFile::open(const char* filename) {
 }
 
 /*
+	Takes in a reference to a vector, then fills it with strings.
+	This way, we don't have to explicitly return.
+
 	Case 1: Reading timestamp file
 	Start at EOF, then read backwards one line
 	
@@ -37,10 +40,8 @@ void ThreadSafeFile::open(const char* filename) {
 	At the end, returns that vector with all the appropriate 
 	strings.
 */
-std::vector<std::string>& ThreadSafeFile::read(long timestamp) {
+void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 	pthread_mutex_lock(&lock);			//always lock before doing anything
-	std::vector<std::string> messages;	//vector to store the messages we
-										//read from the file
 
 	//Part 1: Begin read
 	while (active_writers == 1 || waiting_writers > 0) {
@@ -66,12 +67,12 @@ std::vector<std::string>& ThreadSafeFile::read(long timestamp) {
 		int i = 1;
 
 		std::ifstream myFile("timestamp.txt", std::ios::ate);
-		std::streampos size = myFile.tellg();
+		std::streampos size = myFile.tellg() + 1;	//size+1, since we start at 1
 		while(still_one_line && i < size) {
 			myFile.seekg(-i, std::ios::end);
 			myFile.get(c);
-			printf("%c\n", c);
-			
+			printf("%c, ", c);
+			printf("int rep: %d\n", c);
 			//If we encounter a newline char, increment
 			if (c == NEWLINE_ASCII) {
 				++num_new_lines;
@@ -93,13 +94,14 @@ std::vector<std::string>& ThreadSafeFile::read(long timestamp) {
 		//Then, reverse the string, so it's in the correct order
 		std::reverse(raw.begin(), raw.end());
 
+		std::cout << "read timestamp: " << raw << std::endl;
 		//Then, put the string into the vector, which we'll return
 		messages.push_back(raw);
 	}
 
 	//Case 2: Reading master log
 	else {
-		
+		std::cout << "Soon to come" << std::endl;
 	}
 
 	//Part 3: End read
@@ -108,7 +110,6 @@ std::vector<std::string>& ThreadSafeFile::read(long timestamp) {
 	}
 
 	pthread_mutex_unlock(&lock);	//always unlock after doing operations
-	return messages;
 }
 
 /*
@@ -150,7 +151,11 @@ void ThreadSafeFile::write(std::string item) {
 
 void ThreadSafeFile::close() {
 	pthread_mutex_lock(&lock);
-	file.close();
+
+	//Only attempt to close the file if it was already open
+	if (file.is_open()) {
+		file.close();
+	}
 	pthread_mutex_unlock(&lock);
 }
 

@@ -108,6 +108,9 @@ void* ConnectionHandler::run() {
 
 			}
 
+			std::cout << "Timestamp: " << timestamp << std::endl;
+			std::cout << "time_of_last_received: " << time_of_last_received << std::endl;
+
 			//Create a new message item
 			message_item = new MessageItem(raw_message, time_of_last_received, timestamp, date_formatted, message, thread_name());
 			

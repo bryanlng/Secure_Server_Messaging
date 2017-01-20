@@ -31,13 +31,25 @@ void* MessageHandler::run() {
 
 		//Case 1: MessageItem is an update request
 		if (item->isUpdateRequest()) {
+			std::cout << "Incoming update request!!" << std::endl;
+			//Part 1: Reading from timestamp.txt
 			//Open up timestamp.txt and read the timestamp of the most recent message of the chat
+			ofstream filestream;
+			string name = "timestamp.txt";
+			ThreadSafeFile* file = new ThreadSafeFile(filestream, name);
+			std::vector<std::string> messages;
+			file->read(messages, item->getTimeOfLastReceived());
 
+			//Get the string from the vector of strings
+			//Since there should only be 1 string in the vector, we can use front()
+			std::string message = messages.front();
+			std::cout << "Message from timestamp: " << message << std::endl;
 
-			//
+			//Convert timestamp into a long
+			long latest_timestamp = atol(message.c_str());
 
-
-
+			//Part 2: Reading from master log
+			
 
 			//Supporting fields for finding the ConnectionHandler* of the sender
 			ConnectionHandler* client;
