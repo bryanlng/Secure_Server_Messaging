@@ -88,11 +88,12 @@
 	http://stackoverflow.com/questions/7868936/read-file-line-by-line
 	http://stackoverflow.com/questions/15822062/c-reading-file-backwards-from-the-end-of-the-file
 	http://stackoverflow.com/questions/29495546/reading-file-backwards-c-ifstream
+	http://stackoverflow.com/questions/4155537/writting-into-a-text-file-without-overwritting-it
+	http://www.cplusplus.com/reference/fstream/ofstream/open/
 */
 
 class ThreadSafeFile {
 	private:
-		std::ofstream&	 file;			//the ofstream that represents the file
 		std::string		 name;			//name of the file. Either "master_log.txt", or "timestamp.txt"
 		pthread_mutex_t  lock;			//Lock, so that only 1 Thread can edit a File at a time
 		pthread_cond_t   read_cond_var;	//Condition variable, to signal a waiting Thread that they can
@@ -107,11 +108,9 @@ class ThreadSafeFile {
 
 
 	public:
-		ThreadSafeFile(std::ofstream& ofs, std::string n);
-		~ThreadSafeFile();
-		std::ofstream& getFileStream();
-		void open(const char* filename);
+		ThreadSafeFile(std::string n);
+		std::string getFileName();
 		void read(std::vector<std::string>& messages, long timestamp);
 		void write(std::string item);
-		void close();
+		~ThreadSafeFile();
 };

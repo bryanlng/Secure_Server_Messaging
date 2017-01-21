@@ -1,8 +1,8 @@
 #include "ThreadSafeFile.h"
 #define NEWLINE_ASCII 10
 
-ThreadSafeFile::ThreadSafeFile(std::ofstream& ofs, std::string n) 
-	: file(ofs), name(n)
+ThreadSafeFile::ThreadSafeFile(std::string n) 
+	: name(n)
 {
 	//Initialize locks and condition variables
 	pthread_mutex_init(&lock, NULL);
@@ -16,14 +16,8 @@ ThreadSafeFile::ThreadSafeFile(std::ofstream& ofs, std::string n)
 	waiting_writers = 0;
 }
 
-std::ofstream& ThreadSafeFile::getFileStream() {
-	return file;
-}
-
-void ThreadSafeFile::open(const char* filename) {
-	pthread_mutex_lock(&lock);
-	file.open(filename);
-	pthread_mutex_unlock(&lock);
+std::string ThreadSafeFile::getFileName() {
+	return name;
 }
 
 /*
@@ -153,7 +147,10 @@ void ThreadSafeFile::write(std::string item) {
 							//at a time
 	
 	//Part 2: The actual write operation
-
+	std::ofstream file(getFileName().c_str(), std::ofstream::app);		//app = append
+	if (file.is_open()) {
+		file << item;
+	}
 
 	//Part 3: End write
 	//--active_writers;		
@@ -172,19 +169,7 @@ void ThreadSafeFile::write(std::string item) {
 	pthread_mutex_unlock(&lock);	//always unlock after doing operations;
 }
 
-void ThreadSafeFile::close() {
-	pthread_mutex_lock(&lock);
-
-	//Only attempt to close the file if it was already open
-	if (file.is_open()) {
-		file.close();
-	}
-	pthread_mutex_unlock(&lock);
-}
-
-
 ThreadSafeFile::~ThreadSafeFile() {
-	//delete file;
 	pthread_mutex_destroy(&lock);
 	pthread_cond_destroy(&read_cond_var);
 	pthread_cond_destroy(&write_cond_var);

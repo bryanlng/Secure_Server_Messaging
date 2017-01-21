@@ -24,6 +24,9 @@
 		-All string fields are ""
 		-Constructor 2 takes care of this
 
+	Constructor 3 is used in the process of sending messages from the master log
+	to the client. 
+
 	Timestamp of last message received:
 		-special message sent by client
 		-If it's just a regular message, time_of_last_received = -1

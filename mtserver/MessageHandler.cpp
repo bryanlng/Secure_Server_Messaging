@@ -36,8 +36,7 @@ void* MessageHandler::run() {
 			//Part 1: Reading from timestamp.txt
 			//Open up timestamp.txt and read the timestamp of the most recent message of the chat
 			ofstream time_filestream;
-			string t_name = "timestamp.txt";
-			ThreadSafeFile* t_file = new ThreadSafeFile(time_filestream, t_name);
+			ThreadSafeFile* t_file = new ThreadSafeFile("timestamp.txt");
 			std::vector<std::string> t_vector;
 			t_file->read(t_vector, 0);
 
@@ -48,15 +47,12 @@ void* MessageHandler::run() {
 
 			//Convert timestamp into a long
 			long latest_timestamp = atol(latest_ts.c_str());
-
-			
-			
+					
 			
 			
 			//Part 2: Reading from master log
 			ofstream master_filestream;
-			string m_name = "master_log.txt";
-			ThreadSafeFile* m_file = new ThreadSafeFile(master_filestream, m_name);
+			ThreadSafeFile* m_file = new ThreadSafeFile("master_log.txt");
 			std::vector<std::string> messages;
 			m_file->read(messages, item->getTimeOfLastReceived());
 
