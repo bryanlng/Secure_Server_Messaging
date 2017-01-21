@@ -29,6 +29,7 @@
 #include <string>
 #include <ctime>
 #include "tcpconnector.h"
+#define MAX_MESSAGE_SIZE 25600
 
 /*
 	Generates the required format
@@ -71,7 +72,7 @@ int main(int argc, char** argv)
     string message;
 	string delimiter = ":";
 	string formatted;
-    char line[256];
+    char input[256];
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
 	int x = 0;
@@ -86,10 +87,11 @@ int main(int argc, char** argv)
 			x++;
 		}
 
-		len = stream->receive(line, sizeof(line));
-		line[len] = '\0';
-		printf("received - %s\n", line);
-		sleep(1);		
+		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
+			std::cout << "Raw message received from server: " << input << std::endl;
+			//sleep(1);
+		}
+				
    }
 
    /* stream = connector->connect(argv[2], atoi(argv[1]));
