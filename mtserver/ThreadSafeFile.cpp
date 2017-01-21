@@ -66,13 +66,13 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		bool still_one_line = true;
 		int i = 1;
 
-		std::ifstream myFile("timestamp.txt", std::ios::ate);
-		std::streampos size = myFile.tellg() + 1;	//size+1, since we start at 1
-		while(still_one_line && i < size) {
-			myFile.seekg(-i, std::ios::end);
-			myFile.get(c);
-			printf("%c, ", c);
-			printf("int rep: %d\n", c);
+		std::ifstream file("timestamp.txt", std::ios::ate);
+		std::streampos size = file.tellg();
+		while(still_one_line && i < size+1) {
+			file.seekg(-i, std::ios::end);
+			file.get(c);
+			//printf("%c, ", c);
+			//printf("int rep: %d\n", c);
 			//If we encounter a newline char, increment
 			if (c == NEWLINE_ASCII) {
 				++num_new_lines;
@@ -97,11 +97,34 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		std::cout << "read timestamp: " << raw << std::endl;
 		//Then, put the string into the vector, which we'll return
 		messages.push_back(raw);
+
+		//Free fields
+		file.close();
 	}
 
 	//Case 2: Reading master log
 	else {
-		std::cout << "Soon to come" << std::endl;
+		std::string delimiter = ":";	//"::&$*@^$^$(@(::";
+		std::string line;
+		std::ifstream file("master_log.txt");
+		if (file.is_open()){
+			while (getline(file, line)){
+				std::cout << "Masterlog current line: " << line << std::endl;
+				//Extract the current timestamp out of the message
+				int delimiter_pos = line.find(delimiter);
+				std::string token = line.substr(0, delimiter_pos);
+				char* sz;   // alias of size_t
+				long curr_timestamp = std::strtol (token.c_str(), &sz, 10);
+
+				//If the timestamp >= timestamp from the client, put the line
+				//into the vector
+				if (curr_timestamp >= timestamp) {
+					messages.push_back(line);
+				}
+
+			}
+		}
+	
 	}
 
 	//Part 3: End read
@@ -161,6 +184,7 @@ void ThreadSafeFile::close() {
 
 
 ThreadSafeFile::~ThreadSafeFile() {
+	//delete file;
 	pthread_mutex_destroy(&lock);
 	pthread_cond_destroy(&read_cond_var);
 	pthread_cond_destroy(&write_cond_var);

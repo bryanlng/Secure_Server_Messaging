@@ -32,27 +32,33 @@ void* MessageHandler::run() {
 		//Case 1: MessageItem is an update request
 		if (item->isUpdateRequest()) {
 			std::cout << "Incoming update request!!" << std::endl;
+
 			//Part 1: Reading from timestamp.txt
 			//Open up timestamp.txt and read the timestamp of the most recent message of the chat
-			ofstream filestream;
-			string name = "timestamp.txt";
-			ThreadSafeFile* file = new ThreadSafeFile(filestream, name);
-			std::vector<std::string> messages;
-			file->read(messages, item->getTimeOfLastReceived());
+			ofstream time_filestream;
+			string t_name = "timestamp.txt";
+			ThreadSafeFile* t_file = new ThreadSafeFile(time_filestream, t_name);
+			std::vector<std::string> t_vector;
+			t_file->read(t_vector, 0);
 
 			//Get the string from the vector of strings
 			//Since there should only be 1 string in the vector, we can use front()
-			std::string message = messages.front();
-			std::cout << "Message from read(): " << message << std::endl;
+			std::string latest_ts = t_vector.front();
+			std::cout << "Message from read(): " << latest_ts << std::endl;
 
 			//Convert timestamp into a long
-			long latest_timestamp = atol(message.c_str());
+			long latest_timestamp = atol(latest_ts.c_str());
 
-			//Delete the file, since we don't need it anymore
-			delete file;
-
-			//Part 2: Reading from master log
 			
+			
+			
+			
+			//Part 2: Reading from master log
+			ofstream master_filestream;
+			string m_name = "master_log.txt";
+			ThreadSafeFile* m_file = new ThreadSafeFile(master_filestream, m_name);
+			std::vector<std::string> messages;
+			m_file->read(messages, item->getTimeOfLastReceived());
 
 			//Supporting fields for finding the ConnectionHandler* of the sender
 			ConnectionHandler* client;
@@ -60,26 +66,34 @@ void* MessageHandler::run() {
 			bool senderFound = false;
 			std::cout << "Sender of message: " << sender << std::endl;
 
-			//Find the ConnectionHandler* of the sender, then stop when
-			std::vector<ConnectionHandler*>::const_iterator iterator = connections.begin();
-			while (!senderFound && iterator != connections.end()) {
-				ConnectionHandler* connection = *iterator;
+			//Find the ConnectionHandler* of the sender and stop when we find it
+			std::vector<ConnectionHandler*>::const_iterator c_iterator = connections.begin();
+			while (!senderFound && c_iterator != connections.end()) {
+				ConnectionHandler* connection = *c_iterator;
 				std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
 				if (!sender.compare(connection->thread_name())) {
 					client = connection;
 					senderFound = true;
 				}
 
-				++iterator;
+				++c_iterator;
 			}				
+			
+			//Parse each string --> MessageItem, then send each message back to the client
+			std::vector<std::string>::const_iterator m_iterator;
+			for (m_iterator = messages.begin(); m_iterator != messages.end(); ++m_iterator) {
+				std::string raw_message = *m_iterator;
+				//std::cout << "Message to send back to client: " << raw_message << std::endl;
 
+				MessageItem* message_item = new MessageItem(raw_message);
+				client->send_message(message_item);
+
+				delete message_item;
+			}
+			
 			//Send the updated timestamp back to the client
-			string dummy_fields;
 			MessageItem* time_message = new MessageItem(latest_timestamp);
 			client->send_message(time_message);
-
-			//Send each message back to the client
-
 
 			//Free fields
 			delete time_message;

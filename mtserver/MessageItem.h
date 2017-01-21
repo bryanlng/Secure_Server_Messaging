@@ -47,6 +47,8 @@ class MessageItem
 			raw(full), time_of_last_received(last_received) ,timestamp(time), 
 			date_formatted(date), message(mes), thread_id(tid) {}
 
+		MessageItem(std::string full) : raw(full), time_of_last_received(-1){}
+
 		MessageItem(long last_received) : time_of_last_received(last_received) {}
 
 		string getRawMessage() {

@@ -47,8 +47,7 @@ void* ConnectionHandler::run() {
 		string date_formatted;
 		string message;
 
-		//Upon receiving a message, parse it, then put contents into 
-		//a MessageItem
+		//Upon receiving a message, parse it, then put contents into a MessageItem
 		//Format of message from client:
 		/*
 			Case 1. Timestamp message
@@ -178,11 +177,13 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 		std::stringstream sstm;
 		sstm << message_item->getTimeOfLastReceived();
 		message = sstm.str();
+
+		std::cout << "send_message(): Updated timestamp being sent: " << message << std::endl;
 	}
 
 	else {
 		message = message_item->getRawMessage();
-		std::cout << "send_message(): Raw message being sent: " << message << std::endl;
+		std::cout << "send_message(): Regular message being sent: " << message << std::endl;
 	}
 
 	//Convert message from string --> c-style string, since send() only accepts a char*
@@ -191,7 +192,6 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	c_string[message.size()] = '\0';
 
 	//Send message, then free temp buffer
-	printf("c_string: %s\n", c_string);
 	stream->send(const_cast<const char*>(c_string), message.size());
 	//delete(c_string);
 
