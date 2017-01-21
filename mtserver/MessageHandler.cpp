@@ -112,7 +112,26 @@ void* MessageHandler::run() {
 				}
 			}
 
-			//Update the master log and the file for the most recent timestamp file
+			//Update master log with the new message, with a 
+			//newline at the beginning
+			ofstream master_filestream;
+			ThreadSafeFile* m_file = new ThreadSafeFile("master_log.txt");
+			std::string nl = "\n";
+			std::string message = item->getRawMessage();
+			message += nl;
+			//std::string message = sstm.str();
+			m_file->write(message);
+			delete m_file;
+
+			//Update timestamp file for the most recent timestamp, with a 
+			//newline at the beginning
+			ofstream time_filestream;	
+			ThreadSafeFile* t_file = new ThreadSafeFile("timestamp.txt");
+			std::stringstream sstm2;
+			sstm2 << item->getTimestamp() << nl;
+			std::string timestamp = sstm2.str();
+			t_file->write(timestamp);
+			delete t_file;
 
 		}
 

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
-
+#define NEW_LINE_VAL 10
 /*
 	Class that represents a "Consumer Thread"
 	The server creates a specified number of Consumer Threads at the beginning.

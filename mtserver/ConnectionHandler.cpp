@@ -195,10 +195,6 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	stream->send(const_cast<const char*>(c_string), message.size());
 	//delete(c_string);
 
-	//Update the most recent timestamp file to be the timestamp of the message,
-	//as this message will be the most recent message sent
-	
-	
 	
 
 }

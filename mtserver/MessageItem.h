@@ -66,6 +66,10 @@ class MessageItem
 			return !(time_of_last_received == -1);
 		}
 
+		long getTimestamp() {
+			return timestamp;
+		}
+
 		long getTimeOfLastReceived() {
 			return time_of_last_received;
 		}
