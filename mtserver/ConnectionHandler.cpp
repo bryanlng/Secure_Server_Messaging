@@ -191,6 +191,8 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	std::copy(message.begin(), message.end(), c_string);
 	c_string[message.size()] = '\0';
 
+	printf("message being sent, in char* form: %s\n", c_string);
+
 	//Send message, then free temp buffer
 	stream->send(const_cast<const char*>(c_string), message.size());
 	//delete(c_string);

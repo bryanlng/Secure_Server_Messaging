@@ -88,7 +88,8 @@ int main(int argc, char** argv)
 		}
 
 		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
-			std::cout << "Raw message received from server: " << input << std::endl;
+			//std::cout << "Raw message received from server: " << input << std::endl;
+			printf("Raw message received from server: %s\n", input);
 			//sleep(1);
 		}
 				
