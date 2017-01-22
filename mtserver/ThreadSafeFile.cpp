@@ -104,8 +104,8 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		if (file.is_open()){
 			while (getline(file, line)){
 				std::cout << "Masterlog current line: " << line << std::endl;
-				char c = line.at(line.length() - 1);
-				printf("Last character in line: %d\n", c);
+				int c = line.at(line.length() - 1);
+				std::cout << "Last character in line: " << c << std::endl;
 
 				//Extract the current timestamp out of the message
 				int delimiter_pos = line.find(delimiter);
