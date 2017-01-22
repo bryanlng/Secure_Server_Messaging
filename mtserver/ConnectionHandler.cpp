@@ -187,13 +187,16 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	}
 
 	//Convert message from string --> c-style string, since send() only accepts a char*
+	char * buffer = new char[message.length() + 1];
 	const char* c_string = message.c_str();
+	std::strcpy(buffer, c_string);
 
-	printf("message being sent, in char* form: %s\n", c_string);
+
+	printf("message being sent, in char* form: %s\n", buffer);
 
 	//Send message, then free temp buffer
-	stream->send(c_string, message.size()+1);	//+1 to include the null char at the end
-	delete[] c_string;
+	stream->send(buffer, message.size()+1);	//+1 to include the null char at the end
+	delete[] buffer;
 
 	
 

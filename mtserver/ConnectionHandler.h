@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <cstdlib>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <stdio.h>
@@ -24,6 +25,8 @@
 
 	If there's no WorkItems in the work queue (like in the beginning), the 
 	ConnectionHandler blocks.
+
+	http://stackoverflow.com/questions/6199729/how-to-solve-munmap-chunk-invalid-pointer-error-in-c
 */
 class ConnectionHandler : public Thread
 {
