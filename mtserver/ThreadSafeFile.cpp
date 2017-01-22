@@ -65,8 +65,8 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		while(still_one_line && i < size+1) {
 			file.seekg(-i, std::ios::end);
 			file.get(c);
-			printf("%c, ", c);
-			printf("int rep: %d\n", c);
+			//printf("%c, ", c);
+			//printf("int rep: %d\n", c);
 			//If we encounter a newline char, increment
 			if (c == NEWLINE_ASCII) {
 				++num_new_lines;
@@ -102,7 +102,7 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		std::string line;
 		std::ifstream file("master_log.txt");
 		if (file.is_open()){
-			while (getline(file, line)){
+			while (getline(file, line)){	////getline() grabs the string up to "\n"
 				std::cout << "Masterlog current line: " << line << std::endl;
 				int c = line.at(line.length() - 1);
 				std::cout << "Last character in line: " << c << std::endl;
