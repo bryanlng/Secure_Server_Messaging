@@ -172,7 +172,7 @@ bool ConnectionHandler::hasAConnection() {
 */
 void ConnectionHandler::send_message(MessageItem* message_item) {
 	TCPStream* stream = getStream();
-	string message;
+	std::string message;
 	if (message_item->isUpdateRequest()) {
 		std::stringstream sstm;
 		sstm << message_item->getTimeOfLastReceived();
@@ -187,15 +187,13 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	}
 
 	//Convert message from string --> c-style string, since send() only accepts a char*
-	char* c_string = new char[message.size() + 1];
-	std::copy(message.begin(), message.end(), c_string);
-	c_string[message.size()] = '\0';
+	const char* c_string = message.c_str();
 
 	printf("message being sent, in char* form: %s\n", c_string);
 
 	//Send message, then free temp buffer
-	stream->send(const_cast<const char*>(c_string), message.size());
-	//delete(c_string);
+	stream->send(c_string, message.size()+1);	//+1 to include the null char at the end
+	delete[] c_string;
 
 	
 
