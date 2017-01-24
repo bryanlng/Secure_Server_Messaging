@@ -83,8 +83,13 @@ std::string ClientSender::formatMessage(std::string message, std::string delimit
 		result = sstm.str();
 		result += delimiter;
 
-		//2. Generate current date, but formatted, then concatenate
+		//2a. Generate current date, but formatted, then concatenate
+		//Also, replace the pesky \n char (last char before the null) 
+		//with a null character
 		char* formatted = std::asctime(std::localtime(&timer));
+		string tmp(formatted);
+		formatted[tmp.length() - 1] = '\0';
+
 		string temp(formatted);
 		result += temp;
 		result += delimiter;
