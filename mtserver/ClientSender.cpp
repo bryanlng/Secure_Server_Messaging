@@ -23,9 +23,18 @@ void* ClientSender::run() {
 		std::cout << "Type in a message: ";
 		std::cin >> message;
 		
-		std::string formatted = formatMessage(message, ":");
-		std::cout << "Formatted message: " << formatted << std::endl;
-		//stream->send(formatted.c_str(), formatted.size());
+		//If user wants to quit, exit the program
+		if (!message.compare("quit")) {
+			exit(-1);
+		}
+
+		else {
+			std::string formatted = formatMessage(message, ":");
+			//std::cout << "Formatted message: " << formatted << std::endl;
+			stream->send(formatted.c_str(), formatted.size());
+		}
+
+		
 	}
 
 	//should never get here

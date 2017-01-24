@@ -113,6 +113,8 @@ int main(int argc, char** argv)
 		sender->start();
 
 
+
+
 		////Sending messages
 		//message = std::string(argv[3]);
 		////message = (message, delimiter);
@@ -125,6 +127,7 @@ int main(int argc, char** argv)
 		//	printf("Raw message received from server: %s\n", input);
 		//	//sleep(1);
 		//}
+
 		sleep(UINT_MAX);
 				
    }
