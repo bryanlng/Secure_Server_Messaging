@@ -72,6 +72,7 @@
 #include <string>
 
 #define MAX_MESSAGE_SIZE 25600
+#define SLEEP_FOREVER 999999999
 
 int main(int argc, char** argv)
 {
@@ -107,7 +108,7 @@ int main(int argc, char** argv)
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
 
-	while (stream) {
+	if (stream) {
 		ClientSender* sender = new ClientSender(stream);
 		sender->start();
 
@@ -123,6 +124,7 @@ int main(int argc, char** argv)
 		//	printf("Raw message received from server: %s\n", input);
 		//	//sleep(1);
 		//}
+		sleep(SLEEP_FOREVER);
 				
    }
 

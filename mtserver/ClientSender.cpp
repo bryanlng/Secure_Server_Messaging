@@ -13,9 +13,9 @@ ClientSender::ClientSender(TCPStream* s) : stream(s) {}
 */
 void* ClientSender::run() {
 
-	//Send update message
-	std::string time_message = formatMessage("", "??");
-	stream->send(time_message.c_str(), time_message.size());
+	////Send update message
+	//std::string time_message = formatMessage("", "??");
+	//stream->send(time_message.c_str(), time_message.size());
 
 	//Take in user input, then send it to the server
 	while (1) {
@@ -24,7 +24,8 @@ void* ClientSender::run() {
 		std::cin >> message;
 		
 		std::string formatted = formatMessage(message, ":");
-		stream->send(formatted.c_str(), formatted.size());
+		std::cout << "Formatted message: " << formatted << std::endl;
+		//stream->send(formatted.c_str(), formatted.size());
 	}
 
 	//should never get here
