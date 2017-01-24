@@ -194,8 +194,13 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 
 	//Send message, then free temp buffer
 	stream->send(buffer, message.size()+1);	//+1 to include the null char at the end
-	delete[] buffer;
+	delete[] buffer;	
 
-	
+}
 
+/*
+	Destructor
+*/
+ConnectionHandler::~ConnectionHandler() {
+	delete stream;
 }

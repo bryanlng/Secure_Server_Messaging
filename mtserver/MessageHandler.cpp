@@ -139,7 +139,6 @@ void* MessageHandler::run() {
 			delete t_file;
 
 		}
-
 		
 
 		//Free fields

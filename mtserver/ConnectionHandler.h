@@ -27,6 +27,7 @@
 	ConnectionHandler blocks.
 
 	http://stackoverflow.com/questions/6199729/how-to-solve-munmap-chunk-invalid-pointer-error-in-c
+	http://stackoverflow.com/questions/3233987/deleting-a-reference
 */
 class ConnectionHandler : public Thread
 {
@@ -44,4 +45,5 @@ class ConnectionHandler : public Thread
 		void setStream(TCPStream* s);
 		bool hasAConnection();
 		void send_message(MessageItem* message_item);
+		~ConnectionHandler();
 };

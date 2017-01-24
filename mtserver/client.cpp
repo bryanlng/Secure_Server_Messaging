@@ -9,8 +9,6 @@
    This is pretty barebones, as this is going to be a basis for the Android
    client, which will look much nicer than this
 
-   App will sit there.
-
    What's actually going on:
    2 Threads are running at the same time:
 		1) ClientSender
@@ -63,13 +61,14 @@
    http://en.cppreference.com/w/cpp/chrono/c/time
 */
 
+#include "ClientSender.h"
+#include "tcpconnector.h"
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <ctime>
-#include "tcpconnector.h"
 #define MAX_MESSAGE_SIZE 25600
 
 /*
