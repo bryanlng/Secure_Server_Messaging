@@ -78,7 +78,7 @@ void* ConnectionHandler::run() {
 
 			//Else, it's got to be just a regular message
 			else {
-				delimiter = ":";	//"::&$*@^$^$(@(::";
+				delimiter = "::";	//"::&$*@^$^$(@(::";
 
 				//Parsing the string. String is "eaten" along the way
 				while ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {

@@ -29,7 +29,7 @@ void* ClientSender::run() {
 		}
 
 		else {
-			std::string formatted = formatMessage(message, ":");
+			std::string formatted = formatMessage(message, "::");
 			//std::cout << "Formatted message: " << formatted << std::endl;
 			stream->send(formatted.c_str(), formatted.size());
 		}

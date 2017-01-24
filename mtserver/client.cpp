@@ -62,7 +62,7 @@
    http://en.cppreference.com/w/cpp/chrono/c/gmtime
 */
 
-#include "ClientSender.h"
+#include "ClientReceiver.h"
 #include "tcpconnector.h"
 #include <iostream>
 #include <sstream>
@@ -99,11 +99,6 @@ int main(int argc, char** argv)
 	}
 
 	//Establish connection with server
-    int len;
-    string message;
-	string delimiter = ":";
-	string formatted;
-    char input[256];
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
 
@@ -111,6 +106,9 @@ int main(int argc, char** argv)
 	if (stream) {
 		ClientSender* sender = new ClientSender(stream);
 		sender->start();
+
+		ClientReceiver* receiver = new ClientReceiver(stream);
+		receiver->start();
 
 		//while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 		//	//std::cout << "Raw message received from server: " << input << std::endl;

@@ -16,10 +16,6 @@ ThreadSafeFile::ThreadSafeFile(std::string n)
 	waiting_writers = 0;
 }
 
-std::string ThreadSafeFile::getFileName() {
-	return name;
-}
-
 /*
 	Takes in a reference to a vector, then fills it with strings.
 	This way, we don't have to explicitly return.
@@ -120,7 +116,7 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		//Then, put the string into the vector, which we'll return
 		messages.push_back(raw);
 
-		//Free fields
+		//Close file
 		file.close();
 	}
 

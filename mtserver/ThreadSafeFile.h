@@ -107,7 +107,6 @@ class ThreadSafeFile {
 
 	public:
 		ThreadSafeFile(std::string n);
-		std::string getFileName();
 		void read(std::vector<std::string>& messages, long timestamp);
 		void write(std::string item);
 		~ThreadSafeFile();

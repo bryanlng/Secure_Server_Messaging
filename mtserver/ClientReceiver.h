@@ -1,8 +1,4 @@
-#include "thread.h"
-#include "tcpacceptor.h"
-#include "ThreadSafeFile.h"
-#include <iostream>
-#include <fstream>
+#include "ClientSender.h"
 
 class ClientReceiver : public Thread{
 	private:

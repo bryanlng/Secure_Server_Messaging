@@ -28,12 +28,12 @@ void* ClientReceiver::run() {
 	while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 		//std::cout << "Raw message received from server: " << input << std::endl;
 		printf("Raw message received from server: %s\n", input);
-		string raw(input);
+		std::string raw(input);
 		
 		//Fields for parsing the string
 		int delimiter_pos = 0;
 		int which_one = 0;
-		string current_item;
+		std::string current_item;
 
 		//First check if the message is the "timestamp", aka update message
 		string delimiter = "??";	//"::Timestamp!!!!!::";
@@ -42,17 +42,58 @@ void* ClientReceiver::run() {
 			std::cout << "Timestamp message, Item found: " << current_item << std::endl;
 			long time_of_last_received = atol(current_item.c_str());
 
-			//Write 
+			//Write the timestamp to client_timestamp.txt, with a newline at the beginning
+			ofstream master_filestream;
+			ThreadSafeFile* t_file = new ThreadSafeFile("client_timestamp.txt");
+
+			std::string nl = "\n";
+			std::stringstream sstm;
+			sstm << time_of_last_received << nl;
+			std::string timestamp = sstm.str();
+			
+			t_file->write(timestamp);
+			
+			delete t_file;
 		}
 
 		//Else, it's a regular message
 		else {
-			string delimiter = ":";
+			std::string delimiter = "::"; //"::&$*@^$^$(@(::";
 			
 			//Fields to extract
 			long timestamp;
-			string date_formatted;
-			string message;
+			std::string date_formatted;
+			std::string message;
+
+			//Parsing the string. String is "eaten" along the way
+			while ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
+				current_item = raw.substr(0, delimiter_pos);
+				std::cout << "Regular message, Item found: " << current_item << std::endl;
+				switch (which_one) {
+					case 0:		//timestamp
+						timestamp = atol(current_item.c_str());
+						break;
+					case 1:		//formatted date
+						date_formatted = current_item;
+						break;
+					case 2:		//actual message
+						message = current_item;
+						break;
+					default:
+						std::cout << "Field is not used" << std::endl;
+						break;
+				}
+
+				//update fields
+				int next_index = delimiter_pos + delimiter.length();
+				raw = raw.substr(next_index, raw.size());
+				++which_one;
+			}
+
+			//Display message
+			std::cout << "Incoming message: " << std::endl;
+			std::cout << message << std::endl;
+			std::cout << "Sent at: " << date_formatted << std::endl;
 		}
 
 	}
