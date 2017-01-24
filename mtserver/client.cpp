@@ -1,7 +1,48 @@
 /*
    client.cpp
 
-   Test client for the tcpsockets classes. 
+   Class to represent a user. 
+   A user can send and receive messages.
+
+   What the user sees:
+   To start the client app, do ./client port ip (ex: ./client 9999 localhost)
+   This is pretty barebones, as this is going to be a basis for the Android
+   client, which will look much nicer than this
+
+   App will sit there.
+
+   What's actually going on:
+   2 Threads are running at the same time:
+		1) ClientSender
+		2) ClientReceiver
+
+   1. ClientSender:
+		-First things first, client sends an "update" message to the server,
+		 to see if its behind
+		-Then, ClientSender sits there and waits for input from stdout
+		-Once it has input, it sends it to the server, which broadcasts the 
+		 message to all other clients
+		-Client can send 2 types of messages:
+			1) Update message:
+			    -Ask the server if client is behind, and if we are, send us all
+				 the messages that we didn't get 
+				-Message contains client's timestamp of the last message it 
+				 received
+				 -timestamp <special timestamp delimiter>
+
+			2) Regular message:
+				-timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+
+   2. ClientReceiver:
+		-Sits there and waits for messages to come in
+		-2 types of messages can come in:
+			1) Update message:
+				-The updated, most recent timestamp from the server
+				-timestamp <special timestamp delimiter>
+
+			2) Regular message:
+				-timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+
 
    ------------------------------------------
 
@@ -61,9 +102,9 @@ string formatMessage(string message, string delimiter) {
 
 int main(int argc, char** argv)
 {
-	//Given: Ex: ./client 9999 localhost
-	//Mine:  ./client 9999 localhost <message>
-    if (argc < 3 || argc > 4) {
+	//Given example:	 ./client 9999 localhost
+	//Testing purposes:  ./client 9999 localhost <message>
+    if (argc != 4) {
         printf("usage: %s <port> <ip>\n", argv[0]);
         exit(1);
     }
@@ -75,17 +116,14 @@ int main(int argc, char** argv)
     char input[256];
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
-	int x = 0;
     while (stream) {
 
 		//Sending messages
-		if (argc == 4 && x == 0) {
-			message = std::string(argv[3]);
-			//message = (message, delimiter);
-			stream->send(message.c_str(), message.size());
-			printf("sent - %s\n", message.c_str());
-			x++;
-		}
+		message = std::string(argv[3]);
+		//message = (message, delimiter);
+		stream->send(message.c_str(), message.size());
+		printf("sent - %s\n", message.c_str());
+		
 
 		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 			//std::cout << "Raw message received from server: " << input << std::endl;

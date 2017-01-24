@@ -17,7 +17,7 @@
 		-Constructor 1 takes care of this
 
 	Case 2: Timestamp message
-		-timestamp <special delimiter>
+		-timestamp <special timestamp delimiter>
 		-Delimiter:	 ::Timestamp!!!!!::
 		-time_of_last_received != -1
 		-timestamp = -1

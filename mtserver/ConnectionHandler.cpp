@@ -115,8 +115,6 @@ void* ConnectionHandler::run() {
 			
 			//Add the new message item to the appropriate message queue
 			if (message_item->isUpdateRequest()) {
-				//Only add it to the update queue if the timestamp < most recent message timestamp from file
-				
 				update_queue.add(message_item);
 			}
 			else {
@@ -175,7 +173,7 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	std::string message;
 	if (message_item->isUpdateRequest()) {
 		std::stringstream sstm;
-		sstm << message_item->getTimeOfLastReceived();
+		sstm << message_item->getTimeOfLastReceived() << "??";	//special delimiter added so client knows
 		message = sstm.str();
 
 		std::cout << "send_message(): Updated timestamp being sent: " << message << std::endl;
