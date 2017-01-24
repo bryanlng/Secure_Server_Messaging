@@ -48,9 +48,37 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 	pthread_cond_signal(&read_cond_var);
 
 	//Part 2: The actual read operation
-	//Case 1: Reading timestamp file
-	if (!name.compare("timestamp.txt") || !name.compare("client_timestamp.txt")) {
+	
+	//Case 1: Reading master log
+	if (!name.compare("master_log.txt") ) {
+		std::string delimiter = ":";	//"::&$*@^$^$(@(::";
+		std::string line;
+		std::ifstream file("master_log.txt");
+		if (file.is_open()) {
+			while (getline(file, line)) {	////getline() grabs the string up to "\n"
+				std::cout << "Masterlog current line: " << line << std::endl;
+				int c = line.at(line.length() - 1);
+				std::cout << "Last character in line: " << c << std::endl;
 
+				//Extract the current timestamp out of the message
+				int delimiter_pos = line.find(delimiter);
+				std::string token = line.substr(0, delimiter_pos);
+				char* sz;   // alias of size_t
+				long curr_timestamp = std::strtol(token.c_str(), &sz, 10);
+
+				//If the timestamp >= timestamp from the client, put the line
+				//into the vector
+				if (curr_timestamp >= timestamp) {
+					messages.push_back(line);
+				}
+
+			}
+		}
+
+	}
+
+	//Case 2: Reading timestamp file
+	else {
 		//First, read in 1 line of input backwards, one char at a time
 		//We'll know it's a next line when the second NL line feed (new line)
 		//shows up, which has an ascii value of 10.
@@ -60,7 +88,7 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		bool still_one_line = true;
 		int i = 1;
 
-		std::ifstream file("timestamp.txt", std::ios::ate);
+		std::ifstream file(name.c_str(), std::ios::ate);
 		std::streampos size = file.tellg();
 		while(still_one_line && i < size+1) {
 			file.seekg(-i, std::ios::end);
@@ -96,34 +124,6 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 		file.close();
 	}
 
-	//Case 2: Reading master log
-	else {
-		std::string delimiter = ":";	//"::&$*@^$^$(@(::";
-		std::string line;
-		std::ifstream file("master_log.txt");
-		if (file.is_open()){
-			while (getline(file, line)){	////getline() grabs the string up to "\n"
-				std::cout << "Masterlog current line: " << line << std::endl;
-				int c = line.at(line.length() - 1);
-				std::cout << "Last character in line: " << c << std::endl;
-
-				//Extract the current timestamp out of the message
-				int delimiter_pos = line.find(delimiter);
-				std::string token = line.substr(0, delimiter_pos);
-				char* sz;   // alias of size_t
-				long curr_timestamp = std::strtol (token.c_str(), &sz, 10);
-
-				//If the timestamp >= timestamp from the client, put the line
-				//into the vector
-				if (curr_timestamp >= timestamp) {
-					messages.push_back(line);
-				}
-
-			}
-		}
-	
-	}
-
 	//Part 3: End read
 	if (--active_readers == 0) {
 		pthread_cond_signal(&write_cond_var);
@@ -150,7 +150,7 @@ void ThreadSafeFile::write(std::string item) {
 							//at a time
 	
 	//Part 2: The actual write operation
-	std::ofstream file(getFileName().c_str(), std::ofstream::app);		//app = append
+	std::ofstream file(name.c_str(), std::ofstream::app);		//app = append
 	if (file.is_open()) {
 		file << item;
 	}

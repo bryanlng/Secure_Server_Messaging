@@ -35,12 +35,14 @@ void* ClientReceiver::run() {
 		int which_one = 0;
 		string current_item;
 
-		//First check if the message is the "timestamp"/ update message
+		//First check if the message is the "timestamp", aka update message
 		string delimiter = "??";	//"::Timestamp!!!!!::";
 		if ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
 			current_item = raw.substr(0, delimiter_pos);
 			std::cout << "Timestamp message, Item found: " << current_item << std::endl;
 			long time_of_last_received = atol(current_item.c_str());
+
+			//Write 
 		}
 
 		//Else, it's a regular message
