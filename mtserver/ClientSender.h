@@ -1,5 +1,14 @@
 #include "thread.h"
 #include "tcpacceptor.h"
+#include "ThreadSafeFile.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+#include <string>
+#include <vector>
+#include <algorithm>
+
 
 /*
 	http://stackoverflow.com/questions/10486116/what-does-this-gcc-error-relocation-truncated-to-fit-mean
@@ -8,10 +17,11 @@
 class ClientSender : public Thread {
 	private:
 		TCPStream* stream;
+
 	public:
 		ClientSender(TCPStream* s);
 		void* run();
-		TCPStream* getStream();
+		std::string formatMessage(std::string message, std::string delimiter);
 		~ClientSender();
 
 };

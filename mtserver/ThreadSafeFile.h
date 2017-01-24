@@ -94,17 +94,15 @@
 
 class ThreadSafeFile {
 	private:
-		std::string		 name;			//name of the file. Either "master_log.txt", or "timestamp.txt"
-		pthread_mutex_t  lock;			//Lock, so that only 1 Thread can edit a File at a time
-		pthread_cond_t   read_cond_var;	//Condition variable, to signal a waiting Thread that they can
-										//now use the file
-		pthread_cond_t   write_cond_var;	//Condition variable, to signal a waiting Thread that they can
-										//now use the file
+		std::string		 name;				//name of the file. Either "master_log.txt", or "timestamp.txt"
+		pthread_mutex_t  lock;				//Lock, so that only 1 Thread can edit a File at a time
+		pthread_cond_t   read_cond_var;		//Condition variable, to signal a waiting Thread that they can now use the file
+		pthread_cond_t   write_cond_var;	//Condition variable, to signal a waiting Thread that they can now use the file
 
-		int active_readers;				//used so that we can have a condition to wait on
-		int active_writers;				//used so that we can have a condition to wait on
-		int waiting_readers;
-		int waiting_writers;
+		int active_readers;				//# Threads actively reading the file
+		int active_writers;				//# Threads actively writing to the file
+		int waiting_readers;			//# Threads waiting to read the file
+		int waiting_writers;			//# Threads waiting to write to the file
 
 
 	public:
