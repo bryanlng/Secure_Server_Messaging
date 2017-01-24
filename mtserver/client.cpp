@@ -73,43 +73,32 @@
 
 #define MAX_MESSAGE_SIZE 25600
 
-/*
-	Generates the required format
-	timestamp <delimiter> date_formatted <delimiter> message <delimiter>
-*/
-string formatMessage(string message, string delimiter) {
-	string result;
-
-	//1. Generate timestamp, then concatenate onto our string
-	std::time_t timer = std::time(NULL);
-	long millis = static_cast<long>(timer);
-	std::stringstream sstm;
-	sstm << millis;
-	result = sstm.str();
-	result += delimiter;
-
-	//2. Generate current date, but formatted, then concatenate
-	char* formatted = std::asctime(std::localtime(&timer));
-	string temp(formatted);
-	result += temp;
-	result += delimiter;
-
-	//3. Add on message
-	result += message;
-	result += delimiter;
-
-	return result;
-}
-
 int main(int argc, char** argv)
 {
 	//Given example:	 ./client 9999 localhost
 	//Testing purposes:  ./client 9999 localhost <message>
-    if (argc != 4) {
+    if (argc != 3) {
         printf("usage: %s <port> <ip>\n", argv[0]);
         exit(1);
     }
 
+	//If the client's timestamp file hasn't been created yet, 
+	//create it, and give it the current time
+	ofstream t_file;
+	if (!std::ifstream("client_timestamp.txt")) {
+		std::cout << "Created client_timestamp.txt b/c it didn't exist" << std::endl;
+		t_file.open("client_timestamp.txt");
+
+		std::string nl = "\n";
+		std::time_t timer = std::time(NULL);
+		long millis = static_cast<long>(timer);
+		t_file << millis;
+		t_file << nl;
+
+		t_file.close();
+	}
+
+	//Establish connection with server
     int len;
     string message;
 	string delimiter = ":";
@@ -117,20 +106,23 @@ int main(int argc, char** argv)
     char input[256];
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
-    while (stream) {
 
-		//Sending messages
-		message = std::string(argv[3]);
-		//message = (message, delimiter);
-		stream->send(message.c_str(), message.size());
-		printf("sent - %s\n", message.c_str());
-		
+	while (stream) {
+		ClientSender* sender = new ClientSender(stream);
+		sender->start();
 
-		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
-			//std::cout << "Raw message received from server: " << input << std::endl;
-			printf("Raw message received from server: %s\n", input);
-			//sleep(1);
-		}
+		////Sending messages
+		//message = std::string(argv[3]);
+		////message = (message, delimiter);
+		//stream->send(message.c_str(), message.size());
+		//printf("sent - %s\n", message.c_str());
+		//
+
+		//while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
+		//	//std::cout << "Raw message received from server: " << input << std::endl;
+		//	printf("Raw message received from server: %s\n", input);
+		//	//sleep(1);
+		//}
 				
    }
 

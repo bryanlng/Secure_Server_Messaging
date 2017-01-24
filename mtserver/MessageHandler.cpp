@@ -124,7 +124,6 @@ void* MessageHandler::run() {
 			std::string nl = "\n";
 			std::string message = item->getRawMessage();
 			message += nl;
-			//std::string message = sstm.str();
 			m_file->write(message);
 			delete m_file;
 

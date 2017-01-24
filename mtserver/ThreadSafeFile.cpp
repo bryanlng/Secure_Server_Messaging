@@ -49,7 +49,7 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 
 	//Part 2: The actual read operation
 	//Case 1: Reading timestamp file
-	if (!name.compare("timestamp.txt")) {
+	if (!name.compare("timestamp.txt") || !name.compare("client_timestamp.txt")) {
 
 		//First, read in 1 line of input backwards, one char at a time
 		//We'll know it's a next line when the second NL line feed (new line)
