@@ -112,16 +112,6 @@ int main(int argc, char** argv)
 		ClientSender* sender = new ClientSender(stream);
 		sender->start();
 
-
-
-
-		////Sending messages
-		//message = std::string(argv[3]);
-		////message = (message, delimiter);
-		//stream->send(message.c_str(), message.size());
-		//printf("sent - %s\n", message.c_str());
-		//
-
 		//while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 		//	//std::cout << "Raw message received from server: " << input << std::endl;
 		//	printf("Raw message received from server: %s\n", input);
