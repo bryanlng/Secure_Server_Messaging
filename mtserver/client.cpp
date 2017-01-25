@@ -60,6 +60,7 @@
 
    http://en.cppreference.com/w/cpp/chrono/c/time
    http://en.cppreference.com/w/cpp/chrono/c/gmtime
+   http://stackoverflow.com/questions/1662909/undefined-reference-to-pthread-create-in-linux
 */
 
 #include "ClientReceiver.h"
@@ -110,25 +111,8 @@ int main(int argc, char** argv)
 		ClientReceiver* receiver = new ClientReceiver(stream);
 		receiver->start();
 
-		//while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
-		//	//std::cout << "Raw message received from server: " << input << std::endl;
-		//	printf("Raw message received from server: %s\n", input);
-		//	//sleep(1);
-		//}
-
-		sleep(UINT_MAX);		//unfortunately jank code, but it works
-				
+		sleep(UINT_MAX);		//Need to get this thread to not be active
+								//unfortunately jank code, but it works				
    }
 
-   /* stream = connector->connect(argv[2], atoi(argv[1]));
-    if (stream) {
-        message = "Why is there air?";
-        stream->send(message.c_str(), message.size());
-        printf("sent - %s\n", message.c_str());
-        len = stream->receive(line, sizeof(line));
-        line[len] = NULL;
-        printf("received - %s\n", line);
-        delete stream;
-    }
-    exit(0);*/
 }
