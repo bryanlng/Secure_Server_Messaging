@@ -14,8 +14,8 @@ ClientSender::ClientSender(TCPStream* s) : stream(s) {}
 void* ClientSender::run() {
 
 	//Send update message
-	std::string time_message = formatMessage("", "??");
-	stream->send(time_message.c_str(), time_message.size());
+	//std::string time_message = formatMessage("", "::Timestamp::");
+	//stream->send(time_message.c_str(), time_message.size());
 
 	//Take in user input, then send it to the server
 	while (1) {
@@ -29,7 +29,7 @@ void* ClientSender::run() {
 		}
 
 		else {
-			std::string formatted = formatMessage(message, "::");
+			std::string formatted = formatMessage(message, ":::::::");
 			//std::cout << "Formatted message: " << formatted << std::endl;
 			stream->send(formatted.c_str(), formatted.size());
 		}
@@ -51,6 +51,8 @@ void* ClientSender::run() {
 		-timestamp is the timestamp of the last message received
 		-Format:
 			timestamp <special timestamp delimiter>
+		-Ex:
+			199999999::Timestamp::
 
 	Case 2: Regular message
 		-Simply create the string in the format as specified below
@@ -59,11 +61,13 @@ void* ClientSender::run() {
 			-message will be the message
 		-Format:
 			timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+		-Ex:
+			1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::
 */
 std::string ClientSender::formatMessage(std::string message, std::string delimiter) {
 
 	//Case 1: Update message
-	if (!delimiter.compare("??")) {
+	if (!delimiter.compare("::Timestamp::")) {
 
 		//Read from client's timestamp file
 		ofstream time_filestream;

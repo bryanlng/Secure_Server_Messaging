@@ -31,7 +31,7 @@ void* ClientReceiver::run() {
 		int which_one = 0;
 		std::string current_item;
 
-		std::string delimiter = "::"; //"::&$*@^$^$(@(::";
+		std::string delimiter = ":::::::";
 			
 		//Fields to extract
 		long timestamp;

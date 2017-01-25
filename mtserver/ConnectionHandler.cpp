@@ -32,7 +32,7 @@ void* ConnectionHandler::run() {
 		connected = true;
 
 		// 1. Parse contents into their fields ==> then put into a MessageItem object
-		// Delimiter will be: ::&$*@^$^$(@(::
+		// Delimiter will be: :::::::
 		// Delimiter will not be seen by the user
 
 		//Fields for receiving the message
@@ -69,7 +69,7 @@ void* ConnectionHandler::run() {
 			string current_item;
 
 			//First check if the message is the "timestamp" message
-			string delimiter = "??";	//"::Timestamp!!!!!::";
+			string delimiter = "::Timestamp::";
 			if ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
 				current_item = raw.substr(0, delimiter_pos);
 				std::cout << "Timestamp message, Item found: " << current_item << std::endl;
@@ -78,7 +78,7 @@ void* ConnectionHandler::run() {
 
 			//Else, it's got to be just a regular message
 			else {
-				delimiter = "::";	//"::&$*@^$^$(@(::";
+				delimiter = ":::::::";
 
 				//Parsing the string. String is "eaten" along the way
 				while ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
@@ -175,7 +175,7 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	//Case 1: Updated timestamp message
 	if (message_item->isUpdateRequest()) {
 		std::stringstream sstm;
-		sstm << message_item->getTimeOfLastReceived() << "??";	//special delimiter added so client knows
+		sstm << message_item->getTimeOfLastReceived() << "::Timestamp::";	//special delimiter added so client knows
 		message = sstm.str();
 
 		std::cout << "send_message(): Updated timestamp being sent: " << message << std::endl;

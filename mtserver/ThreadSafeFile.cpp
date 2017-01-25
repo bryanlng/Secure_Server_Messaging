@@ -47,7 +47,7 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 	
 	//Case 1: Reading master log
 	if (!name.compare("master_log.txt") ) {
-		std::string delimiter = ":";	//"::&$*@^$^$(@(::";
+		std::string delimiter = ":::::::";
 		std::string line;
 		std::ifstream file("master_log.txt");
 		if (file.is_open()) {
