@@ -50,7 +50,7 @@ void* ConnectionHandler::run() {
 		//Upon receiving a message, parse it, then put contents into a MessageItem
 		//Format of message from client:
 		/*
-			Case 1. Timestamp message
+			Case 1. Timestamp/update message
 			timestamp <special delimiter>
 
 			Case 2. Regular message
@@ -171,6 +171,8 @@ bool ConnectionHandler::hasAConnection() {
 void ConnectionHandler::send_message(MessageItem* message_item) {
 	TCPStream* stream = getStream();
 	std::string message;
+
+	//Case 1: Updated timestamp message
 	if (message_item->isUpdateRequest()) {
 		std::stringstream sstm;
 		sstm << message_item->getTimeOfLastReceived() << "??";	//special delimiter added so client knows
@@ -179,6 +181,7 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 		std::cout << "send_message(): Updated timestamp being sent: " << message << std::endl;
 	}
 
+	//Case 2: Regular message
 	else {
 		message = message_item->getRawMessage();
 		std::cout << "send_message(): Regular message being sent: " << message << std::endl;
@@ -188,8 +191,7 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	char * buffer = new char[message.length() + 1];
 	const char* c_string = message.c_str();
 	std::strcpy(buffer, c_string);
-
-
+	
 	printf("message being sent, in char* form: %s\n", buffer);
 
 	//Send message, then free temp buffer

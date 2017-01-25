@@ -13,9 +13,9 @@ ClientSender::ClientSender(TCPStream* s) : stream(s) {}
 */
 void* ClientSender::run() {
 
-	////Send update message
-	//std::string time_message = formatMessage("", "??");
-	//stream->send(time_message.c_str(), time_message.size());
+	//Send update message
+	std::string time_message = formatMessage("", "??");
+	stream->send(time_message.c_str(), time_message.size());
 
 	//Take in user input, then send it to the server
 	while (1) {

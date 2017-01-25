@@ -1,4 +1,8 @@
 /*
+	NOTICE:
+	This file is from the original implementation by Vic
+	Hargrave.
+	
 	A WorkItem consists of a TCPStream object, denoted by the
 	TCPStream* m_stream
 

@@ -10,8 +10,11 @@
 #include <algorithm>
 #include <climits>
 
-
 /*
+	Thread that encapsulates the functionality to send messages
+	Prompts the user for input, then (behind the scenes) formats the message,
+	then sends it to the server.
+	
 	http://stackoverflow.com/questions/10486116/what-does-this-gcc-error-relocation-truncated-to-fit-mean
 	http://stackoverflow.com/questions/39931468/what-does-mean-when-used-in-a-g-argument
 */

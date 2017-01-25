@@ -31,7 +31,6 @@
 		-special message sent by client
 		-If it's just a regular message, time_of_last_received = -1
 		-Else, time_of_last_received != -1
-
 */
 
 class MessageItem

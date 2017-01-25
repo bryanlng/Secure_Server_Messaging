@@ -6,10 +6,11 @@ ClientReceiver::ClientReceiver(TCPStream* s) : stream(s) {}
 /*
 	Receives incoming messages from the server
 
-	Case 2: Regular message
-		-Extract the timestamp, date, and message. Then display it
+	Steps:
+		-Extract the timestamp, date, and message.
 		-Afterwards, update client_timestamp.txt with the extracted timestamp, so
 		 that it has the most updated timestamp
+		-Then, display the message
 		-Format:
 			timestamp <delimiter> date_formatted <delimiter> message <delimiter>
 			Ex: 1485288373:Tue Jan 24 13:06:13 2017:df:
