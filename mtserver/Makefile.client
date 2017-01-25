@@ -1,5 +1,6 @@
 CC		= g++
 CFLAGS		= -g -c -Wall
+LDFLAGS		= -pthread
 SOURCES		= client.cpp ClientSender.cpp ClientReceiver.cpp ThreadSafeFile.cpp ../tcpsockets/tcpstream.cpp ../threads/thread.cpp ../tcpsockets/tcpconnector.cpp
 INCLUDES	= -I. -I../threads -I../tcpsockets
 OBJECTS		= $(SOURCES:.cpp=.o)
@@ -8,7 +9,7 @@ TARGET		= client
 all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
