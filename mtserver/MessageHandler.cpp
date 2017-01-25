@@ -88,12 +88,6 @@ void* MessageHandler::run() {
 					delete message_item;
 				}
 
-				//Send the updated timestamp back to the client
-				MessageItem* time_message = new MessageItem(latest_timestamp);
-				client->send_message(time_message);
-
-				//Free fields
-				delete time_message;
 			}
 
 

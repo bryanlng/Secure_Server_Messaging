@@ -84,15 +84,15 @@ int main(int argc, char** argv)
     }
 
 	//If the client's timestamp file hasn't been created yet, 
-	//create it, and give it the current time
+	//create it, and give it the value 0, so that it MUST pull
+	//from the server
 	ofstream t_file;
 	if (!std::ifstream("client_timestamp.txt")) {
 		std::cout << "Created client_timestamp.txt b/c it didn't exist" << std::endl;
 		t_file.open("client_timestamp.txt");
 
 		std::string nl = "\n";
-		std::time_t timer = std::time(NULL);
-		long millis = static_cast<long>(timer);
+		long millis = 0;
 		t_file << millis;
 		t_file << nl;
 
