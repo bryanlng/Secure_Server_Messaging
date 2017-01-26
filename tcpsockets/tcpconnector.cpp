@@ -57,9 +57,6 @@
 		2. Server port #
 
 	Establishes a connection with the server
-	Actually call
-
-	
 
 */
 TCPStream* TCPConnector::connect(const char* server, int port)
