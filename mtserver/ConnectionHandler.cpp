@@ -40,13 +40,6 @@ void* ConnectionHandler::run() {
 		input = (char*)malloc(sizeof(char) * MAX_MESSAGE_SIZE);
 		int len;
 
-		//Fields to put inside the Message item
-		string raw_message;
-		long time_of_last_received = -1;		//used to check whether we need to pull from log
-		long timestamp = -1;
-		string date_formatted;
-		string message;
-
 		//Upon receiving a message, parse it, then put contents into a MessageItem
 		//Format of message from client:
 		/*
@@ -61,7 +54,13 @@ void* ConnectionHandler::run() {
 		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 			std::cout << "Raw message received from client: " << input << std::endl;
 			string raw(input);
-			raw_message = raw;
+			
+			//Fields to put inside the Message item
+			string raw_message = raw;
+			long time_of_last_received = -1;		//used to check whether we need to pull from log
+			long timestamp = -1;
+			string date_formatted;
+			string message;
 
 			//Fields for parsing the string
 			int delimiter_pos = 0;
@@ -120,12 +119,13 @@ void* ConnectionHandler::run() {
 			else {
 				m_queue.add(message_item);
 			}
+
 		}
 
 		//Free and update fields
 		free(input);
-		delete item;
 		connected = false;
+		delete item;
 
 	}
 

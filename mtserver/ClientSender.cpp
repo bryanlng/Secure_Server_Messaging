@@ -80,8 +80,11 @@ std::string ClientSender::formatMessage(std::string message, std::string delimit
 		std::string latest_ts = t_vector.front();
 		std::cout << "client latest timestamp from read(): " << latest_ts << std::endl;
 
+		//Extract the message, without the \n at the end
+		std::string no_nl = latest_ts.substr(0, latest_ts.find("\n"));
+
 		//Append on the delimiter
-		return latest_ts + delimiter;
+		return no_nl + delimiter;
 	}
 
 	//Case 2: Regular message

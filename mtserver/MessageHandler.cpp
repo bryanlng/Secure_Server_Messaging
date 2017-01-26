@@ -45,6 +45,9 @@ void* MessageHandler::run() {
 			std::string latest_ts = t_vector.front();
 			std::cout << "Message from read(): " << latest_ts << std::endl;
 
+			if(!latest_ts.compare(""))
+				std::cout << "EMPTY!!!!!!!!!!!!" << latest_ts << std::endl;
+
 			//Convert timestamp into a long
 			long latest_timestamp = atol(latest_ts.c_str());					
 			
