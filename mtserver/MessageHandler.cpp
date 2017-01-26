@@ -45,40 +45,9 @@ void* MessageHandler::run() {
 			std::string latest_ts = t_vector.front();
 			std::cout << "Message from read(): " << latest_ts << std::endl;
 
-			//Means that timestamp and master log are empty,
-			//Simply send an empty string back to the client.
-			if (!latest_ts.compare("")) {
-				std::cout << "Master log and timestamp are empty!!" << std::endl;
-				//Supporting fields for finding the ConnectionHandler* of the sender
-				ConnectionHandler* client;
-				string sender = item->getThreadID();
-				bool senderFound = false;
-				std::cout << "Sender of message: " << sender << std::endl;
-
-				//Find the ConnectionHandler* of the sender and stop when we find it
-				std::vector<ConnectionHandler*>::const_iterator c_iterator = connections.begin();
-				while (!senderFound && c_iterator != connections.end()) {
-					ConnectionHandler* connection = *c_iterator;
-					std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
-					if (!sender.compare(connection->thread_name())) {
-						client = connection;
-						senderFound = true;
-					}
-
-					++c_iterator;
-				}
-
-				//Send MessageItem with empty string
-				MessageItem* message_item = new MessageItem("");
-				client->send_message(message_item);
-
-				delete message_item;
-
-			}
-
-			//Timestamp and master log are NOT empty. If the client is behind,
-			//send the messages it missed back to the client.
-			else {
+			//If Timestamp and master log are NOT empty, check if the client is behind.
+			//If it is, send the messages it missed back to the client.
+			if (latest_ts.compare("")) {
 				std::cout << "NOT empty Master log and timestamp" << std::endl;
 				//Convert timestamp into a long
 				long latest_timestamp = atol(latest_ts.c_str());
@@ -152,9 +121,7 @@ void* MessageHandler::run() {
 			//newline at the beginning
 			ofstream master_filestream;
 			ThreadSafeFile* m_file = new ThreadSafeFile("master_log.txt");
-			std::string nl = "\n";
 			std::string message = item->getRawMessage();
-			message += nl;
 			m_file->write(message);
 			delete m_file;
 
@@ -163,7 +130,7 @@ void* MessageHandler::run() {
 			ofstream time_filestream;	
 			ThreadSafeFile* t_file = new ThreadSafeFile("timestamp.txt");
 			std::stringstream sstm2;
-			sstm2 << item->getTimestamp() << nl;
+			sstm2 << item->getTimestamp();
 			std::string timestamp = sstm2.str();
 			t_file->write(timestamp);
 			delete t_file;

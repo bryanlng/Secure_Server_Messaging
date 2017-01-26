@@ -148,7 +148,9 @@ void ThreadSafeFile::write(std::string item) {
 	//Part 2: The actual write operation
 	std::ofstream file(name.c_str(), std::ofstream::app);		//app = append
 	if (file.is_open()) {
+		std::string nl = "\n";
 		file << item;
+		file << nl;
 	}
 
 	//Part 3: End write

@@ -71,9 +71,8 @@ void* ClientReceiver::run() {
 			/*ofstream master_filestream;
 			ThreadSafeFile* t_file = new ThreadSafeFile("client_timestamp.txt");
 
-			std::string nl = "\n";
 			std::stringstream sstm;
-			sstm << timestamp << nl;
+			sstm << timestamp;
 			std::string ts = sstm.str();
 
 			t_file->write(ts);
