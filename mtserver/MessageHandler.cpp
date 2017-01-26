@@ -48,6 +48,7 @@ void* MessageHandler::run() {
 			//Means that timestamp and master log are empty,
 			//Simply send an empty string back to the client.
 			if (!latest_ts.compare("")) {
+				std::cout << "Master log and timestamp are empty!!" << std::endl;
 				//Supporting fields for finding the ConnectionHandler* of the sender
 				ConnectionHandler* client;
 				string sender = item->getThreadID();
@@ -78,8 +79,12 @@ void* MessageHandler::run() {
 			//Timestamp and master log are NOT empty. If the client is behind,
 			//send the messages it missed back to the client.
 			else {
+				std::cout << "NOT empty Master log and timestamp" << std::endl;
 				//Convert timestamp into a long
 				long latest_timestamp = atol(latest_ts.c_str());
+
+				std::cout << "item->getTimeOfLastReceived(): " << item->getTimeOfLastReceived() << std::endl;
+				std::cout << "latest_timestamp: " << latest_timestamp << std::endl;
 
 				//Only send messages back to the sender if its timestamp is
 				//behind the server's latest timestamp
@@ -123,10 +128,6 @@ void* MessageHandler::run() {
 
 				}
 			}
-
-			
-
-
 			
 
 		}

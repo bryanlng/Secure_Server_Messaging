@@ -178,7 +178,7 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 		sstm << message_item->getTimeOfLastReceived() << "::Timestamp::";	//special delimiter added so client knows
 		message = sstm.str();
 
-		std::cout << "send_message(): Updated timestamp being sent: " << message << std::endl;
+		//std::cout << "send_message(): Updated timestamp being sent: " << message << std::endl;
 	}
 
 	//Case 2: Regular message
@@ -196,7 +196,7 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 
 	//Send message, then free temp buffer
 	stream->send(buffer, message.size()+1);	//+1 to include the null char at the end
-	delete[] buffer;	
+	free(buffer);
 
 }
 

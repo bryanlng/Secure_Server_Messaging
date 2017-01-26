@@ -68,7 +68,7 @@ void* ClientReceiver::run() {
 			}
 
 			//Write the timestamp to client_timestamp.txt, with a newline at the beginning
-			ofstream master_filestream;
+			/*ofstream master_filestream;
 			ThreadSafeFile* t_file = new ThreadSafeFile("client_timestamp.txt");
 
 			std::string nl = "\n";
@@ -78,12 +78,16 @@ void* ClientReceiver::run() {
 
 			t_file->write(ts);
 
-			delete t_file;
+			delete t_file;*/
 
 			//Display message
-			std::cout << "Incoming message: " << std::endl;
 			std::cout << message << std::endl;
 			std::cout << "Sent at: " << date_formatted << std::endl;
+
+			//"Erase" the char array, so our next message comes in cleanly
+			for (int i = 0; i < len; i++) {
+				input[i] = '\0';
+			}
 		}	
 
 	}
