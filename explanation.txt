@@ -180,7 +180,7 @@ into a vector, then send all those messages out.
        		 have remnants of the previous message in it.
 		12) Now inside MessageHandler, it grabs and removes the MessageItem from the Message queue
 		13) Determine what kind of MessageItem it is:
-			1) If it's an update request --> (see section )
+			1) If it's an update request --> (see section III)
 			2) Else, it's a message request, so do the following:
 		14) Using an iterator, go through every element in the list of ConnectionHandler:
 			-If the ConnectionHandler isn't the sender, and currently has a connection, then send the message
@@ -217,6 +217,26 @@ into a vector, then send all those messages out.
 		9) ClientReceiver receives each message, then updates client_timestamp.txt with the timestamp every time. That way, after
 		   the last (and thus most recent) message comes in, client_timestamp.txt will have the most updated timestamp.
 		   See section II, steps 17 for a more detailed explanation.
+	
+Choosing the delimiters:
+So I had to find a way to send messages across different platforms (C++ sockets vs Java sockets). Originally, I wanted to send a 
+MessageItem* over, but the problem is, you can't write pointers in Java! So I had to think, what's a common format across all platforms?
+Strings. But how am I gonna send all this metatdata? I'll just put a delimiter in between each field, so that I'll be able to parse it
+later. But the problem with this is the MESSAGE field. The message could consist of ANY combination of any characters. That means, there
+exists a possibility that someone could type in my delimiter as part of their message ==> now my whole operation is screwed up. Thus, I'll
+just have to choose a delimiter that won't easily be typed. But even then, the security flaw exists.
+
+	
+Edge case to think of:
+Let's say at the very beginning, like I mean when the first time the server is ever started up, master_log.txt, timestamp.txt, and
+client_timestamp.txt will all not exist. When the server and client executables are run, master_log.txt and timestamp.txt will be 
+created, but have nothing in them (remember this, this is important). On the client side, client_timestamp.txt will be created, and
+will have the message 0 with a new line at the end of it. So let's say the whole process starts. Client sends an update message to 
+the server .......(skip a few steps) .... and now we're in the Update Handler. Now here's the important part. Normally, in a case where
+master_log.txt and timestamp.txt aren't empty, we would read the last line of timestamp.txt, then use this timestamp to get the correct
+messages from master_log.txt. But the problem is, BOTH OF THESE FILES ARE EMPTY. So there are NO MESSAGES to get. Thus, if we encounter 
+this case (which I built in), the server should just do nothing by sending nothing back. It makes sense. If there are no messages to 
+receive, why should I receive any? 
 		   
 To recall more, visit the following websites:
 https://vichargrave.github.io/articles/2013-03/multithreaded-work-queue-based-server-in-cpp
