@@ -98,19 +98,6 @@ So we would read the last line of timestamp.txt, check if [the timestamp of the 
 most recent message that was sent], then read every line of master_log and put only lines whose timestamp > client timestamp
 into a vector, then send all those messages out.
 
-But let's stop for a second. Remember that this server is MULTI-THREADED. 
-
-
-
-ThreadSafeFile:
-
-
-
-
-
-
-
-
 
 
 
@@ -198,10 +185,8 @@ ThreadSafeFile:
 		14) Using an iterator, go through every element in the list of ConnectionHandler:
 			-If the ConnectionHandler isn't the sender, and currently has a connection, then send the message
 			 using send_message()
-		15) Update the master log with the new message, by creating a ThreadSafeFile with "master_log.txt" as its
-		    parameter, then writing message by calling the write() method.
-		16) Update timestamp.txt with the latest timestamp, by creating a ThreadSafeFile with "timestamp.txt" as its
-		    parameter, then writing timestamp by calling the write() method.
+		15) Update the master log with the new message, by calling MessageHandler's write(), with master_log.txt
+		16) Update timestamp.txt with the latest timestamp, by calling MessageHandler's write(), with timestamp.txt
 		17) Inside ClientReceiver, for every message we receive:		
 			A) while ((len = stream->receive(input, sizeof(input)) > 0)) {
 			B) If the message received (input) isn't an empty string, do the following:
@@ -218,17 +203,15 @@ ThreadSafeFile:
 	III. Update request:
 		1) Assume we did everything in section II, steps 1 - 10. So now, we are in the update queue.
 		2) Inside the update queue (actually a MessageHandler Thread), we hit Case 1. Do the following:
-		3) Read the latest timestamp from timestamp.txt. Do this by creating a ThreadSafeFile with "timestamp.txt" 
-		   as its parameter, then reading the latest timestamp (last line) by calling the read() method.
-		   This will return a vector of strings, but there should only be 1 string inside of it.
+		3) Read the latest timestamp from timestamp.txt. Do this by calling MessageHandler's readTimestampFile() 
+		   with timestamp.txt as its parameter, which will read the latest timestamp (last line).
 		4) If timestamp.txt and master log are NOT empty, check if the client is behind. Do the following:
 		5) Compare [the latest timestamp read from timestamp.txt] with the timestamp found in the MessageItem 
 		   (aka the timestamp that was sent). If the timestamp that was sent < timestamp read from timestamp.txt,
 		   then the client is BEHIND. Do the following:
-		6) Read the appropriate messages from master_log.txt. Do this by creating a ThreadSafeFile with "master_log.txt" 
-		   as its parameter, then reading the latest timestamp by calling the read() method. The read() method will go through
-		   each line in the master log, and put messages (lines) [whose timestamp > timestamp that was sent] into a vector of 
-		   strings.
+		6) Read the appropriate messages from master_log.txt. Do this by calling readMasterLog() with "master_log.txt" 
+		   as its parameter, which will go through each line in the master log, and put messages (lines) 
+		   [whose timestamp > timestamp that was sent] into a vector of  strings.
 		7) Then, iterate through the list to find the ConnectionHandler* of the sender of the message
 		8) Once we've found the sender, send each message from the [vector of strings] back to the client, using send_message().
 		9) ClientReceiver receives each message, then updates client_timestamp.txt with the timestamp every time. That way, after
