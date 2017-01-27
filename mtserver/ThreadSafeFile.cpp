@@ -6,14 +6,12 @@ ThreadSafeFile::ThreadSafeFile(std::string n)
 {
 	//Initialize locks and condition variables
 	pthread_mutex_init(&lock, NULL);
-	pthread_cond_init(&read_cond_var, NULL);
-	pthread_cond_init(&write_cond_var, NULL);
+	pthread_cond_init(&rww_cond_var, NULL);
+	pthread_cond_init(&wwr_cond_var, NULL);
 
 	//Intialize fields
-	active_readers = 0;
-	active_writers = 0;
-	waiting_readers = 0;
-	waiting_writers = 0;
+	readers = 0;
+	writers = 0;
 }
 
 /*
@@ -31,20 +29,15 @@ ThreadSafeFile::ThreadSafeFile(std::string n)
 	strings.
 */
 void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
-	pthread_mutex_lock(&lock);			//always lock before doing anything
-
 	//Part 1: Begin read
-	while (active_writers == 1 || waiting_writers > 0) {
-		++waiting_readers;
-		pthread_cond_wait(&read_cond_var, &lock);
-		--waiting_readers;
+	pthread_mutex_lock(&lock);			//always lock before doing anything
+	while (writers > 0) {
+		pthread_cond_wait(&rww_cond_var, &lock);
 	}
-
-	++active_readers;
-	pthread_cond_signal(&read_cond_var);
+	++readers;
+	pthread_mutex_unlock(&lock);	//always unlock after doing operations
 
 	//Part 2: The actual read operation
-	
 	//Case 1: Reading master log
 	if (!name.compare("master_log.txt") ) {
 		std::string delimiter = ":::::::";
@@ -121,8 +114,10 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 	}
 
 	//Part 3: End read
-	if (--active_readers == 0) {
-		pthread_cond_signal(&write_cond_var);
+	pthread_mutex_lock(&lock);			//always lock before doing anything
+	--readers;
+	if (readers == 0) {
+		pthread_cond_signal(&wwr_cond_var);
 	}
 
 	pthread_mutex_unlock(&lock);	//always unlock after doing operations
@@ -132,18 +127,13 @@ void ThreadSafeFile::read(std::vector<std::string>& messages, long timestamp) {
 	Writes the string to the end of the file
 */
 void ThreadSafeFile::write(std::string item) {
-	pthread_mutex_lock(&lock);		//always lock before doing anything
 
 	//Part 1: Begin write
-	while (active_writers == 1 || waiting_readers > 0) {
-		++waiting_writers;
-		pthread_cond_wait(&write_cond_var, &lock);
-		--waiting_writers;
+	pthread_mutex_lock(&lock);		//always lock before doing anything
+	++writers;
+	while (readers > 0) {		
+		pthread_cond_wait(&wwr_cond_var, &lock);
 	}
-
-	//++active_writers;
-	active_writers = 1;		//set to 1, as there can only be 1 writer
-							//at a time
 	
 	//Part 2: The actual write operation
 	std::ofstream file(name.c_str(), std::ofstream::app);		//app = append
@@ -154,24 +144,19 @@ void ThreadSafeFile::write(std::string item) {
 	}
 
 	//Part 3: End write
-	//--active_writers;		
-	active_writers = 0;		//set back to 0
-
+	--writers;
+	pthread_cond_signal(&wwr_cond_var);
 	//If there are waiting readers, signal one of them
-	if (waiting_readers) {	
-		pthread_cond_signal(&read_cond_var);
+	if (writers <= 0) {	
+		pthread_cond_broadcast(&rww_cond_var);
 	}
 
-	//Else, signal a waiting writer
-	else {
-		pthread_cond_signal(&write_cond_var);
-	}
 
 	pthread_mutex_unlock(&lock);	//always unlock after doing operations;
 }
 
 ThreadSafeFile::~ThreadSafeFile() {
 	pthread_mutex_destroy(&lock);
-	pthread_cond_destroy(&read_cond_var);
-	pthread_cond_destroy(&write_cond_var);
+	pthread_cond_destroy(&rww_cond_var);
+	pthread_cond_destroy(&wwr_cond_var);
 }

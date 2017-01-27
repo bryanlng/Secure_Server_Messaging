@@ -16,53 +16,9 @@
 	in order to ensure that we get the correct results, as we could have been
 	robbed along the way.
 
-	The Readers-Writers problem:
-		-Needs to provide a balance between readers and writers
-		-Multiple readers can read at a time, but only 1 writer can write 
-		 at a time
-		1) Rules:
-			1. Readers can only read when there's no writers
-			2. Writers can only write when there's no active readers 
-			3. Writer can't enter if 
-		2) Reader:
-			-made of 3 parts
-				-Begin Read
-				-<Actual reading operation>
-				-End read
-			1) Begin read:
-				- If there is an active writer, or waiting writers, increment
-				  # of waiting readers, then wait() in a while loop for the
-				  read condvar. After wait() unblocks, decrement # of waiting
-				  readers, as you're now active. However, if there's still an
-				  active writer, or waiting writers, go back into the loop.
-				- Increment the # of active readers
-				- Signal the read condvar, as if one reader can get in, all
-				  the other readers should be let in too.
-			2) Read operation:
-			3) End read:
-				- If after we decrement the # of active readers, it's 0, 
-				  signal the write condvar.
-				- AKA, if there are no more active readers, let a writer in.
-		3) Writer:
-			-made of 3 parts
-				-Begin write
-				-<Actual write operation>
-				-End write
-			1) Begin write:
-				- If there is an active writer, or active readers, increment
-				  # of waiting writers, then wait() in the while loop. 
-				  a while loop for the write condvar. After wait() unblocks, 
-				  decrement # of waiting writers, as you're now active. 
-				  However, if there's still an active writer, or waiting 
-				  readers, go back into the loop.
-				- Then, set the # of writers to be 1.
-			2) Write operation:
-			3) End write:
-				- Set # of active writers to 0
-				- If there are still waiting readers, signal the read condvar
-				  to wake up any waiting readers.
-				- Else, signal the write condvar to wake up any waiting writers.
-				
+	The Readers-Writers problem (Norman's solution):
+
+		
 
 	Example case scenarios:
 	1. 10 readers come in, then a writer:
@@ -96,13 +52,11 @@ class ThreadSafeFile {
 	private:
 		std::string		 name;				//name of the file. Either "master_log.txt", or "timestamp.txt"
 		pthread_mutex_t  lock;				//Lock, so that only 1 Thread can edit a File at a time
-		pthread_cond_t   read_cond_var;		//Condition variable, to signal a waiting Thread that they can now use the file
-		pthread_cond_t   write_cond_var;	//Condition variable, to signal a waiting Thread that they can now use the file
+		pthread_cond_t   rww_cond_var;		//Reader waiting on writers cond var
+		pthread_cond_t   wwr_cond_var;		//Writers waiting on readers cond var
 
-		int active_readers;				//# Threads actively reading the file
-		int active_writers;				//# Threads actively writing to the file
-		int waiting_readers;			//# Threads waiting to read the file
-		int waiting_writers;			//# Threads waiting to write to the file
+		int readers;
+		int writers;
 
 
 	public:
