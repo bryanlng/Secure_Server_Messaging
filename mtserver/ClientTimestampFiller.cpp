@@ -1,0 +1,34 @@
+#include "ClientTimestampFiller.h"
+
+ClientTimestampFiller::ClientTimestampFiller(wqueue<long>& queue, std::string n) : m_queue(queue) 
+{
+	set_name(n);
+}
+
+void* ClientTimestampFiller::run() {
+	// Remove 1 item at a time and process it. Blocks if no items are 
+	// available to process.
+	for (int i = 0;; i++) {
+		std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
+		long timestamp = m_queue.remove();
+		std::cout << thread_name() << ", loop " << i << " - got one item: " << timestamp << std::endl;
+
+		//Update client_timestamp.txt with the timestamp
+		std::ofstream file;
+		file.open("client_timestamp.txt", std::ofstream::app);
+		if (file.is_open()){
+			std::string nl = "\n";
+			file << timestamp;
+			file << nl;
+			file.close();
+		}
+		else {
+			std::cout << "Error opening file";
+		}
+		
+
+	}
+
+	//Should not get here
+	return NULL;
+}

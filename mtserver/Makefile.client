@@ -1,8 +1,8 @@
 CC		= g++
 CFLAGS		= -g -c -Wall
 LDFLAGS		= -pthread
-SOURCES		= client.cpp ClientSender.cpp ClientReceiver.cpp ThreadSafeFile.cpp ../tcpsockets/tcpstream.cpp ../threads/thread.cpp ../tcpsockets/tcpconnector.cpp
-INCLUDES	= -I. -I../threads -I../tcpsockets
+SOURCES		= client.cpp ClientSender.cpp ClientReceiver.cpp ClientTimestampFiller.cpp ThreadSafeFile.cpp ../tcpsockets/tcpstream.cpp ../threads/thread.cpp ../tcpsockets/tcpconnector.cpp
+INCLUDES	= -I. -I../threads -I../wqueue -I../tcpsockets
 OBJECTS		= $(SOURCES:.cpp=.o)
 TARGET		= client
 

@@ -1,6 +1,7 @@
 #include "thread.h"
 #include "tcpacceptor.h"
 #include "ThreadSafeFile.h"
+#include "wqueue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

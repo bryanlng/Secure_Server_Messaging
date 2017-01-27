@@ -63,7 +63,7 @@
    http://stackoverflow.com/questions/1662909/undefined-reference-to-pthread-create-in-linux
 */
 
-#include "ClientReceiver.h"
+#include "ClientTimestampFiller.h"
 #include "tcpconnector.h"
 #include <iostream>
 #include <sstream>
@@ -105,11 +105,18 @@ int main(int argc, char** argv)
 
 	//If there's a connection, create the 2 Threads to send and receive messages
 	if (stream) {
+		wqueue<long>  m_queue;
+		std::string name = "timestamp_filler";
+		ClientTimestampFiller* timestamp_filler = new ClientTimestampFiller(m_queue,name);
+		timestamp_filler->start();
+
 		ClientSender* sender = new ClientSender(stream);
 		sender->start();
 
-		ClientReceiver* receiver = new ClientReceiver(stream);
+		ClientReceiver* receiver = new ClientReceiver(stream, m_queue);
 		receiver->start();
+
+
 
 		sleep(UINT_MAX);		//Need to get this thread to not be active
 								//unfortunately jank code, but it works				

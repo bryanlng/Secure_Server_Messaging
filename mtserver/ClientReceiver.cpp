@@ -1,7 +1,7 @@
 #include "ClientReceiver.h"
 #define MAX_MESSAGE_SIZE 25600
 
-ClientReceiver::ClientReceiver(TCPStream* s) : stream(s) {}
+ClientReceiver::ClientReceiver(TCPStream* s, wqueue<long>& queue) : stream(s), m_queue(queue) {}
 
 /*
 	Receives incoming messages from the server
@@ -26,7 +26,6 @@ void* ClientReceiver::run() {
 		//std::cout << "Raw message received from server: " << input << std::endl;
 		printf("Raw message received from server: %s\n", input);
 		std::string raw(input);
-		int length = raw.length();
 
 		//If message isn't "", then extract its contents and display the message.
 		//A "" message means that the timestamp and master log were empty
@@ -94,6 +93,10 @@ void* ClientReceiver::run() {
 			const char* ts = sstm.str().c_str();
 			fprintf(fp, ts);
 			fclose(fp);*/
+
+			//Add the message to ClientTimestampFiller, who will write to 
+			//client_timestamp.txt for us so that all our messages can get in
+			m_queue.add(timestamp);
 		
 
 			//"Erase" the char array, so our next message doesn't come in with bits of the previous message

@@ -11,8 +11,10 @@ http://stackoverflow.com/questions/39931468/what-does-mean-when-used-in-a-g-argu
 class ClientReceiver : public Thread{
 	private:
 		TCPStream* stream;
+		wqueue<long>& m_queue;
+
 	public:
-		ClientReceiver(TCPStream* s);
+		ClientReceiver(TCPStream* s, wqueue<long>& queue);
 		void* run();
 		~ClientReceiver();
 };
