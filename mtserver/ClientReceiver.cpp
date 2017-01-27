@@ -68,31 +68,9 @@ void* ClientReceiver::run() {
 				++which_one;
 			}
 
-			//Write the timestamp to client_timestamp.txt, with a newline at the beginning
-			/*ofstream master_filestream;
-			ThreadSafeFile* t_file = new ThreadSafeFile("client_timestamp.txt");
-
-			std::stringstream sstm;
-			sstm << timestamp;
-			std::string ts = sstm.str();
-
-			t_file->write(ts);
-
-			delete t_file;*/
-
 			//Display message
 			std::cout << message << std::endl;
 			std::cout << "Sent at: " << date_formatted << std::endl;
-
-			//File IO using C's file io
-			/*FILE* fp;
-			fp = fopen("client_timestamp.txt", "a");
-			std::string nl = "\n";
-			std::stringstream sstm;
-			sstm << timestamp << nl;
-			const char* ts = sstm.str().c_str();
-			fprintf(fp, ts);
-			fclose(fp);*/
 
 			//Add the message to ClientTimestampFiller, who will write to 
 			//client_timestamp.txt for us so that all our messages can get in

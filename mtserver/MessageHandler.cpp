@@ -1,5 +1,5 @@
 #include "MessageHandler.h"
-
+#define NEWLINE_ASCII 10
 
 /*
 	Constructor
@@ -34,15 +34,7 @@ void* MessageHandler::run() {
 			std::cout << "Incoming update request!!" << std::endl;
 
 			//Part 1: Reading from timestamp.txt
-			//Open up timestamp.txt and read the timestamp of the most recent message of the chat
-			ofstream time_filestream;
-			ThreadSafeFile* t_file = new ThreadSafeFile("timestamp.txt");
-			std::vector<std::string> t_vector;
-			t_file->read(t_vector, 0);
-
-			//Get the string from the vector of strings
-			//Since there should only be 1 string in the vector, we can use front()
-			std::string latest_ts = t_vector.front();
+			std::string latest_ts = readTimestampFile();
 			std::cout << "Message from read(): " << latest_ts << std::endl;
 
 			//If Timestamp and master log are NOT empty, check if the client is behind.
@@ -58,11 +50,10 @@ void* MessageHandler::run() {
 				//Only send messages back to the sender if its timestamp is
 				//behind the server's latest timestamp
 				if (item->getTimeOfLastReceived() < latest_timestamp) {
+
 					//Part 2: Reading from master log
-					ofstream master_filestream;
-					ThreadSafeFile* m_file = new ThreadSafeFile("master_log.txt");
 					std::vector<std::string> messages;
-					m_file->read(messages, item->getTimeOfLastReceived());
+					readMasterLog(messages, item->getTimeOfLastReceived());
 
 					//Supporting fields for finding the ConnectionHandler* of the sender
 					ConnectionHandler* client;
@@ -117,23 +108,15 @@ void* MessageHandler::run() {
 				}
 			}
 
-			//Update master log with the new message, with a 
-			//newline at the beginning
-			ofstream master_filestream;
-			ThreadSafeFile* m_file = new ThreadSafeFile("master_log.txt");
+			//Update master log with the new message
 			std::string message = item->getRawMessage();
-			m_file->write(message);
-			delete m_file;
+			write("master_log.txt", message);
 
-			//Update timestamp file for the most recent timestamp, with a 
-			//newline at the beginning
-			ofstream time_filestream;	
-			ThreadSafeFile* t_file = new ThreadSafeFile("timestamp.txt");
-			std::stringstream sstm2;
-			sstm2 << item->getTimestamp();
-			std::string timestamp = sstm2.str();
-			t_file->write(timestamp);
-			delete t_file;
+			//Update timestamp file for the most recent timestamp
+			std::stringstream sstm;
+			sstm << item->getTimestamp();
+			std::string timestamp = sstm.str();
+			write("timestamp.txt", timestamp);
 
 		}
 		
@@ -145,4 +128,108 @@ void* MessageHandler::run() {
 
 	// Should never get here
 	return NULL;
+}
+
+/*
+	Reads the last line of client_timestamp.txt,
+	then returns it
+
+	This function was originally implemented in ThreadSafeFile 
+	as a case in read(), but I moved it here.
+*/
+std::string MessageHandler::readTimestampFile() {
+	//First, read in 1 line of input backwards, one char at a time
+	//We'll know it's a next line when the second NL line feed (new line)
+	//shows up, which has an ascii value of 10.
+	std::string raw;
+	char c;
+	int num_new_lines = 0;
+	bool still_one_line = true;
+	int i = 1;
+
+	std::ifstream file("timestamp.txt", std::ios::ate);
+	std::streampos size = file.tellg();
+	while (still_one_line && i < size + 1) {
+		file.seekg(-i, std::ios::end);
+		file.get(c);
+		//printf("%c, ", c);
+		//printf("int rep: %d\n", c);
+		//If we encounter a newline char, increment
+		if (c == NEWLINE_ASCII) {
+			++num_new_lines;
+		}
+
+		//It's the next line, so stop
+		if (num_new_lines == 2) {
+			still_one_line = false;
+		}
+
+		//If we didn't encounter a new line
+		else {
+			raw += c;
+		}
+
+		++i;
+	}
+
+	//Then, reverse the string, so it's in the correct order
+	std::reverse(raw.begin(), raw.end());
+	std::cout << "read timestamp: " << raw << std::endl;
+
+	file.close();
+
+	return raw;
+}
+
+/*
+	Given a timestamp ts, puts all messages [whose timestamp is greater than ts]
+	into a vector of strings.
+
+	This function was originally implemented in ThreadSafeFile as a case in read(),
+	but I moved it here.
+*/
+void MessageHandler::readMasterLog(std::vector<std::string>& messages, long ts) {
+	std::string delimiter = ":::::::";
+	std::string line;
+	std::ifstream file("master_log.txt");
+	if (file.is_open()) {
+		while (getline(file, line)) {	////getline() grabs the string up to "\n"
+			//std::cout << "Masterlog current line: " << line << std::endl;
+
+			//Extract the current timestamp out of the message
+			int delimiter_pos = line.find(delimiter);
+			std::string token = line.substr(0, delimiter_pos);
+			char* sz;   // alias of size_t
+			long curr_timestamp = std::strtol(token.c_str(), &sz, 10);
+
+			//If the timestamp >= timestamp from the client, put the line
+			//into the vector
+			if (curr_timestamp >= ts) {
+				messages.push_back(line);
+			}
+
+		}
+
+		file.close();
+	}
+}
+
+/*
+	Given a timestamp ts, puts all messages [whose timestamp is greater than ts]
+	into a vector of strings.
+
+	This function automatically puts a newline at the end of each message, so 
+	we don't have to do it manually outside of the function
+
+	This function was originally implemented in ThreadSafeFile as write(), 
+	but I moved it here.
+*/
+void MessageHandler::write(std::string filename, std::string item) {
+	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
+	if (file.is_open()) {
+		std::string nl = "\n";
+		file << item;
+		file << nl;
+		file.close();
+	}
 }

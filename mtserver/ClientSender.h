@@ -1,6 +1,5 @@
 #include "thread.h"
 #include "tcpacceptor.h"
-#include "ThreadSafeFile.h"
 #include "wqueue.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,6 +29,7 @@ class ClientSender : public Thread {
 		ClientSender(TCPStream* s);
 		void* run();
 		std::string formatMessage(std::string message, std::string delimiter);
+		std::string readTimestampFile();
 		~ClientSender();
 
 };

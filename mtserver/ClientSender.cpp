@@ -1,4 +1,5 @@
 #include "ClientSender.h"
+#define NEWLINE_ASCII 10
 
 ClientSender::ClientSender(TCPStream* s) : stream(s) {}
 
@@ -70,14 +71,7 @@ std::string ClientSender::formatMessage(std::string message, std::string delimit
 	if (!delimiter.compare("::Timestamp::")) {
 
 		//Read from client's timestamp file
-		ofstream time_filestream;
-		ThreadSafeFile* t_file = new ThreadSafeFile("client_timestamp.txt");
-		std::vector<std::string> t_vector;
-		t_file->read(t_vector, 0);
-
-		//Get the string from the vector of strings
-		//Since there should only be 1 string in the vector, we can use front()
-		std::string latest_ts = t_vector.front();
+		std::string latest_ts = readTimestampFile();
 		std::cout << "client latest timestamp from read(): " << latest_ts << std::endl;
 
 		//Extract the message, without the \n at the end
@@ -118,6 +112,59 @@ std::string ClientSender::formatMessage(std::string message, std::string delimit
 	}
 
 	return "";
+}
+
+/*
+	Reads the last line of client_timestamp.txt,
+	then returns it
+
+	This function was originally in ThreadSafeFile's read(),
+	but I moved it here.
+*/
+std::string ClientSender::readTimestampFile() {
+	//First, read in 1 line of input backwards, one char at a time
+	//We'll know it's a next line when the second NL line feed (new line)
+	//shows up, which has an ascii value of 10.
+	std::string raw;
+	char c;
+	int num_new_lines = 0;
+	bool still_one_line = true;
+	int i = 1;
+
+	std::ifstream file("client_timestamp.txt", std::ios::ate);
+	std::streampos size = file.tellg();
+	while (still_one_line && i < size + 1) {
+		file.seekg(-i, std::ios::end);
+		file.get(c);
+		//printf("%c, ", c);
+		//printf("int rep: %d\n", c);
+		//If we encounter a newline char, increment
+		if (c == NEWLINE_ASCII) {
+			++num_new_lines;
+		}
+
+		//It's the next line, so stop
+		if (num_new_lines == 2) {
+			still_one_line = false;
+		}
+
+		//If we didn't encounter a new line
+		else {
+			raw += c;
+		}
+
+		++i;
+	}
+
+	//Then, reverse the string, so it's in the correct order
+	std::reverse(raw.begin(), raw.end());
+
+	std::cout << "read timestamp: " << raw << std::endl;
+	
+	//Close file
+	file.close();
+
+	return raw;
 }
 
 

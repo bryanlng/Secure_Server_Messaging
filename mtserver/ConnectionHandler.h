@@ -2,13 +2,14 @@
 #include "wqueue.h"
 #include "thread.h"
 #include "MessageItem.h"
-#include "ThreadSafeFile.h"
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
