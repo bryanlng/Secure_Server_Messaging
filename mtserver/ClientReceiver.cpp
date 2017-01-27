@@ -21,10 +21,12 @@ void* ClientReceiver::run() {
 	char input[MAX_MESSAGE_SIZE];
 
 	//Receive messages
-	while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
+	while ((len = stream->receive(input, sizeof(input)) > 0)) {
+		
 		//std::cout << "Raw message received from server: " << input << std::endl;
 		printf("Raw message received from server: %s\n", input);
 		std::string raw(input);
+		int length = raw.length();
 
 		//If message isn't "", then extract its contents and display the message.
 		//A "" message means that the timestamp and master log were empty
@@ -83,13 +85,25 @@ void* ClientReceiver::run() {
 			std::cout << message << std::endl;
 			std::cout << "Sent at: " << date_formatted << std::endl;
 
-			//"Erase" the char array, so our next message comes in cleanly
-			for (int i = 0; i < len; i++) {
-				input[i] = '\0';
-			}
+			//File IO using C's file io
+			/*FILE* fp;
+			fp = fopen("client_timestamp.txt", "a");
+			std::string nl = "\n";
+			std::stringstream sstm;
+			sstm << timestamp << nl;
+			const char* ts = sstm.str().c_str();
+			fprintf(fp, ts);
+			fclose(fp);*/
+		
+
+			//"Erase" the char array, so our next message doesn't come in with bits of the previous message
+			memset(input, 0, MAX_MESSAGE_SIZE);
+
 		}	
 
 	}
+
+	std::cout << "Why are we here?" << std::endl;
 
 
 	//should never get here

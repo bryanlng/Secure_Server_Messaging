@@ -120,6 +120,9 @@ void* ConnectionHandler::run() {
 				m_queue.add(message_item);
 			}
 
+			//"Erase" the char array, so our next message doesn't come in with bits of the previous message
+			memset(input, 0, MAX_MESSAGE_SIZE);
+
 		}
 
 		//Free and update fields

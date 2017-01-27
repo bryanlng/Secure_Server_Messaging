@@ -5,12 +5,13 @@
 #include "ThreadSafeFile.h"
 #include <iostream>
 #include <sstream>
-#include <stdlib.h>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define NEW_LINE_VAL 10
 /*
 	Class that represents a "Consumer Thread"
