@@ -66,12 +66,6 @@ int main(int argc, char** argv)
         ip = argv[3];
     }
  
-    // Create the queues and consumer (worker) threads
-	vector<ConnectionHandler*> connections;
-    wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
-	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
-	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
-
 	//Check if the files for the master log and the most recent timestamp exist
 	//If they don't, create them right now
 	ofstream master_log;
@@ -86,6 +80,12 @@ int main(int argc, char** argv)
 		timestamp.open("timestamp.txt");
 		timestamp.close();
 	}
+	
+	// Create the queues and consumer (worker) threads
+	vector<ConnectionHandler*> connections;
+    wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
+	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
+	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
 
 	// Create the first Message Thread, which is responsible for broadcasting messages
 	string message_id = "message_handler";

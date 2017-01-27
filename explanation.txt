@@ -1,0 +1,253 @@
+tl;dr explanation:
+- A client sends a message to the server. The server broadcasts this message to all other clients.
+  For n clients, the server sends the same message n times, to each client.
+- Server:
+	-Works on a Producer-Consumer model
+	-The original producer Thread takes incoming connections, then gives these connections to
+	 Consumer Threads, so that they can handle the connection. 
+		-Before anything, the Producer Thread creates n amount of Consumer Threads, then starts them.
+		-Since the work queue is empty, each Consumer Thread will block.
+		-Upon receiving a connection, the Producer Thread puts the connection (TCPStream*) onto the 
+		 work queue.
+		-Upon an item appearing in the work queue, a Consumer Thread will grab and remove the item
+		 from the work queue, then perform operations on it.
+- Client:
+	- 2 functions:
+		1) Send messages
+		2) Receive messages
+	- The message sent contains the message + metadata:
+		-timestamp of when the message was sent (in millis)
+		-formatted time of when the message was sent
+		-the actual message
+	- Client can send 2 types of messages:
+		1) regular messages:
+			-regular old messages
+			-Format:
+				timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+				where delimiter is :::::::
+			-time_of_last_received = -1		(used to denote whether this is an update message or not)
+				
+		2) update request messages
+			-what if the client is super behind (like 1 day behind) on messages? 
+			-messages that ask the server to send back all the messages that it missed
+			-Format:
+				timestamp <special timestamp delimiter>
+				where special timestamp delimiter is ::Timestamp::
+			-time_of_last_received != -1
+			
+- The work queue:
+	- Synchronized list 
+	- A shared resource between all the Consumer Threads. Thus, we enforce critical sections
+	  in each method, that ensure that one AND ONLY ONE Thread can be operating on the list
+	  at a time.
+	- Uses locks (mutexes) and condition variables.
+	- But think of them as Monitors, like back in OS
+	- Rules to remember:
+		1) Always lock before doing anything, then unlock after doing the operations
+		2) Always wait in a while loop
+			-as we could be robbed while we waited
+		3) wait():
+			- Makes the thread BLOCK/ give up control, in order to wait for a certain condition 
+			  to become true
+			- In this case, in remove(), if the list is empty, we need to wait (in a while loop)
+		4) signal():
+			- Unblocks a thread that's currently waiting 
+			- In this case, in add(), after we add an item, we signal someone who is waiting in 
+			  a while loop in remove() that they can now remove the item. 
+
+- Simplified chronological explanation:
+	1) Client establishes a connection using connect()
+	2) Server gets the connection ... gives it to a ConnectionHandler Consumer Thread
+	3) Client sends a message (string) using send()
+	4) Inside the ConnectionHandler, it is listening for messages in a while loop. Once a 
+	   message is received, various fields are extracted out of the string, then put into a MessageItem.
+	5) The MessageItem is put onto a queue that either the MessageHandler or UpdateHandler is watching.
+	   (For sake of simplicity, let's assume it's a regular message that was sent, so the MessageHandler
+	   will get the MessageItem)
+	6) Inside the MessageHandler, the MessageItem is sent to every other client by calling each and every
+	   other Consumer Thread's (ConnectionHandler's) send_message()
+	7) In ConnectionHandler's send_message(), the message is sent back to the client
+
+The DETAILED explanation:
+
+The thought process behind the update request:
+Let's say that a client is really really behind, like a day behind. When a client connects, it should be able
+to see all the messages that it missed. This brings up a few questions:
+	1) What is the definition of "behind"?
+	2) How does a client know it is behind?
+	3) How can the client retrieve the messages, if all the server does is just broadcast messages? 
+	   Wouldn't this require us to keep a log of all the messages that we sent?
+
+A client is "behind" if [the timestamp of the last message it received] < [timestamp of the most recent message
+that was sent]. How does the client know it's behind? It doesn't. It needs to send a message to the server to ask
+if it's behind. Originally, I thought about implementing this inside the send() function, but then I was like, if
+the client only updates when we send the message, then if we never send a message, we never update! It needs to be 
+like when client connects (after a long hiatus), missed messages automatically come flowing in. That's what a real 
+messenging app would do. 
+
+So we need a way to keep track of all the messages that have been sent, so that in case someone was behind, we can 
+find the old messages and send it to them. Let's use a log, call it master log. Master log, on every line, will have
+the raw string sent, in the format timestamp:::::::date_formatted:::::::message:::::::. 
+
+But now we need to get the [timestamp of the most recent message that was sent]. We could go to the last line of master_log,
+but then we would be going through master_log too many times unnecessarily (1. to find the latest timestamp, 2. To read all
+the appropriate messages out). Let's just have a file with all the timestamps of each file. Each time we write a line to 
+master_log, we write its timestamp to this file. Let's call this timestamp.txt. 
+
+So we would read the last line of timestamp.txt, check if [the timestamp of the last message it received] < [timestamp of the
+most recent message that was sent], then read every line of master_log and put only lines whose timestamp > client timestamp
+into a vector, then send all those messages out.
+
+But let's stop for a second. Remember that this server is MULTI-THREADED. 
+
+
+
+ThreadSafeFile:
+
+
+
+
+
+
+
+
+
+
+
+- Detailed chronological explanation:
+	I. Initializations/ setting up:
+		-All happen at roughly the same time
+		1) Client:
+			1) checks if sufficient # of args
+			2) checks if client_timestamp.txt exists. 
+				-If it doesn't, write the number 0, with a \n into it
+			3) Client creates and starts 3 threads:
+				A) ClientSender:
+					-Thread used for sending messages
+				B) ClientReceiver:
+					-Thread used for receiving messages
+				C) ClientTimestampFiller:
+					-Thread used to put timestamps from received messages
+					 into client_timestamp.txt
+					-Originally, this was done in ClientReceiver, but doing file I/O 
+					 in ClientReceiver caused not all the messages to be received. Thus,
+					 file I/O was moved into another Thread.
+			4) Original thread sleeps forever
+		2) Server:
+			1) checks if sufficient # of args
+			2) Check if master_log.txt and timestamp.txt exist:
+				-If they don't, create them
+			3) Initialize the work queues:
+				A) Work queue of WorkItem*, to manage the ConnectionHandler consumer threads
+				B) Message queue of MessageItem*, to manage the sending of messages
+				C) Update queue of MessageItem*, to manage updating messages.
+					-Please note that Update queue is actually a MessageHandler too
+					-"Update queue" is just a name I gave it to make it more understandable
+			4) Initialize the list of Consumer Threads (ConnectionHandler), which will be useful
+			   later in MessageHandler when we need to broadcast
+			5) Create the MessageHandler Thread, which is responsible for broadcasting 
+			   messages, then start it.
+				-Like all Threads, this will initially block on remove(), as the Message queue
+				 is empty
+			6) Create the "Update Handler", which is actually also a MessageHandler Thread
+				-responsible for updating a client who's really behind, then start it.
+				-Like all Threads, this will initially block on remove(), as the Update queue
+				 is empty
+			7) Create n ConnectionHandler Consumer Threads, as specified by argv[1],
+			   then start all of them. 
+				-Like all Threads, this will initially block on remove(), as the Work queue
+				 is empty
+				-Add the Consumer Thread to the list of Consumer Threads
+			8) Create a TCPAcceptor*, and start listening for connections. 
+			   Inside the infinite while loop, call accept(), which will block while waiting
+			   for a connection
+			9) Once we receive a connection, create a new WorkItem, then add it to the Work queue
+	
+	II. Typical case:
+		1) Client establishes a connection
+		2) Server receives this connection, then adds it to the Work queue 
+		3) A Consumer Thread (ConnectionHandler) grabs and removes it from the work queue
+		4) Inside ConnectionHandler, wait while we listen for messages in a while loop:
+			-while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
+		5) Inside ClientSender, client sends an update message, to check if it's behind.
+		   After a lot of work is done (more on this in section III), messages are sent to the client
+		   and received in ClientReceiver. More on this in 17)
+		6) Inside an infinite while loop, read in user input using cin.
+			A) If the message is "quit": 	exit(-1)
+			B) Else, format the message by calling formatMessage with the regular message delimiter :::::::
+			   then, send the message
+		7) Back inside ConnectionHandler, we need to fill in the following fields:
+			string raw_message = raw;
+			long time_of_last_received = -1;		//used to check whether we need to pull from log
+			long timestamp = -1;
+			string date_formatted;
+			string message;
+		8) First check if the message is an update request
+			A) If it is, set the time_of_last_received fields
+			B) Else, extract the timestamp, date_formatted, and message fields
+		9) Create a new MessageItem with all the extracted fields
+		10) Determine which queue to place the MessageItem in:
+			1) If time_of_last_received = -1, then it's an update request, so place it in the Update Queue
+			2) Else, then it's a message request, so place it in the Message Queue
+		11) "Erase" input by calling memset(input, 0, MAX_MESSAGE_SIZE), so that the next message doesn't
+       		 have remnants of the previous message in it.
+		12) Now inside MessageHandler, it grabs and removes the MessageItem from the Message queue
+		13) Determine what kind of MessageItem it is:
+			1) If it's an update request --> (see section )
+			2) Else, it's a message request, so do the following:
+		14) Using an iterator, go through every element in the list of ConnectionHandler:
+			-If the ConnectionHandler isn't the sender, and currently has a connection, then send the message
+			 using send_message()
+		15) Update the master log with the new message, by creating a ThreadSafeFile with "master_log.txt" as its
+		    parameter, then writing message by calling the write() method.
+		16) Update timestamp.txt with the latest timestamp, by creating a ThreadSafeFile with "timestamp.txt" as its
+		    parameter, then writing timestamp by calling the write() method.
+		17) Inside ClientReceiver, for every message we receive:		
+			A) while ((len = stream->receive(input, sizeof(input)) > 0)) {
+			B) If the message received (input) isn't an empty string, do the following:
+				1) Extract the timestamp, date_formatted, and actual message from input
+				2) Display the message
+				3) Add the timestamp to the message queue that ClientTimestampFiller is listening to
+				4) "Erase" input by calling memset(input, 0, MAX_MESSAGE_SIZE), so that the next message 
+				   doesn't have remnants of the previous message in it.
+				5) Update client_timestamp.txt with the timestamp from the message:
+					A) ClientTimestampFiller grabs and removes the timestamp
+					B) ClientTimestampFiller opens up an ofstream for client_timestamp.txt, with the append flag on
+					C) ClientTimestampFiller writes the timestamp + \n to client_timestamp.txt
+	
+	III. Update request:
+		1) Assume we did everything in section II, steps 1 - 10. So now, we are in the update queue.
+		2) Inside the update queue (actually a MessageHandler Thread), we hit Case 1. Do the following:
+		3) Read the latest timestamp from timestamp.txt. Do this by creating a ThreadSafeFile with "timestamp.txt" 
+		   as its parameter, then reading the latest timestamp (last line) by calling the read() method.
+		   This will return a vector of strings, but there should only be 1 string inside of it.
+		4) If timestamp.txt and master log are NOT empty, check if the client is behind. Do the following:
+		5) Compare [the latest timestamp read from timestamp.txt] with the timestamp found in the MessageItem 
+		   (aka the timestamp that was sent). If the timestamp that was sent < timestamp read from timestamp.txt,
+		   then the client is BEHIND. Do the following:
+		6) Read the appropriate messages from master_log.txt. Do this by creating a ThreadSafeFile with "master_log.txt" 
+		   as its parameter, then reading the latest timestamp by calling the read() method. The read() method will go through
+		   each line in the master log, and put messages (lines) [whose timestamp > timestamp that was sent] into a vector of 
+		   strings.
+		7) Then, iterate through the list to find the ConnectionHandler* of the sender of the message
+		8) Once we've found the sender, send each message from the [vector of strings] back to the client, using send_message().
+		9) ClientReceiver receives each message, then updates client_timestamp.txt with the timestamp every time. That way, after
+		   the last (and thus most recent) message comes in, client_timestamp.txt will have the most updated timestamp.
+		   See section II, steps 17 for a more detailed explanation.
+		   
+To recall more, visit the following websites:
+https://vichargrave.github.io/articles/2013-03/multithreaded-work-queue-based-server-in-cpp
+https://vichargrave.github.io/articles/2013-02/tcp-ip-network-programming-design-patterns-in-cpp
+https://vichargrave.github.io/articles/2012-12/java-style-thread-class-in-cpp
+https://vichargrave.github.io/articles/2013-01/multithreaded-work-queue-in-cpp
+	
+
+Descriptions of each class:
+
+ConnectionHandler:
+
+MessageHandler:
+A child of the Thread class, this Thread takes MessageItem objects and sends 
+
+MessageItem:
+

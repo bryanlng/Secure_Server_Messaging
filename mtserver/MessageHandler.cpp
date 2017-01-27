@@ -46,7 +46,7 @@ void* MessageHandler::run() {
 			std::cout << "Message from read(): " << latest_ts << std::endl;
 
 			//If Timestamp and master log are NOT empty, check if the client is behind.
-			//If it is, send the messages it missed back to the client.
+			//If the client is behind, send the messages it missed back to the client.
 			if (latest_ts.compare("")) {
 				std::cout << "NOT empty Master log and timestamp" << std::endl;
 				//Convert timestamp into a long
