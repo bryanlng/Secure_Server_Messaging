@@ -24,6 +24,12 @@ void* ClientSender::run() {
 		std::cout << "Type in a message: ";
 		std::cin >> message;
 		
+		//If the delimiter is part of the message, prevent the user
+		//from sending the message, as it'll screw everything up
+		if (message.find(":::::::") != -1) {
+			std::cout << "Bad message, type another one" << std::endl;
+		}
+
 		//If user wants to quit, exit the program
 		if (!message.compare("quit")) {
 			exit(-1);
