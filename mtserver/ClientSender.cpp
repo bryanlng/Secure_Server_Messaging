@@ -14,16 +14,55 @@ ClientSender::ClientSender(TCPStream* s) : stream(s) {}
 */
 void* ClientSender::run() {
 
+	//Read in name of the client, and check if it was created before
+	std::string sender;
+	bool nameCreatedAlready;
+	std::string line;
+	std::ifstream file("client_name.txt");
+	if (file.is_open()) {
+		getline(file, line);	//getline() grabs the string up to "\n"
+		
+		//If the user already set their name on a previous iteration, use it
+		if (line.compare("")) {
+			sender = line;
+			nameCreatedAlready = true;
+		}
+		else {
+			nameCreatedAlready = false;
+		}
+		file.close();
+	}
+	
 	//Send update message
-	std::string time_message = formatMessage("", "::Timestamp::");
+	std::string time_message = formatMessage("", "", "::Timestamp::");
 	stream->send(time_message.c_str(), time_message.size());
 
+	
 	//Take in user input, then send it to the server
 	while (1) {
+		//If the name wasn't created already, prompt the user to fill it out
+		//Then, write it to the client_name.txt
+		if (!nameCreatedAlready) {
+			std::string name;
+			std::cout << "Type in a name: ";
+			std::cin >> name;
+
+			std::ofstream n_file("client_name.txt", std::ofstream::app);		//app = append
+			if (n_file.is_open()) {
+				std::string nl = "\n";
+				n_file << name;
+				n_file << nl;
+				n_file.close();
+			}
+
+			sender = name;
+			nameCreatedAlready = true;	//so that we only ask for the name once
+		}
+
 		std::string message;
 		std::cout << "Type in a message: ";
 		std::cin >> message;
-		
+
 		//If user wants to quit, exit the program
 		if (!message.compare("quit")) {
 			exit(-1);
@@ -35,7 +74,7 @@ void* ClientSender::run() {
 			std::cout << "Bad message, type another one" << std::endl;
 		}
 		else {
-			std::string formatted = formatMessage(message, ":::::::");
+			std::string formatted = formatMessage(sender, message, ":::::::");
 			//std::cout << "Formatted message: " << formatted << std::endl;
 			stream->send(formatted.c_str(), formatted.size());
 		}
@@ -66,11 +105,11 @@ void* ClientSender::run() {
 			-date_formatted will the current time, formatted in
 			-message will be the message
 		-Format:
-			timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+			timestamp <delimiter> date_formatted <delimiter> message <delimiter> sender <delimiter>
 		-Ex:
 			1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::
 */
-std::string ClientSender::formatMessage(std::string message, std::string delimiter) {
+std::string ClientSender::formatMessage(std::string sender, std::string message, std::string delimiter) {
 
 	//Case 1: Update message
 	if (!delimiter.compare("::Timestamp::")) {
@@ -111,6 +150,10 @@ std::string ClientSender::formatMessage(std::string message, std::string delimit
 
 		//3. Add on message
 		result += message;
+		result += delimiter;
+
+		//4. Add on name
+		result += sender;
 		result += delimiter;
 
 		return result;

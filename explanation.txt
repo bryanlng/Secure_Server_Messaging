@@ -23,7 +23,7 @@ tl;dr explanation:
 		1) regular messages:
 			-regular old messages
 			-Format:
-				timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+				timestamp <delimiter> date_formatted <delimiter> message <delimiter> sender <delimiter>
 				where delimiter is :::::::
 			-time_of_last_received = -1		(used to denote whether this is an update message or not)
 				
@@ -106,8 +106,11 @@ into a vector, then send all those messages out.
 		-All happen at roughly the same time
 		1) Client:
 			1) checks if sufficient # of args
-			2) checks if client_timestamp.txt exists. 
-				-If it doesn't, write the number 0, with a \n into it
+			2) checks if certain files exist:
+				A) Check if client_timestamp.txt exists. 
+					-If it doesn't, create it, and write the number 0, with a \n into it
+				B) Check if client_name.txt exists. 
+					-If it doesn't, create it.
 			3) Client creates and starts 3 threads:
 				A) ClientSender:
 					-Thread used for sending messages
@@ -156,19 +159,25 @@ into a vector, then send all those messages out.
 		3) A Consumer Thread (ConnectionHandler) grabs and removes it from the work queue
 		4) Inside ConnectionHandler, wait while we listen for messages in a while loop:
 			-while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
-		5) Inside ClientSender, client sends an update message, to check if it's behind.
+		5a)Inside ClientSender, client checks if the user named themselves already in a previous
+		   iteration by reading from client_name.txt
+		5b)Inside ClientSender, client sends an update message, to check if it's behind.
 		   After a lot of work is done (more on this in section III), messages are sent to the client
-		   and received in ClientReceiver. More on this in 17)
+		   and received in ClientReceiver (more on this in step 17).
 		6) Inside an infinite while loop, read in user input using cin.
-			A) If the message is "quit": 	exit(-1)
-			B) Else, format the message by calling formatMessage with the regular message delimiter :::::::
-			   then, send the message
+			A) If the name of the user wasn't set already, prompt the user to write in a name, which will
+			   be saved into client_name.txt. This is only done once.
+			B) If the message is "quit", then exit(-1)
+			C) Check that the message is "good"; aka, the message doesn't contain our delimiter ":::::::".
+			   If it does, prompt the user to write a new message. Else, format the message by calling 
+			   formatMessage with the regular message delimiter ::::::: then, send the message.
 		7) Back inside ConnectionHandler, we need to fill in the following fields:
 			string raw_message = raw;
 			long time_of_last_received = -1;		//used to check whether we need to pull from log
 			long timestamp = -1;
 			string date_formatted;
 			string message;
+			string sender;
 		8) First check if the message is an update request
 			A) If it is, set the time_of_last_received fields
 			B) Else, extract the timestamp, date_formatted, and message fields
@@ -190,8 +199,8 @@ into a vector, then send all those messages out.
 		17) Inside ClientReceiver, for every message we receive:		
 			A) while ((len = stream->receive(input, sizeof(input)) > 0)) {
 			B) If the message received (input) isn't an empty string, do the following:
-				1) Extract the timestamp, date_formatted, and actual message from input
-				2) Display the message
+				1) Extract the timestamp, date_formatted, actual message, and name of senders from input
+				2) Display the message (with the date_formatted and sender)
 				3) Add the timestamp to the message queue that ClientTimestampFiller is listening to
 				4) "Erase" input by calling memset(input, 0, MAX_MESSAGE_SIZE), so that the next message 
 				   doesn't have remnants of the previous message in it.

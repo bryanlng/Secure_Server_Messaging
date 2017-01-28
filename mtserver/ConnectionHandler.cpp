@@ -47,7 +47,7 @@ void* ConnectionHandler::run() {
 			timestamp <special delimiter>
 
 			Case 2. Regular message
-			timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+			timestamp <delimiter> date_formatted <delimiter> message <delimiter> name <delimiter>
 
 		*/
 		MessageItem* message_item;
@@ -61,6 +61,7 @@ void* ConnectionHandler::run() {
 			long timestamp = -1;
 			string date_formatted;
 			string message;
+			string sender;		//name of sender
 
 			//Fields for parsing the string
 			int delimiter_pos = 0;
@@ -93,6 +94,9 @@ void* ConnectionHandler::run() {
 						case 2:		//actual message
 							message = current_item;
 							break;
+						case 3:		//name of sender
+							sender = current_item;
+							break;
 						default:
 							std::cout << "Field is not used" << std::endl;
 							break;
@@ -110,7 +114,7 @@ void* ConnectionHandler::run() {
 			std::cout << "time_of_last_received: " << time_of_last_received << std::endl;
 
 			//Create a new message item
-			message_item = new MessageItem(raw_message, time_of_last_received, timestamp, date_formatted, message, thread_name());
+			message_item = new MessageItem(raw_message, time_of_last_received, timestamp, date_formatted, message, sender, thread_name());
 			
 			//Add the new message item to the appropriate message queue
 			if (message_item->isUpdateRequest()) {

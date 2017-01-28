@@ -10,7 +10,7 @@
 
 	Format of message:
 	Case 1: Regular message
-		-timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+		-timestamp <delimiter> date_formatted <delimiter> message <delimiter> sender <delimiter>
 		-thread_id is ignored, as that field is taken from the thread itself
 		-Delimiter:  :::::::
 		-time_of_last_received = -1
@@ -41,13 +41,14 @@ class MessageItem
 		long timestamp;				//timestamp of when the message was sent, in milliseconds
 		string date_formatted;		//Formatted date of when the message of sent
 		string message;				//Actual message
+		string sender;				//Name of sender
 		string thread_id;			//ID of thread (which held the connection) which sent the message
 									//Used for broadcasting 
 
 	public:
-		MessageItem(std::string full, long last_received, long time, std::string date, std::string mes, std::string tid) :
+		MessageItem(std::string full, long last_received, long time, std::string date, std::string mes, std::string n, std::string tid) :
 			raw(full), time_of_last_received(last_received) ,timestamp(time), 
-			date_formatted(date), message(mes), thread_id(tid) {}
+			date_formatted(date), message(mes), sender(n), thread_id(tid) {}
 
 		MessageItem(std::string full) : raw(full), time_of_last_received(-1){}
 

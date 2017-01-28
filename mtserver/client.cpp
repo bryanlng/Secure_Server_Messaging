@@ -99,6 +99,14 @@ int main(int argc, char** argv)
 		t_file.close();
 	}
 
+	//If the client's name file hasn't been created yet, create it
+	ofstream n_file;
+	if (!std::ifstream("client_name.txt")) {
+		std::cout << "Created client_name.txt b/c it didn't exist" << std::endl;
+		n_file.open("client_name.txt");
+		n_file.close();
+	}
+
 	//Establish connection with server
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));

@@ -42,6 +42,7 @@ void* ClientReceiver::run() {
 			long timestamp;
 			std::string date_formatted;
 			std::string message;
+			std::string sender;
 
 			//Parsing the string. String is "eaten" along the way
 			while ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
@@ -57,6 +58,9 @@ void* ClientReceiver::run() {
 				case 2:		//actual message
 					message = current_item;
 					break;
+				case 3:		//name of sender
+					sender = current_item;
+					break;
 				default:
 					std::cout << "Field is not used" << std::endl;
 					break;
@@ -70,6 +74,7 @@ void* ClientReceiver::run() {
 
 			//Display message
 			std::cout << message << std::endl;
+			std::cout << "From: " << sender << std::endl;
 			std::cout << "Sent at: " << date_formatted << std::endl;
 
 			//Add the message to ClientTimestampFiller, who will write to 
@@ -84,7 +89,7 @@ void* ClientReceiver::run() {
 
 	}
 
-	std::cout << "Why are we here?" << std::endl;
+	std::cout << "Connection cut off" << std::endl;
 
 
 	//should never get here
