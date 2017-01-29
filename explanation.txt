@@ -19,6 +19,7 @@ tl;dr explanation:
 		-timestamp of when the message was sent (in millis)
 		-formatted time of when the message was sent
 		-the actual message
+		-the name of sender
 	- Client can send 2 types of messages:
 		1) regular messages:
 			-regular old messages
@@ -101,7 +102,7 @@ into a vector, then send all those messages out.
 
 
 
-- Detailed chronological explanation:
+- Detailed chronological explanation (with C++ client):
 	I. Initializations/ setting up:
 		-All happen at roughly the same time
 		1) Client:
