@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SecureAndroidClient</string>
+    <string name="action_settings">Settings</string>
+    <string name="message_box_hint">Type message</string>
+</resources>
