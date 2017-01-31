@@ -34,34 +34,40 @@ public class MessagesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_messages, container, false);
         setRetainInstance(true);
 
-        messagesListView = (ListView)rootView.findViewById(R.id.list);
+        messagesListView = (ListView)rootView.findViewById(R.id.listview);
 
         ArrayList<String> values = new ArrayList<>();
         values.add("a");
         values.add("b");
         values.add("ccccccccccccc");
         values.add("ddddddddddddddd");
-        values.add("eeeeeeeeeeeeeeeeeeeeeee");
+        values.add("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         values.add("fffff");
         values.add("ggggggggg");
         values.add("hhhhhhhhh");
         values.add("iiiiiiiiiii");
         values.add("jjjjjjjjjjjjjjj");
         values.add("kkkkkkkkkk");
+        values.add("llllllll");
+        values.add("mm");
+        values.add("hhhhhhhhh");
+        values.add("nn");
+        values.add("o");
+        values.add("p");
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getActivity(), android.R.layout.simple_list_item_1, values);
-
-        messagesListView.setAdapter(adapter);
-
-        messagesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getItemAtPosition(position).toString();
-                Toast.makeText(view.getContext(), "Item selected: " + item, Toast.LENGTH_LONG).show();
-            }
-        });
+        messagesListView.setAdapter(new CustomListViewAdapter(getActivity(), values));
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+//                getActivity(), android.R.layout.simple_list_item_1, values);
+//
+//        messagesListView.setAdapter(adapter);
+//
+//        messagesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                String item = parent.getItemAtPosition(position).toString();
+//                Toast.makeText(view.getContext(), "Item selected: " + item, Toast.LENGTH_LONG).show();
+//            }
+//        });
 
         // Inflate the layout for this fragment
         return rootView;
