@@ -20,12 +20,6 @@ import java.util.ArrayList;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MessagesFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MessagesFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class MessagesFragment extends Fragment {
     private ListView messagesListView;
@@ -57,7 +51,7 @@ public class MessagesFragment extends Fragment {
 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getActivity().getApplicationContext(), android.R.layout.simple_list_item_1, values);
+                getActivity(), android.R.layout.simple_list_item_1, values);
 
         messagesListView.setAdapter(adapter);
 
