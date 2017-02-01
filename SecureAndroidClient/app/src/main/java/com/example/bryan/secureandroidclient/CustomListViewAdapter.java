@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,13 +25,16 @@ import java.util.ArrayList;
 /**
  */
 public class CustomListViewAdapter extends BaseAdapter{
+    private final String TAG = "SecureAndroidClient";
     private Context context;
-    private ArrayList<String> data;
+    private ArrayList<String> data = new ArrayList<String>();
     private static LayoutInflater inflater = null;
 
-    public CustomListViewAdapter(Context context, ArrayList<String> data){
+    public CustomListViewAdapter(Context context, ArrayList<String> messages){
         this.context = context;
-        this.data = data;   //bad
+        for(String s: messages){
+            data.add(s);
+        }
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -55,9 +59,30 @@ public class CustomListViewAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
+        Log.i(TAG, "getView, position: " + position + ", which is equal to: " + data.get(position));
         View view = convertView;
-        if (view == null)
-            view = inflater.inflate(R.layout.row_item_incoming, null);
+        if (view == null){
+            if(data.get(position).equals("a")){
+                Log.i(TAG, "getView: " + data.get(position) + ", OUTGOING");
+                view = inflater.inflate(R.layout.row_item_outgoing, null);
+            }
+            else{
+                Log.i(TAG, "getView: " + data.get(position) + ", INCOMING");
+                view = inflater.inflate(R.layout.row_item_incoming, null);
+            }
+        }
+
+        else{
+            if(data.get(position).equals("a")){
+                Log.i(TAG, "getView: " + data.get(position) + ", OUTGOING");
+                view = inflater.inflate(R.layout.row_item_outgoing, null);
+            }
+            else{
+                Log.i(TAG, "getView: " + data.get(position) + ", INCOMING");
+                view = inflater.inflate(R.layout.row_item_incoming, null);
+            }
+        }
+
 
         //Set the fields
         ImageView imageView = (ImageView) view.findViewById(R.id.picture);
