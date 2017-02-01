@@ -57,7 +57,7 @@ public class CustomListViewAdapter extends BaseAdapter{
         // TODO Auto-generated method stub
         View view = convertView;
         if (view == null)
-            view = inflater.inflate(R.layout.row_item, null);
+            view = inflater.inflate(R.layout.row_item_incoming, null);
 
         //Set the fields
         ImageView imageView = (ImageView) view.findViewById(R.id.picture);
