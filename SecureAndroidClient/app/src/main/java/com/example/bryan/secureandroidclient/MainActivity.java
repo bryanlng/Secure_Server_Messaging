@@ -7,15 +7,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
     private MessagesFragment messagesFragment;
     private EditText chatbox;
-    private Button sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +36,23 @@ public class MainActivity extends ActionBarActivity {
         //Initialize chatbox
         chatbox = (EditText)findViewById(R.id.chatbox);
 
-        //Initialize send button
-        sendButton = (Button)findViewById(R.id.sendButton);
+        //Initialize send button for the chatbox, which is
+        //implemented as android:drawableRight
+        chatbox.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (chatbox.getRight() - chatbox.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        Toast.makeText(getApplicationContext(), "Send button send stuff", Toast.LENGTH_LONG).show();
+
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
     }
 
