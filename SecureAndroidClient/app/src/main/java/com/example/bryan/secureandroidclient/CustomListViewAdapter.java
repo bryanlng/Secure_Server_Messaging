@@ -26,28 +26,39 @@ import java.util.ArrayList;
  */
 public class CustomListViewAdapter extends BaseAdapter{
     private final String TAG = "SecureAndroidClient";
+//    private final String address = "localhost";
+//    private final int port = 9999;
+    private final String address = "wleungtx.no-ip.biz";
+    private final int port = 79;
+
     private Context context;
-    private ArrayList<String> data = new ArrayList<String>();
+    private ArrayList<String> messages = new ArrayList<String>();
     private static LayoutInflater inflater = null;
 
-    public CustomListViewAdapter(Context context, ArrayList<String> messages){
+    public CustomListViewAdapter(Context context, ArrayList<String> m){
         this.context = context;
-        for(String s: messages){
-            data.add(s);
-        }
+        messages = m;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        //Start the AsyncTasks to listen for incoming messages + send outgoing messages
+        ClientIncomingAsyncTask client = new ClientIncomingAsyncTask(address, port, messages);
+        client.execute();
+
+
+
+
     }
 
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return data.size();
+        return messages.size();
     }
 
     @Override
     public Object getItem(int position) {
         // TODO Auto-generated method stub
-        return data.get(position);
+        return messages.get(position);
     }
 
     @Override
@@ -59,26 +70,26 @@ public class CustomListViewAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
-        Log.i(TAG, "getView, position: " + position + ", which is equal to: " + data.get(position));
+//        Log.i(TAG, "getView, position: " + position + ", which is equal to: " + messages.get(position));
         View view = convertView;
         if (view == null){
-            if(data.get(position).equals("a")){
-                Log.i(TAG, "getView: " + data.get(position) + ", OUTGOING");
+            if(messages.get(position).equals("a")){
+//                Log.i(TAG, "getView: " + messages.get(position) + ", OUTGOING");
                 view = inflater.inflate(R.layout.row_item_outgoing, null);
             }
             else{
-                Log.i(TAG, "getView: " + data.get(position) + ", INCOMING");
+//                Log.i(TAG, "getView: " + messages.get(position) + ", INCOMING");
                 view = inflater.inflate(R.layout.row_item_incoming, null);
             }
         }
 
         else{
-            if(data.get(position).equals("a")){
-                Log.i(TAG, "getView: " + data.get(position) + ", OUTGOING");
+            if(messages.get(position).equals("a")){
+//                Log.i(TAG, "getView: " + messages.get(position) + ", OUTGOING");
                 view = inflater.inflate(R.layout.row_item_outgoing, null);
             }
             else{
-                Log.i(TAG, "getView: " + data.get(position) + ", INCOMING");
+//                Log.i(TAG, "getView: " + messages.get(position) + ", INCOMING");
                 view = inflater.inflate(R.layout.row_item_incoming, null);
             }
         }
@@ -89,10 +100,10 @@ public class CustomListViewAdapter extends BaseAdapter{
         imageView.setImageResource(R.drawable.test);
 
         TextView message = (TextView) view.findViewById(R.id.message);
-        message.setText(data.get(position));
+        message.setText(messages.get(position));
 
         TextView date = (TextView) view.findViewById(R.id.date);
-        date.setText(data.get(position));
+        date.setText(messages.get(position));
 
         return view;
     }

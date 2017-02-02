@@ -7,14 +7,24 @@
         android:layout_width="match_parent"
         android:layout_height="470dp"
         />
-    <EditText
-        android:id="@+id/chatbox"
+
+    <Button
+        android:id="@+id/sendButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/chatbox"
+        android:layout_toEndOf="@id/chatbox"
+        />
+
+    <EditText
+        android:id="@+id/chatbox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:text=""
         android:hint="@string/message_box_hint"
         android:layout_below="@id/fragment_container"
         />
+
 
 
 </RelativeLayout>

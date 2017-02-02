@@ -36,29 +36,29 @@ public class MessagesFragment extends Fragment {
 
         messagesListView = (ListView)rootView.findViewById(R.id.listview);
 
-        ArrayList<String> values = new ArrayList<>();
-        values.add("a");
-        values.add("b");
-        values.add("ccccccccccccc");
-        values.add("ddddddddddddddd");
-        values.add("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-        values.add("fffff");
-        values.add("ggggggggg");
-        values.add("hhhhhhhhh");
-        values.add("iiiiiiiiiii");
-        values.add("jjjjjjjjjjjjjjj");
-        values.add("kkkkkkkkkk");
-        values.add("llllllll");
-        values.add("mm");
-        values.add("hhhhhhhhh");
-        values.add("nn");
-        values.add("o");
-        values.add("p");
+        ArrayList<String> messages = new ArrayList<>();
+        messages.add("a");
+        messages.add("b");
+//        messages.add("ccccccccccccc");
+//        messages.add("ddddddddddddddd");
+//        messages.add("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+//        messages.add("fffff");
+//        messages.add("ggggggggg");
+//        messages.add("hhhhhhhhh");
+//        messages.add("iiiiiiiiiii");
+//        messages.add("jjjjjjjjjjjjjjj");
+//        messages.add("kkkkkkkkkk");
+//        messages.add("llllllll");
+//        messages.add("mm");
+//        messages.add("hhhhhhhhh");
+//        messages.add("nn");
+//        messages.add("o");
+//        messages.add("p");
 
-        messagesListView.setAdapter(new CustomListViewAdapter(getActivity(), values));
+        messagesListView.setAdapter(new CustomListViewAdapter(getActivity(), messages));
 
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-//                getActivity(), android.R.layout.simple_list_item_1, values);
+//                getActivity(), android.R.layout.simple_list_item_1, messages);
 //
 //        messagesListView.setAdapter(adapter);
 //

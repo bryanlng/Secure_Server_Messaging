@@ -7,12 +7,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 
 public class MainActivity extends ActionBarActivity {
     private MessagesFragment messagesFragment;
     private EditText chatbox;
+    private Button sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,10 @@ public class MainActivity extends ActionBarActivity {
 
         //Initialize chatbox
         chatbox = (EditText)findViewById(R.id.chatbox);
+
+        //Initialize send button
+        sendButton = (Button)findViewById(R.id.sendButton);
+
     }
 
     @Override
