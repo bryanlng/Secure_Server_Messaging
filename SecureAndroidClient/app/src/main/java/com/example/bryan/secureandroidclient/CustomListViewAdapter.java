@@ -24,10 +24,8 @@ import java.util.ArrayList;
 
 /**
  */
-public class CustomListViewAdapter extends BaseAdapter{
+public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse {
     private final String TAG = "SecureAndroidClient";
-//    private final String address = "localhost";
-//    private final int port = 9999;
     private final String address = "wleungtx.no-ip.biz";
     private final int port = 9999;
 
@@ -42,6 +40,7 @@ public class CustomListViewAdapter extends BaseAdapter{
 
         //Start the AsyncTask to listen for incoming messages
         ClientIncomingAsyncTask client = new ClientIncomingAsyncTask(address, port, messages);
+        client.response = this;
         client.execute();
 
     }
@@ -69,26 +68,13 @@ public class CustomListViewAdapter extends BaseAdapter{
         // TODO Auto-generated method stub
 //        Log.i(TAG, "getView, position: " + position + ", which is equal to: " + messages.get(position));
         View view = convertView;
-        if (view == null){
-            if(messages.get(position).equals("a")){
+        if(messages.get(position).equals("a")){
 //                Log.i(TAG, "getView: " + messages.get(position) + ", OUTGOING");
-                view = inflater.inflate(R.layout.row_item_outgoing, null);
-            }
-            else{
-//                Log.i(TAG, "getView: " + messages.get(position) + ", INCOMING");
-                view = inflater.inflate(R.layout.row_item_incoming, null);
-            }
+            view = inflater.inflate(R.layout.row_item_outgoing, null);
         }
-
         else{
-            if(messages.get(position).equals("a")){
-//                Log.i(TAG, "getView: " + messages.get(position) + ", OUTGOING");
-                view = inflater.inflate(R.layout.row_item_outgoing, null);
-            }
-            else{
 //                Log.i(TAG, "getView: " + messages.get(position) + ", INCOMING");
-                view = inflater.inflate(R.layout.row_item_incoming, null);
-            }
+            view = inflater.inflate(R.layout.row_item_incoming, null);
         }
 
 
@@ -104,4 +90,20 @@ public class CustomListViewAdapter extends BaseAdapter{
 
         return view;
     }
+
+    /*
+        Overridden method from the AsyncResponse interface
+        Adds the message to the official message ArrayList. getView() will
+        soon be called, which will allow the message to be shown above.
+
+        Call notifyDataSetChanged() to notify ListView to refresh its data,
+        by calling getView()
+     */
+    @Override
+    public void retrieveResponse(String message){
+        Log.i(TAG, "retrieveResponse(): Adding message: " + message);
+        messages.add(message);
+        notifyDataSetChanged();
+    }
+
 }
