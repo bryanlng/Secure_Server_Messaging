@@ -7,6 +7,6 @@ package com.example.bryan.secureandroidclient;
  * with publishProgress() instead. Hopefully, that will work.
  * http://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
  */
-public interface AsyncResponse {
+public interface AsyncResponseToFragment {
     void retrieveResponse(MessageItem message);
 }

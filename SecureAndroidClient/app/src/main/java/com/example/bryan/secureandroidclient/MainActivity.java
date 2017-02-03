@@ -18,7 +18,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements AsyncResponseToMainActivity{
     private final String TAG = "SecureAndroidClient";
     private final String address = "wleungtx.no-ip.biz";
     private final int port = 9999;
@@ -84,6 +84,29 @@ public class MainActivity extends ActionBarActivity {
         });
 
     }
+
+    /*
+        Overridden method from the AsyncResponseToMainActivity interface
+        A copy of AsyncResponseToFragment's retreiveResponse(), but I had to be clever
+        in being able to get the message to the ListAdapter.
+
+        Basically, this method will call messagesFragment's addMessageToListView().
+        Inside addMessageToListView(), the MessageFragment will get the adapter's arraylist,
+        and from there, it's back to the original functionality of AsyncResponseToFragment's retreiveResponse()
+
+        Adds the message to the official message ArrayList. getView() will
+        soon be called, which will allow the message to be shown above.
+
+        Call notifyDataSetChanged() to notify ListView to refresh its data,
+        by calling getView()
+     */
+    @Override
+    public void retrieveResponse(MessageItem message){
+        Log.i(TAG, "retrieveResponse(): Adding message: " + message);
+        messagesFragment.addMessageToListView(message);
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

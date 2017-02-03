@@ -23,6 +23,7 @@ import java.util.ArrayList;
  */
 public class MessagesFragment extends Fragment {
     private ListView messagesListView;
+    private CustomListViewAdapter adapter;
 
     public MessagesFragment() {
         // Required empty public constructor
@@ -55,7 +56,8 @@ public class MessagesFragment extends Fragment {
 //        messages.add("o");
 //        messages.add("p");
 
-        messagesListView.setAdapter(new CustomListViewAdapter(getActivity(), messages));
+        adapter = new CustomListViewAdapter(getActivity(), messages);
+        messagesListView.setAdapter(adapter);
 
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 //                getActivity(), android.R.layout.simple_list_item_1, messages);
@@ -72,6 +74,17 @@ public class MessagesFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return rootView;
+    }
+
+    public void addMessageToListView(MessageItem mItem){
+        //I'm making the assumption that our ListView is going to be initialized before
+        //this message is called
+
+        if(adapter != null){
+            ArrayList<MessageItem> messages = adapter.getMessageArrayList();
+            messages.add(mItem);
+            adapter.notifyDataSetChanged();
+        }
     }
 
 

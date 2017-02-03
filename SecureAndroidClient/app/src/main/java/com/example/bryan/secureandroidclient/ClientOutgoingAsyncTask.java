@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -26,12 +27,14 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     private String name = "bryan";
     private final int MAX_MESSAGE_SIZE = 25600;
     private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
+    private final int SIX_HOUR_OFFSET = -6 * 60 * 60 * 1000;
+    private int CST_TIMEZONE_ID;
 
     private String serverAddress;
     private int serverPort;
     private String message;
 
-    public AsyncResponse response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
+    public AsyncResponseToMainActivity response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
 
     /*
         Constructor
@@ -72,13 +75,22 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
 
         //2. Generate current date, in the format given above
 
-        //Generate a Gregorian Calendar with the timezone CMT.
-        // get the supported ids for GMT-08:00 (Pacific Standard Time)
-//        String[] ids = TimeZone.getAvailableIDs(-8 * 60 * 60 * 1000);
-//        SimpleTimeZone CMT = new SimpleTimeZone();
-//        Calendar calendar = new GregorianCalendar(CMT);
+        //Generate a Gregorian Calendar with the timezone CST (GMT - 6:00)
+        // get the supported ids for GMT-06:00 (Central Standard Time)
+        String[] ids = TimeZone.getAvailableIDs(SIX_HOUR_OFFSET);
+        CST_TIMEZONE_ID = ids.length - 2;
+        SimpleTimeZone CST = new SimpleTimeZone(SIX_HOUR_OFFSET, ids[CST_TIMEZONE_ID]);
+        Calendar calendar = new GregorianCalendar(CST);
+        Date trialTime = new Date();
+        calendar.setTime(trialTime);
+
+        //Extract day, month, year, day_of_week, HH:MM:SS add put it all into a long string
+        //in the order of:              day_of_week Mon Day HH:MM:SS Year
+        StringBuilder dateBuilder = new StringBuilder("");
+
 
         String dummy = "Wed Jan 25 00:23:17 2017";
+        builder.append(REGULAR_MESSAGE_DELIMITER);
 
         //3. Add on message
         builder.append(message);

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 /**
  */
-public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse {
+public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseToFragment {
     private final String TAG = "SecureAndroidClient";
     private final long MILLISECONDS_IN_A_DAY = 86400000;
     private final String address = "wleungtx.no-ip.biz";
@@ -44,6 +44,10 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
         client.response = this;
         client.execute();
 
+    }
+
+    public ArrayList<MessageItem> getMessageArrayList(){
+        return messages;
     }
 
     @Override
@@ -113,7 +117,7 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
     }
 
     /*
-        Overridden method from the AsyncResponse interface
+        Overridden method from the AsyncResponseToFragment interface
         Adds the message to the official message ArrayList. getView() will
         soon be called, which will allow the message to be shown above.
 

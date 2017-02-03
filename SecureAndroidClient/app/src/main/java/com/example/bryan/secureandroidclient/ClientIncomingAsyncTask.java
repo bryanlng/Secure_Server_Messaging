@@ -33,8 +33,8 @@ import java.util.Arrays;
  *             to CustomListViewAdapter to be displayed
  * 2) publishProgress
  *      - Steps:
- *          1) Call retrieveResponse(), a method from the AsyncResponse interface.
- *             Since CustomListViewAdapter implements AsyncResponse, the
+ *          1) Call retrieveResponse(), a method from the AsyncResponseToFragment interface.
+ *             Since CustomListViewAdapter implements AsyncResponseToFragment, the
  *             retrieveResponse() being called is CustomListViewAdapter's overriden
  *             version defined in CustomListViewAdapter.
  *
@@ -50,7 +50,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     private String serverAddress;
     private int serverPort;
 
-    public AsyncResponse response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
+    public AsyncResponseToFragment response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
     /*
         Constructor
         Takes in the server's IP address, port #, and the ArrayList<String> messages
