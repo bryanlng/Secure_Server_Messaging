@@ -107,7 +107,7 @@ void* ClientSender::run() {
 		-Format:
 			timestamp <delimiter> date_formatted <delimiter> message <delimiter> sender <delimiter>
 		-Ex:
-			1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::
+			1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::bryan:::::::
 */
 std::string ClientSender::formatMessage(std::string sender, std::string message, std::string delimiter) {
 

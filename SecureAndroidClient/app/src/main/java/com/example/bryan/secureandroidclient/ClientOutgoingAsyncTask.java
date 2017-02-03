@@ -12,20 +12,24 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 /**
+ * https://www.codeproject.com/Questions/791580/How-to-send-message-from-server-to-client-TCP-andr
  * Created by Bryan on 2/3/2017.
  */
-public class ClientOutgoingAsyncTask extends AsyncTask<Void, Void, Void> {
+public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> {
     private final String TAG = "SecureAndroidClient";
+    private String name = "bryan";
     private final int MAX_MESSAGE_SIZE = 25600;
     private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
 
     private String serverAddress;
     private int serverPort;
-    private String rawMessage = "";
-    private ArrayList<MessageItem> messages;     //this will be replaced with a synchronized ArrayList,
-    //Since 2 Threads will be adding to this ArrayList, locking must be implemented.
+    private String message;
 
     public AsyncResponse response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
 
@@ -36,10 +40,59 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, Void, Void> {
         from MessagesFragment into here. Normally, you would need a reference, but
         somehow it works.
      */
-    public ClientOutgoingAsyncTask(String address, int port, ArrayList<MessageItem> m ){
+    public ClientOutgoingAsyncTask(String address, int port, String m){
         serverAddress = address;
         serverPort = port;
-        messages = m;
+        message = m;
+    }
+
+    /*
+	Given a regular message, generates a formatted version with metatdata included
+	that can be parsed by the server
+
+    Regular message
+		-Simply create the string in the format as specified below
+			-Timestamp will be the current time, in milliseconds
+			-date_formatted will the current time, formatted in
+			-message will be the message
+		-Format:
+			timestamp <delimiter> date_formatted <delimiter> message <delimiter> sender <delimiter>
+		-Ex:
+			1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::bryan:::::::
+
+    Returns a MessageItem, since we need to send this to publishProgress --> retrieveResponse
+*/
+    public MessageItem formatMessage(String message){
+        StringBuilder builder = new StringBuilder("");
+
+        //1. Generate timestamp, then concatenate onto our string
+        long currentTime = System.currentTimeMillis();
+        builder.append(currentTime);
+        builder.append(REGULAR_MESSAGE_DELIMITER);
+
+        //2. Generate current date, in the format given above
+
+        //Generate a Gregorian Calendar with the timezone CMT.
+        // get the supported ids for GMT-08:00 (Pacific Standard Time)
+//        String[] ids = TimeZone.getAvailableIDs(-8 * 60 * 60 * 1000);
+//        SimpleTimeZone CMT = new SimpleTimeZone();
+//        Calendar calendar = new GregorianCalendar(CMT);
+
+        String dummy = "Wed Jan 25 00:23:17 2017";
+
+        //3. Add on message
+        builder.append(message);
+        builder.append(REGULAR_MESSAGE_DELIMITER);
+
+        //4. Add on name
+        builder.append(name);
+        builder.append(REGULAR_MESSAGE_DELIMITER);
+
+        //5. Add on a null char, since our server is c++ based
+        char c = 0;
+        builder.append(c);
+
+        return new MessageItem(builder.toString(),currentTime, dummy ,message, name, false);
     }
 
     /*
@@ -57,16 +110,23 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, Void, Void> {
 
             OutputStream out = socket.getOutputStream();
             DataOutputStream dos = new DataOutputStream(out);
+//            MessageItem formattedMessage = formatMessage(message);
+//            dos.writeChars(formattedMessage.getRawMessage());
+//            publishProgress(formattedMessage);
+
+            String temp = "1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::bryan:::::::";
+            dos.writeChars(temp);
+
         }
         catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            rawMessage = "UnknownHostException: " + e.toString();
+            Log.i(TAG, "UnknownHostException: " + e.toString());
         }
         catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            rawMessage = "IOException: " + e.toString();
+            Log.i(TAG, "IOException: " + e.toString());
         }
         finally {
             if (socket != null) {
@@ -81,6 +141,20 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, Void, Void> {
             }
         }
         return null;
+    }
+
+    /*
+        Called on the main UI thread,
+
+        This message is called after publishProgress(), which was called
+        in doInBackground(). Usually, results are passed in onPostExecute().
+        However, since we're stuck in a while loop in doInBackground() reading
+        messages, the only way to pass messages is through this method, combined
+        with the main UI's overridden retrieveResponse()
+     */
+    @Override
+    protected void onProgressUpdate(MessageItem... newMessage){
+        response.retrieveResponse(newMessage[0]);
     }
 
 

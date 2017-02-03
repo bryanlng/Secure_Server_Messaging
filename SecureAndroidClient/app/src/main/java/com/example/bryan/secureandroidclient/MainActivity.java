@@ -71,7 +71,7 @@ public class MainActivity extends ActionBarActivity {
                         }
                         else{
                             //Start the AsyncTask to listen for incoming messages
-//                            ClientOutgoingAsyncTask client = new ClientOutgoingAsyncTask(address, port, messages);
+//                            ClientOutgoingAsyncTask client = new ClientOutgoingAsyncTask(address, port, message);
 //                            client.response = this;
 //                            client.execute();
                         }

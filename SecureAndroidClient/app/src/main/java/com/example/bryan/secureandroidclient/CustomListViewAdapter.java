@@ -64,20 +64,31 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
         return position;
     }
 
+    /*
+        Overriden version of getView
+        Checks if the MessageItem from messages.get(position) is an Incoming message
+        or not.
+        If it is, inflate the layout for an incoming message
+        Else, inflate the layout for an ougoing message
+
+        Regardless of what type the message is, display its contents
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
 //        Log.i(TAG, "getView, position: " + position + ", which is equal to: " + messages.get(position));
         View view = convertView;
-        if(messages.get(position).equals("a")){
+
+
+        if(messages.get(position).isIncomingMessage()){
+//                Log.i(TAG, "getView: " + messages.get(position) + ", INCOMING");
+            view = inflater.inflate(R.layout.row_item_incoming, null);
+
+        }
+        else{
 //                Log.i(TAG, "getView: " + messages.get(position) + ", OUTGOING");
             view = inflater.inflate(R.layout.row_item_outgoing, null);
         }
-        else{
-//                Log.i(TAG, "getView: " + messages.get(position) + ", INCOMING");
-            view = inflater.inflate(R.layout.row_item_incoming, null);
-        }
-
 
         //Set the fields
         //Image
@@ -96,6 +107,7 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
 //        String formatted_date = formatDate(unformatted_date, timestamp);
 //        date.setText(formatted_date);
         String unformatted_date = messages.get(position).getDateFormatted();
+        date.setText(unformatted_date);
 
         return view;
     }

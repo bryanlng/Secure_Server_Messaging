@@ -49,7 +49,6 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
 
     private String serverAddress;
     private int serverPort;
-    private String rawMessage = "";
 
     public AsyncResponse response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
     /*
@@ -123,7 +122,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
                 Log.i(TAG, "date_formatted: " + date_formatted);
                 Log.i(TAG, "message: " + message);
                 Log.i(TAG, "sender: " + sender);
-                MessageItem messageItem = new MessageItem(rawMessage, timestamp, date_formatted, message, sender);
+                MessageItem messageItem = new MessageItem(rawMessage, timestamp, date_formatted, message, sender, true);
                 publishProgress(messageItem);
 
                 //Use Java's version of "memset" to clean our buffer
@@ -140,12 +139,12 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            rawMessage = "UnknownHostException: " + e.toString();
+            Log.i(TAG, "UnknownHostException: " + e.toString());
         }
         catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            rawMessage = "IOException: " + e.toString();
+            Log.i(TAG, "IOException: " + e.toString());
         }
         finally {
             if (socket != null) {
