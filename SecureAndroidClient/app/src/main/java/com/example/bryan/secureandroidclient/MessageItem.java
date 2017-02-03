@@ -18,6 +18,7 @@ public class MessageItem {
         sender = s;
     }
 
+    public long getTimestamp(){ return timestamp; }
     public String getDateFormatted(){ return date_formatted; }
     public String getMessage(){ return message; }
     public String getSender(){ return sender; }

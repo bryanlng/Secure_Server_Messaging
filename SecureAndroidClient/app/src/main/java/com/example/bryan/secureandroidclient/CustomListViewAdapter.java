@@ -26,6 +26,7 @@ import java.util.ArrayList;
  */
 public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse {
     private final String TAG = "SecureAndroidClient";
+    private final long MILLISECONDS_IN_A_DAY = 86400000;
     private final String address = "wleungtx.no-ip.biz";
     private final int port = 9999;
 
@@ -79,14 +80,22 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
 
 
         //Set the fields
+        //Image
         ImageView imageView = (ImageView) view.findViewById(R.id.picture);
         imageView.setImageResource(R.drawable.test);
 
+        //Message
         TextView message = (TextView) view.findViewById(R.id.message);
         message.setText(messages.get(position).getMessage());
 
+        //Date. Does special formatting, depending on how far the date is
+        //from the current date
         TextView date = (TextView) view.findViewById(R.id.date);
-        date.setText(messages.get(position).getDateFormatted());
+        long timestamp = messages.get(position).getTimestamp();
+//        String unformatted_date = messages.get(position).getDateFormatted();
+//        String formatted_date = formatDate(unformatted_date, timestamp);
+//        date.setText(formatted_date);
+        String unformatted_date = messages.get(position).getDateFormatted();
 
         return view;
     }
@@ -105,5 +114,42 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
         messages.add(message);
         notifyDataSetChanged();
     }
+
+    /*
+        Formats the date into the correct format
+        4 cases
+        Case 1: If Time < 1 day, and it's the same day
+            - HH:DD AM/PM
+
+        Case 2: If Time < 1 day, but it's not the same day
+            -(Month) (Day)
+
+        Case 3:  If Time > 1 day
+            -(Month) (Day)
+
+        Case 4: If time is in previous year:
+            -(Month) (Day), (Year)
+
+        Ex of date_formatted:
+            Thu Feb  2 23:56:31 2017
+     */
+//    public String formatDate(String date, long timestamp){
+//        String[] items = date.split(" ");
+//        String day_of_week = items[0];
+//        String month = items[1];
+//        String
+//
+//        long currentTime = System.currentTimeMillis();
+//        long diff = currentTime - timestamp;
+//        long diffInDays = diff / MILLISECONDS_IN_A_DAY;
+//
+//        if(diffInDays < 1) {
+//
+//        }
+//
+//        else{
+//
+//        }
+//    }
 
 }
