@@ -22,6 +22,8 @@ import java.util.Arrays;
 public class ClientIncomingAsyncTask extends AsyncTask<Void, Void, Void> {
     private final String TAG = "SecureAndroidClient";
     private final int MAX_MESSAGE_SIZE = 25600;
+    private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
+
     private String serverAddress;
     private int serverPort;
     private String rawMessage = "";
@@ -88,7 +90,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, Void, Void> {
                 String message;
                 String sender;
 
-                String[] items = rawMessage.split(":::::::");
+                String[] items = rawMessage.split(REGULAR_MESSAGE_DELIMITER);
 
                 date_formatted = items[1];
                 message = items[2];

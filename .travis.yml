@@ -1,0 +1,49 @@
+language: cpp
+
+compiler:
+    - gcc
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - libboost-dev
+      - doxygen
+      - g++-5
+      - libgtest-dev
+      - valgrind
+    sources:
+      - ubuntu-toolchain-r-test
+
+install:
+    - pwd
+    - ls -al
+    - mkdir gtest
+    - cd gtest
+    - export LIBRARY_PATH=$(pwd)
+    - cp -r /usr/src/gtest/* ./
+    - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
+    - make
+    - pwd
+    - ls -al
+    - cd -
+
+before_script:
+    - uname -a
+    - printenv
+    - make versions
+
+branches:
+  only:
+    - dev
+
+script:
+    - date
+    - ls -al
+    - make travis
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
