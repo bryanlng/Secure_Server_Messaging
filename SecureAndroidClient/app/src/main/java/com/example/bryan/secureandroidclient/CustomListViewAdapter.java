@@ -29,7 +29,7 @@ public class CustomListViewAdapter extends BaseAdapter{
 //    private final String address = "localhost";
 //    private final int port = 9999;
     private final String address = "wleungtx.no-ip.biz";
-    private final int port = 79;
+    private final int port = 9999;
 
     private Context context;
     private ArrayList<String> messages = new ArrayList<String>();
@@ -40,12 +40,9 @@ public class CustomListViewAdapter extends BaseAdapter{
         messages = m;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        //Start the AsyncTasks to listen for incoming messages + send outgoing messages
+        //Start the AsyncTask to listen for incoming messages
         ClientIncomingAsyncTask client = new ClientIncomingAsyncTask(address, port, messages);
         client.execute();
-
-
-
 
     }
 

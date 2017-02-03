@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Bryan on 2/1/2017.
@@ -20,6 +21,7 @@ import java.util.ArrayList;
  */
 public class ClientIncomingAsyncTask extends AsyncTask<Void, Void, Void> {
     private final String TAG = "SecureAndroidClient";
+    private final int MAX_MESSAGE_SIZE = 25600;
     private String serverAddress;
     private int serverPort;
     private String rawMessage = "";
@@ -53,7 +55,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, Void, Void> {
             socket = new Socket(serverAddress, serverPort);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[100];  //MAX_MESSAGE_SIZE
 
             int bytesRead;
             InputStream inputStream = socket.getInputStream();
@@ -61,21 +63,31 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, Void, Void> {
 			/*
              * While the inputStream from socket has stuff:
              *  1) Write it to our byte array
-             *  2) Get the raw message out
+             *  2) Get the raw message out, taking out the null character attached in the process.
              *  3) Parse the message and extract the contents:
              *      -Timestamp
              *      -Date formatted
              *      -Actual message
              *      -Sender
              *  3) Add the raw message to the official messages ArrayList
+             *  4) Clean the buffer using Arrays.fill
              *
              * notice: inputStream.read() will block if no data return
 			 */
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, bytesRead);
-                rawMessage += byteArrayOutputStream.toString("UTF-8");
+                String rawBuffer = new String(buffer);
+                Log.i(TAG, "# of bytes read: " + bytesRead);
+                Log.i(TAG, "length of rawBuffer: " + rawBuffer.length());
+
+                String rawMessage = rawBuffer.substring(0, bytesRead-1);        //bytesRead-1 b/c we strip out null character
                 messages.add(rawMessage);
-                Log.i(TAG, "received message: " + rawMessage);
+                Log.i(TAG, "after stripping out only the message: " + rawMessage);
+
+                //Use Java's version of "memset" to clean our buffer
+                int z = 0;
+                byte zero = (byte)z;
+                Arrays.fill(buffer, zero);
             }
         }
         catch (UnknownHostException e) {

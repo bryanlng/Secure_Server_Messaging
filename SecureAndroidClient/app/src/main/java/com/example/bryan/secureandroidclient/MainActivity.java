@@ -36,8 +36,8 @@ public class MainActivity extends ActionBarActivity {
         //Initialize chatbox
         chatbox = (EditText)findViewById(R.id.chatbox);
 
-        //Initialize send button for the chatbox, which is
-        //implemented as android:drawableRight
+        //Initialize send button for the chatbox, which is implemented as android:drawableRight
+        //If the send button is pressed, an AsyncTask to send outgoing messages is started and executed
         chatbox.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -45,7 +45,8 @@ public class MainActivity extends ActionBarActivity {
 
                 if(event.getAction() == MotionEvent.ACTION_UP) {
                     if(event.getRawX() >= (chatbox.getRight() - chatbox.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        Toast.makeText(getApplicationContext(), "Send button send stuff", Toast.LENGTH_LONG).show();
+
+                        //Start the AsyncTask to send outgoing messages
 
                         return true;
                     }
