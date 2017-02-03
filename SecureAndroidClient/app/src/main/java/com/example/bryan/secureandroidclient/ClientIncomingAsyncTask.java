@@ -69,7 +69,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, Void, Void> {
              *      -Date formatted
              *      -Actual message
              *      -Sender
-             *  3) Add the raw message to the official messages ArrayList
+             *  3) Add the contents to the official messages ArrayList
              *  4) Clean the buffer using Arrays.fill
              *
              * notice: inputStream.read() will block if no data return
@@ -80,7 +80,20 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, Void, Void> {
                 Log.i(TAG, "# of bytes read: " + bytesRead);
                 Log.i(TAG, "length of rawBuffer: " + rawBuffer.length());
 
+                //Get the raw message out, taking out the null character attached in the process.
                 String rawMessage = rawBuffer.substring(0, bytesRead-1);        //bytesRead-1 b/c we strip out null character
+
+                //Parse the message, extract contents, then add to the ArrayList
+                String date_formatted;
+                String message;
+                String sender;
+
+                String[] items = rawMessage.split(":::::::");
+
+                date_formatted = items[1];
+                message = items[2];
+                sender = items[3];
+
                 messages.add(rawMessage);
                 Log.i(TAG, "after stripping out only the message: " + rawMessage);
 
