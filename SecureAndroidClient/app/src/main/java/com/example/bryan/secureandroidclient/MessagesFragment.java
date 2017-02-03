@@ -36,9 +36,9 @@ public class MessagesFragment extends Fragment {
 
         messagesListView = (ListView)rootView.findViewById(R.id.listview);
 
-        ArrayList<String> messages = new ArrayList<>();
-        messages.add("a");
-        messages.add("b");
+        ArrayList<MessageItem> messages = new ArrayList<>();
+//        messages.add("a");
+//        messages.add("b");
 //        messages.add("ccccccccccccc");
 //        messages.add("ddddddddddddddd");
 //        messages.add("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");

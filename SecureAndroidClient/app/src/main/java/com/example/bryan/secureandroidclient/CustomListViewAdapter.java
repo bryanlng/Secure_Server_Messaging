@@ -30,10 +30,10 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
     private final int port = 9999;
 
     private Context context;
-    private ArrayList<String> messages = new ArrayList<String>();
+    private ArrayList<MessageItem> messages = new ArrayList<MessageItem>();
     private static LayoutInflater inflater = null;
 
-    public CustomListViewAdapter(Context context, ArrayList<String> m){
+    public CustomListViewAdapter(Context context, ArrayList<MessageItem> m){
         this.context = context;
         messages = m;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -83,10 +83,10 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
         imageView.setImageResource(R.drawable.test);
 
         TextView message = (TextView) view.findViewById(R.id.message);
-        message.setText(messages.get(position));
+        message.setText(messages.get(position).getMessage());
 
         TextView date = (TextView) view.findViewById(R.id.date);
-        date.setText(messages.get(position));
+        date.setText(messages.get(position).getDateFormatted());
 
         return view;
     }
@@ -100,7 +100,7 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
         by calling getView()
      */
     @Override
-    public void retrieveResponse(String message){
+    public void retrieveResponse(MessageItem message){
         Log.i(TAG, "retrieveResponse(): Adding message: " + message);
         messages.add(message);
         notifyDataSetChanged();

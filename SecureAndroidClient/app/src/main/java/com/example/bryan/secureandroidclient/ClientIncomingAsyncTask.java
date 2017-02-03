@@ -42,7 +42,7 @@ import java.util.Arrays;
  * Implementation is primarily based off of this website
  * http://androidsrc.net/android-client-server-using-sockets-client-implementation/
  */
-public class ClientIncomingAsyncTask extends AsyncTask<Void, String, Void> {
+public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> {
     private final String TAG = "SecureAndroidClient";
     private final int MAX_MESSAGE_SIZE = 25600;
     private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
@@ -50,7 +50,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, String, Void> {
     private String serverAddress;
     private int serverPort;
     private String rawMessage = "";
-    private ArrayList<String> messages;     //this will be replaced with a synchronized ArrayList,
+    private ArrayList<MessageItem> messages;     //this will be replaced with a synchronized ArrayList,
                                             //Since 2 Threads will be adding to this ArrayList, locking must be implemented.
 
     public AsyncResponse response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
@@ -61,7 +61,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, String, Void> {
         from MessagesFragment into here. Normally, you would need a reference, but
         somehow it works.
      */
-    public ClientIncomingAsyncTask(String address, int port, ArrayList<String> m ){
+    public ClientIncomingAsyncTask(String address, int port, ArrayList<MessageItem> m ){
        serverAddress = address;
        serverPort = port;
        messages = m;
@@ -127,7 +127,8 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, String, Void> {
                 Log.i(TAG, "date_formatted: " + date_formatted);
                 Log.i(TAG, "message: " + message);
                 Log.i(TAG, "sender: " + sender);
-                publishProgress(rawMessage);
+                MessageItem messageItem = new MessageItem(rawMessage, timestamp, date_formatted, message, sender);
+                publishProgress(messageItem);
 
                 //Use Java's version of "memset" to clean our buffer
                 int z = 0;
@@ -168,7 +169,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, String, Void> {
         with the main UI's overridden retrieveResponse()
      */
     @Override
-    protected void onProgressUpdate(String... newMessage){
+    protected void onProgressUpdate(MessageItem... newMessage){
         response.retrieveResponse(newMessage[0]);
     }
 
