@@ -104,7 +104,7 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         char c = 0;
         builder.append(c);
 
-        return new MessageItem(builder.toString(),currentTime, dummy ,message, name, false);
+        return new MessageItem(builder.toString(),currentTime, dateBuilder.toString() ,message, name, false);
     }
 
     /*
@@ -168,6 +168,27 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     protected void onProgressUpdate(MessageItem... newMessage){
         response.retrieveResponse(newMessage[0]);
     }
+
+
+    public String intToMonth(int id){
+        switch(id){
+            case 0: return "Jan";
+            case 1: return "Feb";
+            case 2: return "Mar";
+            case 3: return "Apr";
+            case 4: return "May";
+            case 5: return "Jun";
+            case 6: return "Jul";
+            case 7: return "Aug";
+            case 8: return "Sept";
+            case 9: return "Oct";
+            case 10: return "Nov";
+            case 11: return "Dec";
+            default: return "error";
+        }
+    }
+
+
 
 
 }
