@@ -1,10 +1,13 @@
 package com.example.bryan.secureandroidclient;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -16,6 +19,10 @@ import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
+    private final String TAG = "SecureAndroidClient";
+    private final String address = "wleungtx.no-ip.biz";
+    private final int port = 9999;
+
     private MessagesFragment messagesFragment;
     private EditText chatbox;
 
@@ -46,7 +53,28 @@ public class MainActivity extends ActionBarActivity {
                 if(event.getAction() == MotionEvent.ACTION_UP) {
                     if(event.getRawX() >= (chatbox.getRight() - chatbox.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
 
-                        //Start the AsyncTask to send outgoing messages
+                        //Start the AsyncTask to send outgoing messages, and give it the current text on the EditText
+                        //If the message is empty, prompt user to type in input
+                        String message = chatbox.getText().toString();
+                        if(message.equals("")){
+                            Log.i(TAG, "showAlertDialog with message: " + message);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext()); //getActivity().getApplicationContext());
+                            builder.setMessage(message);
+                            builder.setCancelable(false);
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //do things
+                                }
+                            });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
+                        else{
+                            //Start the AsyncTask to listen for incoming messages
+//                            ClientOutgoingAsyncTask client = new ClientOutgoingAsyncTask(address, port, messages);
+//                            client.response = this;
+//                            client.execute();
+                        }
 
                         return true;
                     }

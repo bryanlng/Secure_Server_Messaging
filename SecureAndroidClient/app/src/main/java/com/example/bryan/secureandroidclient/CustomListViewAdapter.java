@@ -40,7 +40,7 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponse 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //Start the AsyncTask to listen for incoming messages
-        ClientIncomingAsyncTask client = new ClientIncomingAsyncTask(address, port, messages);
+        ClientIncomingAsyncTask client = new ClientIncomingAsyncTask(address, port);
         client.response = this;
         client.execute();
 

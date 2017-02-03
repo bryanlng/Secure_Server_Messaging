@@ -50,8 +50,6 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     private String serverAddress;
     private int serverPort;
     private String rawMessage = "";
-    private ArrayList<MessageItem> messages;     //this will be replaced with a synchronized ArrayList,
-                                            //Since 2 Threads will be adding to this ArrayList, locking must be implemented.
 
     public AsyncResponse response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
     /*
@@ -61,16 +59,15 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         from MessagesFragment into here. Normally, you would need a reference, but
         somehow it works.
      */
-    public ClientIncomingAsyncTask(String address, int port, ArrayList<MessageItem> m ){
+    public ClientIncomingAsyncTask(String address, int port){
        serverAddress = address;
        serverPort = port;
-       messages = m;
     }
 
     /*
          Creates a new Socket connection, then listens for messages
-         Once a message arrives, write it to a temp buffer, then add
-         it to the official messages ArrayList
+         Once a message arrives, write it to a temp buffer, then sends it
+         to publishProgress so that it can be added to the official messages ArrayList
      */
     @Override
     protected Void doInBackground(Void... arg0){
@@ -81,8 +78,7 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
             socket = new Socket(serverAddress, serverPort);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
-            byte[] buffer = new byte[100];  //MAX_MESSAGE_SIZE
-
+            byte[] buffer = new byte[MAX_MESSAGE_SIZE];
             int bytesRead;
             InputStream inputStream = socket.getInputStream();
 
@@ -135,6 +131,11 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
                 byte zero = (byte)z;
                 Arrays.fill(buffer, zero);
             }
+
+            //Should not get past here, unless the connection is severed
+            //In that case, close all streams
+            byteArrayOutputStream.close();
+            inputStream.close();
         }
         catch (UnknownHostException e) {
             // TODO Auto-generated catch block
@@ -150,7 +151,9 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
             if (socket != null) {
                 try {
                     socket.close();
-                } catch (IOException e) {
+
+                }
+                catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
