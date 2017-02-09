@@ -14,7 +14,7 @@ class ClientReceiver : public Thread{
 		wqueue<long>& m_queue;
 
 	public:
-		ClientReceiver(TCPStream* s, wqueue<long>& queue);
+		ClientReceiver(TCPStream* s, wqueue<long long>& queue);
 		void* run();
 		~ClientReceiver();
 };

@@ -2,9 +2,9 @@
 
 class ClientTimestampFiller : public Thread {
 	private:
-		wqueue<long>& m_queue;
+		wqueue<long long>& m_queue;
 
 	public:
-		ClientTimestampFiller(wqueue<long>& queue, std::string n);
+		ClientTimestampFiller(wqueue<long long>& queue, std::string n);
 		void* run();
 };	

@@ -1,7 +1,7 @@
 #include "ClientReceiver.h"
 #define MAX_MESSAGE_SIZE 25600
 
-ClientReceiver::ClientReceiver(TCPStream* s, wqueue<long>& queue) : stream(s), m_queue(queue) {}
+ClientReceiver::ClientReceiver(TCPStream* s, wqueue<long long>& queue) : stream(s), m_queue(queue) {}
 
 /*
 	Receives incoming messages from the server
@@ -39,7 +39,7 @@ void* ClientReceiver::run() {
 			std::string delimiter = ":::::::";
 
 			//Fields to extract
-			long timestamp;
+			long long timestamp;
 			std::string date_formatted;
 			std::string message;
 			std::string sender;
@@ -50,7 +50,7 @@ void* ClientReceiver::run() {
 				std::cout << "Regular message, Item found: " << current_item << std::endl;
 				switch (which_one) {
 				case 0:		//timestamp
-					timestamp = atol(current_item.c_str());
+					timestamp = atoll(current_item.c_str());
 					break;
 				case 1:		//formatted date
 					date_formatted = current_item;

@@ -27,6 +27,6 @@ class MessageHandler : public Thread
 		MessageHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n);
 		void* run();
 		std::string readTimestampFile();
-		void readMasterLog(std::vector<std::string>& messages, long ts);
+		void readMasterLog(std::vector<std::string>& messages, long long ts);
 		void write(std::string filename, std::string item);
 };

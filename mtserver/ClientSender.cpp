@@ -108,6 +108,14 @@ void* ClientSender::run() {
 			timestamp <delimiter> date_formatted <delimiter> message <delimiter> sender <delimiter>
 		-Ex:
 			1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::bryan:::::::
+
+	Generating a timestamp:
+	So a huge problem I ran into was that c++'s std::time(NULL) doesn't produce a value that's EVEN CLOSE
+	to java's System.currentTimeMillis(). I realized this while making the Android client. It took me FOREVER
+	to find a good c++ solution, but I ended up using this:
+	http://en.cppreference.com/w/cpp/chrono/time_point/time_since_epoch
+	Except when casting, change std::chrono::hours --> std::chrono::milliseconds
+	
 */
 std::string ClientSender::formatMessage(std::string sender, std::string message, std::string delimiter) {
 
@@ -129,9 +137,14 @@ std::string ClientSender::formatMessage(std::string sender, std::string message,
 	else {
 		std::string result;
 
-		//1. Generate timestamp, then concatenate onto our string
-		std::time_t timer = std::time(NULL);
-		long millis = static_cast<long>(timer);
+		//1. Generate timestamp, then concatenate onto our string.
+		//Timestamp = time from Unix Epoch, similar to Java's System.currentTimeMillis()
+		std::chrono::time_point<std::chrono::system_clock> p2;
+		p2 = std::chrono::system_clock::now();
+		std::time_t today_time = std::chrono::system_clock::to_time_t(p2);
+		long long millis = std::chrono::duration_cast<std::chrono::milliseconds>(
+			p2.time_since_epoch()).count();
+
 		std::stringstream sstm;
 		sstm << millis;
 		result = sstm.str();
@@ -140,7 +153,7 @@ std::string ClientSender::formatMessage(std::string sender, std::string message,
 		//2a. Generate current date, but formatted, then concatenate
 		//Also, replace the pesky \n char (last char before the null) 
 		//with a null character
-		char* formatted = std::asctime(std::localtime(&timer));
+		char* formatted = std::ctime(&today_time);
 		string tmp(formatted);
 		formatted[tmp.length() - 1] = '\0';
 

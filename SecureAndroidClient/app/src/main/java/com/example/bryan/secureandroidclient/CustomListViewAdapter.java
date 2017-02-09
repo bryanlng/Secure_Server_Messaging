@@ -20,13 +20,17 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 
 /**
  */
 public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseToFragment {
     private final String TAG = "SecureAndroidClient";
-    private final long MILLISECONDS_IN_A_DAY = 86400000;
+    private final long MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
     private final String address = "wleungtx.no-ip.biz";
     private final int port = 9999;
 
@@ -107,11 +111,11 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
         //from the current date
         TextView date = (TextView) view.findViewById(R.id.date);
         long timestamp = messages.get(position).getTimestamp();
-//        String unformatted_date = messages.get(position).getDateFormatted();
-//        String formatted_date = formatDate(unformatted_date, timestamp);
-//        date.setText(formatted_date);
         String unformatted_date = messages.get(position).getDateFormatted();
-        date.setText(unformatted_date);
+        String formatted_date = formatDate(unformatted_date, timestamp);
+        date.setText(formatted_date);
+//        String unformatted_date = messages.get(position).getDateFormatted();
+//        date.setText(unformatted_date);
 
         return view;
     }
@@ -148,24 +152,77 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
 
         Ex of date_formatted:
             Thu Feb  2 23:56:31 2017
+            FOr som
      */
-//    public String formatDate(String date, long timestamp){
-//        String[] items = date.split(" ");
-//        String day_of_week = items[0];
-//        String month = items[1];
-//        String
-//
-//        long currentTime = System.currentTimeMillis();
-//        long diff = currentTime - timestamp;
-//        long diffInDays = diff / MILLISECONDS_IN_A_DAY;
-//
-//        if(diffInDays < 1) {
-//
-//        }
-//
-//        else{
-//
-//        }
-//    }
+    public String formatDate(String date, long timestamp){
+        Log.i(TAG, "formatDate(), with raw date: " + date);
+
+        //1. Extract all fields
+        String[] items = date.split(" ");
+
+        String day_of_week = items[0];
+        String month = items[1];
+        int day_of_month = Integer.parseInt(items[3]);
+
+        String[] hms = items[4].split(":");
+        int hour = Integer.parseInt(hms[0]);
+        int min = Integer.parseInt(hms[1]);
+        int year = Integer.parseInt(items[5]);
+
+        //2. Go through the 4 cases
+        //Find how far the time is from the current time
+        long currentTime = System.currentTimeMillis();
+        long diff = currentTime - timestamp;
+        long diffInDays = diff / MILLISECONDS_IN_A_DAY;
+
+        //Create a GregorianCalendar with CST Timezone, so that we can
+        //get the current day, year
+        String[] ids = TimeZone.getAvailableIDs();
+        TimeZone tz = TimeZone.getTimeZone("GMT-6");
+        Calendar calendar = new GregorianCalendar(tz);
+        int curr_year = calendar.get(Calendar.YEAR);
+        int curr_day = calendar.get(Calendar.DATE);
+
+        Log.i(TAG, "timestamp: " + timestamp);
+        Log.i(TAG, "currentTimeMillis: " + currentTime);
+        Log.i(TAG, "calendar millis: " + calendar.getTimeInMillis());
+        Log.i(TAG, "diff: " + diff);
+        Log.i(TAG, "diffInDays: " + diffInDays);
+        Log.i(TAG, "hour: " + hour);
+        Log.i(TAG, "min: " + min);
+        Log.i(TAG, "curr_day: " + curr_day);
+        Log.i(TAG, "day_of_month: " + day_of_month);
+
+        if(diffInDays < 1) {
+            //Case 1: If Time < 1 day, and it's the same day:     HH:MM AM/PM
+            if(curr_day == day_of_month){
+                if(hour >= 12){
+                    return "" + (hour-12) + ":" + min + " PM";
+                }
+
+                else{
+                    return "" + hour + ":" + min + " AM";
+                }
+            }
+
+            //Case 2: If Time < 1 day, but it's not the same day: (Month) (Day)
+            else{
+                return month + " " + day_of_month;
+            }
+        }
+
+        else{
+            //Case 4: If time is in previous year:               (Month) (Day), (Year)
+            if(curr_year > year){
+                return month + " " + day_of_month + ", " + year;
+            }
+
+            //Case 3:  If Time > 1 day, but in the same year:   (Month) (Day)
+            else {
+                return month + " " + day_of_month;
+            }
+
+        }
+    }
 
 }

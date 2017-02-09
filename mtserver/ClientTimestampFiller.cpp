@@ -1,6 +1,6 @@
 #include "ClientTimestampFiller.h"
 
-ClientTimestampFiller::ClientTimestampFiller(wqueue<long>& queue, std::string n) : m_queue(queue) 
+ClientTimestampFiller::ClientTimestampFiller(wqueue<long long>& queue, std::string n) : m_queue(queue) 
 {
 	set_name(n);
 }
@@ -10,7 +10,7 @@ void* ClientTimestampFiller::run() {
 	// available to process.
 	for (int i = 0;; i++) {
 		std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
-		long timestamp = m_queue.remove();
+		long long timestamp = m_queue.remove();
 		std::cout << thread_name() << ", loop " << i << " - got one item: " << timestamp << std::endl;
 
 		//Update client_timestamp.txt with the timestamp

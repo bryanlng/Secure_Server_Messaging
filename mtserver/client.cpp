@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 		t_file.open("client_timestamp.txt");
 
 		std::string nl = "\n";
-		long millis = 0;
+		long long millis = 0;
 		t_file << millis;
 		t_file << nl;
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +23,11 @@ import java.util.ArrayList;
 /**
  */
 public class MessagesFragment extends Fragment {
+    private final String TAG = "SecureAndroidClient";
+    private final String SAVED_INS_STATE_KEY = "messages";
     private ListView messagesListView;
     private CustomListViewAdapter adapter;
+    private ArrayList<MessageItem> messages;
 
     public MessagesFragment() {
         // Required empty public constructor
@@ -35,42 +39,18 @@ public class MessagesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_messages, container, false);
         setRetainInstance(true);
 
+        //Check if we just came out of a configuration change
+        if(savedInstanceState != null){
+            messages = savedInstanceState.getParcelableArrayList("messages");
+        }
+        else{
+            messages = new ArrayList<>();
+        }
+
+        //Instantiate the ListView, create a CustomListViewAdapter, and set it to the ListView
         messagesListView = (ListView)rootView.findViewById(R.id.listview);
-
-        ArrayList<MessageItem> messages = new ArrayList<>();
-//        messages.add("a");
-//        messages.add("b");
-//        messages.add("ccccccccccccc");
-//        messages.add("ddddddddddddddd");
-//        messages.add("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-//        messages.add("fffff");
-//        messages.add("ggggggggg");
-//        messages.add("hhhhhhhhh");
-//        messages.add("iiiiiiiiiii");
-//        messages.add("jjjjjjjjjjjjjjj");
-//        messages.add("kkkkkkkkkk");
-//        messages.add("llllllll");
-//        messages.add("mm");
-//        messages.add("hhhhhhhhh");
-//        messages.add("nn");
-//        messages.add("o");
-//        messages.add("p");
-
         adapter = new CustomListViewAdapter(getActivity(), messages);
         messagesListView.setAdapter(adapter);
-
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-//                getActivity(), android.R.layout.simple_list_item_1, messages);
-//
-//        messagesListView.setAdapter(adapter);
-//
-//        messagesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String item = parent.getItemAtPosition(position).toString();
-//                Toast.makeText(view.getContext(), "Item selected: " + item, Toast.LENGTH_LONG).show();
-//            }
-//        });
 
         // Inflate the layout for this fragment
         return rootView;
@@ -85,6 +65,17 @@ public class MessagesFragment extends Fragment {
             messages.add(mItem);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    /*
+        Saves the current state of our program, so that on restart,
+        we can restore the program to this state.
+     */
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        Log.i(TAG, "going into onSaveInstanceState()");
+        savedInstanceState.putParcelableArrayList(SAVED_INS_STATE_KEY, messages);
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 

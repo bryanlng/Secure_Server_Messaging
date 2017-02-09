@@ -57,8 +57,8 @@ void* ConnectionHandler::run() {
 			
 			//Fields to put inside the Message item
 			string raw_message = raw;
-			long time_of_last_received = -1;		//used to check whether we need to pull from log
-			long timestamp = -1;
+			long long time_of_last_received = -1;		//used to check whether we need to pull from log
+			long long timestamp = -1;
 			string date_formatted;
 			string message;
 			string sender;		//name of sender
@@ -73,7 +73,7 @@ void* ConnectionHandler::run() {
 			if ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
 				current_item = raw.substr(0, delimiter_pos);
 				std::cout << "Timestamp message, Item found: " << current_item << std::endl;
-				time_of_last_received = atol(current_item.c_str());
+				time_of_last_received = atoll(current_item.c_str());
 			}
 
 			//Else, it's got to be just a regular message
@@ -86,7 +86,7 @@ void* ConnectionHandler::run() {
 					std::cout << "Regular message, Item found: " << current_item << std::endl;
 					switch (which_one) {
 						case 0:		//timestamp
-							timestamp = atol(current_item.c_str());
+							timestamp = atoll(current_item.c_str());
 							break;
 						case 1:		//formatted date
 							date_formatted = current_item;

@@ -42,7 +42,7 @@ void* MessageHandler::run() {
 			if (latest_ts.compare("")) {
 				std::cout << "NOT empty Master log and timestamp" << std::endl;
 				//Convert timestamp into a long
-				long latest_timestamp = atol(latest_ts.c_str());
+				long long latest_timestamp = atoll(latest_ts.c_str());
 
 				std::cout << "item->getTimeOfLastReceived(): " << item->getTimeOfLastReceived() << std::endl;
 				std::cout << "latest_timestamp: " << latest_timestamp << std::endl;
@@ -188,7 +188,7 @@ std::string MessageHandler::readTimestampFile() {
 	This function was originally implemented in ThreadSafeFile as a case in read(),
 	but I moved it here.
 */
-void MessageHandler::readMasterLog(std::vector<std::string>& messages, long ts) {
+void MessageHandler::readMasterLog(std::vector<std::string>& messages, long long ts) {
 	std::string delimiter = ":::::::";
 	std::string line;
 	std::ifstream file("master_log.txt");
@@ -200,7 +200,7 @@ void MessageHandler::readMasterLog(std::vector<std::string>& messages, long ts) 
 			int delimiter_pos = line.find(delimiter);
 			std::string token = line.substr(0, delimiter_pos);
 			char* sz;   // alias of size_t
-			long curr_timestamp = std::strtol(token.c_str(), &sz, 10);
+			long long curr_timestamp = std::strtol(token.c_str(), &sz, 10);
 
 			//If the timestamp >= timestamp from the client, put the line
 			//into the vector

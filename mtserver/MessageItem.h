@@ -36,23 +36,23 @@
 class MessageItem
 {
 	private:
-		string raw;					//raw form of the message, not split yet
-		long time_of_last_received; //Timestamp of the last message the CLIENT received
-		long timestamp;				//timestamp of when the message was sent, in milliseconds
-		string date_formatted;		//Formatted date of when the message of sent
-		string message;				//Actual message
-		string sender;				//Name of sender
-		string thread_id;			//ID of thread (which held the connection) which sent the message
-									//Used for broadcasting 
+		string raw;							//raw form of the message, not split yet
+		long long time_of_last_received;	//Timestamp of the last message the CLIENT received
+		long long timestamp;				//timestamp of when the message was sent, in milliseconds
+		string date_formatted;				//Formatted date of when the message of sent
+		string message;						//Actual message
+		string sender;						//Name of sender
+		string thread_id;					//ID of thread (which held the connection) which sent the message
+											//Used for broadcasting 
 
 	public:
-		MessageItem(std::string full, long last_received, long time, std::string date, std::string mes, std::string n, std::string tid) :
+		MessageItem(std::string full, long long last_received, long long time, std::string date, std::string mes, std::string n, std::string tid) :
 			raw(full), time_of_last_received(last_received) ,timestamp(time), 
 			date_formatted(date), message(mes), sender(n), thread_id(tid) {}
 
 		MessageItem(std::string full) : raw(full), time_of_last_received(-1){}
 
-		MessageItem(long last_received) : time_of_last_received(last_received) {}
+		MessageItem(long long last_received) : time_of_last_received(last_received) {}
 
 		string getRawMessage() {
 			return raw;

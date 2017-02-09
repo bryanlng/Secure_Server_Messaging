@@ -27,8 +27,7 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     private String name = "bryan";
     private final int MAX_MESSAGE_SIZE = 25600;
     private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
-    private final int SIX_HOUR_OFFSET = -6 * 60 * 60 * 1000;
-    private int CST_TIMEZONE_ID;
+    private int CST_TIMEZONE_ID = 601;
 
     private String serverAddress;
     private int serverPort;
@@ -77,15 +76,20 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
 
         //Generate a Gregorian Calendar with the timezone CST (GMT - 6:00)
         // get the supported ids for GMT-06:00 (Central Standard Time)
-        String[] ids = TimeZone.getAvailableIDs(SIX_HOUR_OFFSET);
-        CST_TIMEZONE_ID = ids.length - 2;
-        SimpleTimeZone CST = new SimpleTimeZone(SIX_HOUR_OFFSET, ids[CST_TIMEZONE_ID]);
-        Calendar calendar = new GregorianCalendar(CST);
-        Date trialTime = new Date();
-        calendar.setTime(trialTime);
+        String[] ids = TimeZone.getAvailableIDs();
+        TimeZone tz = TimeZone.getTimeZone("GMT-6");
+//        String id = tz.getID();
+//        int offset = tz.getRawOffset();
+//        SimpleTimeZone CST = new SimpleTimeZone(offset, id);
+//        Calendar calendar = new GregorianCalendar(CST);
+//        Date trialTime = new Date();
+//        calendar.setTime(trialTime);
+        Calendar calendar = new GregorianCalendar(tz);
+
 
         //Extract day, month, year, day_of_week, HH:MM:SS add put it all into a long string
         //in the order of:              day_of_week Mon Day HH:MM:SS Year
+        //
         StringBuilder dateBuilder = new StringBuilder("");
 
 
