@@ -31,6 +31,7 @@ import java.util.TimeZone;
 public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseToFragment {
     private final String TAG = "SecureAndroidClient";
     private final long MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
+    private final long CPP_JAVA_TIME_CORRECTION = 3571677;
     private final String address = "wleungtx.no-ip.biz";
     private final int port = 9999;
 
@@ -173,6 +174,14 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
         //Find how far the time is from the current time
         long currentTime = System.currentTimeMillis();
         long diff = currentTime - timestamp;
+        diff += CPP_JAVA_TIME_CORRECTION;   //ideally, Java and c++'s methods should return the # milliseconds
+                                            //from the epoch should return the same value. However, they don't.
+                                            //c++'s time function consistently gives a value that is around 3571713 off of
+                                            //Java's time function. In order to correctly format the date, we need Java and c++'s time values
+                                            //to be as close as possible. I averaged the difference from multiple runs
+                                            //to calculate the value. This value will be added onto diff, in order to
+                                            //more accurately display the difference
+
         long diffInDays = diff / MILLISECONDS_IN_A_DAY;
 
         //Create a GregorianCalendar with CST Timezone, so that we can
@@ -183,15 +192,15 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
         int curr_year = calendar.get(Calendar.YEAR);
         int curr_day = calendar.get(Calendar.DATE);
 
-        Log.i(TAG, "timestamp: " + timestamp);
-        Log.i(TAG, "currentTimeMillis: " + currentTime);
-        Log.i(TAG, "calendar millis: " + calendar.getTimeInMillis());
+//        Log.i(TAG, "timestamp: " + timestamp);
+//        Log.i(TAG, "currentTimeMillis: " + currentTime);
+//        Log.i(TAG, "calendar millis: " + calendar.getTimeInMillis());
         Log.i(TAG, "diff: " + diff);
-        Log.i(TAG, "diffInDays: " + diffInDays);
-        Log.i(TAG, "hour: " + hour);
-        Log.i(TAG, "min: " + min);
-        Log.i(TAG, "curr_day: " + curr_day);
-        Log.i(TAG, "day_of_month: " + day_of_month);
+//        Log.i(TAG, "diffInDays: " + diffInDays);
+//        Log.i(TAG, "hour: " + hour);
+//        Log.i(TAG, "min: " + min);
+//        Log.i(TAG, "curr_day: " + curr_day);
+//        Log.i(TAG, "day_of_month: " + day_of_month);
 
         if(diffInDays < 1) {
             //Case 1: If Time < 1 day, and it's the same day:     HH:MM AM/PM
