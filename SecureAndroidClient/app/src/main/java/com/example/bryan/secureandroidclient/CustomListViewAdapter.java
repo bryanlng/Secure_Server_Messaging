@@ -111,7 +111,7 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
         //Date. Does special formatting, depending on how far the date is
         //from the current date
         TextView date = (TextView) view.findViewById(R.id.date);
-        long timestamp = messages.get(position).getTimestamp();
+        Long timestamp = messages.get(position).getTimestamp();
         String unformatted_date = messages.get(position).getDateFormatted();
         String formatted_date = formatDate(unformatted_date, timestamp);
         date.setText(formatted_date);
@@ -155,8 +155,8 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
             Thu Feb  2 23:56:31 2017
             FOr som
      */
-    public String formatDate(String date, long timestamp){
-        Log.i(TAG, "formatDate(), with raw date: " + date);
+    public String formatDate(String date, Long timestamp){
+//        Log.i(TAG, "formatDate(), with raw date: " + date);
 
         //1. Extract all fields
         String[] items = date.split(" ");
@@ -195,7 +195,7 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
 //        Log.i(TAG, "timestamp: " + timestamp);
 //        Log.i(TAG, "currentTimeMillis: " + currentTime);
 //        Log.i(TAG, "calendar millis: " + calendar.getTimeInMillis());
-        Log.i(TAG, "diff: " + diff);
+//        Log.i(TAG, "diff: " + diff);
 //        Log.i(TAG, "diffInDays: " + diffInDays);
 //        Log.i(TAG, "hour: " + hour);
 //        Log.i(TAG, "min: " + min);

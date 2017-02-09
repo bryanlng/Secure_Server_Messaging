@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.lang.Long;
 
 /**
  * Created by Bryan on 2/1/2017.
@@ -106,20 +107,22 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
                 String rawMessage = rawBuffer.substring(0, bytesRead-1);        //bytesRead-1 b/c we strip out null character
 
                 //Parse the message, extract contents, then add to the ArrayList
-                long timestamp;
+                Long timestamp;
                 String date_formatted;
                 String message;
                 String sender;
 
                 String[] items = rawMessage.split(REGULAR_MESSAGE_DELIMITER);
 
-                timestamp = Long.parseLong(items[0]);
+                timestamp = Long.valueOf((items[0]));
                 date_formatted = items[1];
                 message = items[2];
                 sender = items[3];
 
                 Log.i(TAG, "after stripping out only the message: " + rawMessage);
                 Log.i(TAG, "date_formatted: " + date_formatted);
+                Log.i(TAG, "timestamp in Long: " + timestamp);
+                Log.i(TAG, "timestamp longValue(): " + timestamp.longValue());
                 Log.i(TAG, "message: " + message);
                 Log.i(TAG, "sender: " + sender);
                 MessageItem messageItem = new MessageItem(rawMessage, timestamp, date_formatted, message, sender, true);

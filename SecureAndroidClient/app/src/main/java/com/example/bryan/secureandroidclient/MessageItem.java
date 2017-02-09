@@ -13,7 +13,7 @@ import android.util.Log;
 public class MessageItem implements Parcelable{
     private final String TAG = "SecureAndroidClient";
     private String rawMessage;
-    private long timestamp;
+    private Long timestamp;
     private String date_formatted;
     private String message;
     private String sender;
@@ -22,7 +22,7 @@ public class MessageItem implements Parcelable{
     /*
         Regular constructor
      */
-    public MessageItem(String raw, long ts, String date, String m, String s, boolean b){
+    public MessageItem(String raw, Long ts, String date, String m, String s, boolean b){
         rawMessage = raw;
         timestamp = ts;
         date_formatted = date;
@@ -45,7 +45,7 @@ public class MessageItem implements Parcelable{
 
     /*Getters*/
     public String getRawMessage(){ return rawMessage; }
-    public long getTimestamp(){ return timestamp; }
+    public Long getTimestamp(){ return timestamp; }
     public String getDateFormatted(){ return date_formatted; }
     public String getMessage(){ return message; }
     public String getSender(){ return sender; }
