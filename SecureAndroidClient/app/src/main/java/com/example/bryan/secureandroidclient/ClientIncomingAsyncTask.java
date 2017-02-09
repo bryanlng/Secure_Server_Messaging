@@ -100,8 +100,8 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, bytesRead);
                 String rawBuffer = new String(buffer);
-                Log.i(TAG, "# of bytes read: " + bytesRead);
-                Log.i(TAG, "length of rawBuffer: " + rawBuffer.length());
+//                Log.i(TAG, "# of bytes read: " + bytesRead);
+//                Log.i(TAG, "length of rawBuffer: " + rawBuffer.length());
 
                 //Get the raw message out, taking out the null character attached in the process.
                 String rawMessage = rawBuffer.substring(0, bytesRead-1);        //bytesRead-1 b/c we strip out null character
@@ -119,10 +119,9 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
                 message = items[2];
                 sender = items[3];
 
-                Log.i(TAG, "after stripping out only the message: " + rawMessage);
-                Log.i(TAG, "date_formatted: " + date_formatted);
-                Log.i(TAG, "timestamp in Long: " + timestamp);
-                Log.i(TAG, "timestamp longValue(): " + timestamp.longValue());
+//                Log.i(TAG, "after stripping out only the message: " + rawMessage);
+//                Log.i(TAG, "date_formatted: " + date_formatted);
+//                Log.i(TAG, "timestamp in Long: " + timestamp);
                 Log.i(TAG, "message: " + message);
                 Log.i(TAG, "sender: " + sender);
                 MessageItem messageItem = new MessageItem(rawMessage, timestamp, date_formatted, message, sender, true);

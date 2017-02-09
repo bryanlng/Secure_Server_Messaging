@@ -53,10 +53,12 @@ public class MessageItem implements Parcelable{
 
 
     /*Methods required in order to get Parcel working*/
+    @Override
     public int describeContents() {
         return 0;
     }
 
+    @Override
     public void writeToParcel(Parcel dest, int flags) {
         Log.i(TAG, "entering writeToParcel()");
         dest.writeString(rawMessage);

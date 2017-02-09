@@ -41,10 +41,12 @@ public class MessagesFragment extends Fragment {
 
         //Check if we just came out of a configuration change
         if(savedInstanceState != null){
-            messages = savedInstanceState.getParcelableArrayList("messages");
+            Log.i(TAG, "just came out of a configuration change");
+            messages = savedInstanceState.getParcelableArrayList(SAVED_INS_STATE_KEY);
         }
         else{
-            messages = new ArrayList<>();
+            Log.i(TAG, "first time, no configuration change");
+            messages = new ArrayList<MessageItem>();
         }
 
         //Instantiate the ListView, create a CustomListViewAdapter, and set it to the ListView
@@ -77,6 +79,4 @@ public class MessagesFragment extends Fragment {
         savedInstanceState.putParcelableArrayList(SAVED_INS_STATE_KEY, messages);
         super.onSaveInstanceState(savedInstanceState);
     }
-
-
 }
