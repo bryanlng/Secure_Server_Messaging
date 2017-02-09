@@ -197,11 +197,22 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
             //Case 1: If Time < 1 day, and it's the same day:     HH:MM AM/PM
             if(curr_day == day_of_month){
                 if(hour >= 12){
-                    return "" + (hour-12) + ":" + min + " PM";
+                    if(min < 10){
+                        return "" + (hour-12) + ":" + "0" + min + " PM";
+                    }
+                    else{
+                        return "" + (hour-12) + ":" + min + " PM";
+                    }
+
                 }
 
                 else{
-                    return "" + hour + ":" + min + " AM";
+                    if(min < 10){
+                        return "" + (hour-12) + ":" + "0" + min + " AM";
+                    }
+                    else{
+                        return "" + (hour-12) + ":" + min + " AM";
+                    }
                 }
             }
 

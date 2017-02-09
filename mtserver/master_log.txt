@@ -1,2 +1,3 @@
-1486080473:::::::Thu Feb  2 17:07:53 2017:::::::aaaaaaaaaaaaaaaaaaaaaaaa:::::::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:::::::
-1486080474:::::::Thu Feb  2 17:07:54 2017:::::::bbbbbbbbbbbb:::::::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:::::::
+1486612572367:::::::Wed Feb  8 20:56:12 2017:::::::bbbbbbbbbbbbb:::::::bryan:::::::
+1486612598191:::::::Wed Feb  8 20:56:38 2017:::::::[A[Bfffffffffffff:::::::bryan:::::::
+1486612601490:::::::Wed Feb  8 20:56:41 2017:::::::aaaaaaaaaaaaa:::::::bryan:::::::
