@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 
 	//If there's a connection, create the 2 Threads to send and receive messages
 	if (stream) {
-		wqueue<long>  m_queue;
+		wqueue<long long>  m_queue;
 		std::string name = "timestamp_filler";
 		ClientTimestampFiller* timestamp_filler = new ClientTimestampFiller(m_queue,name);
 		timestamp_filler->start();
