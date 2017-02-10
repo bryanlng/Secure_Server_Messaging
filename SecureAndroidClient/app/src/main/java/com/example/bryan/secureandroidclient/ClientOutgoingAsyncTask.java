@@ -27,7 +27,12 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     private String name = "bryan";
     private final int MAX_MESSAGE_SIZE = 25600;
     private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
-    private int CST_TIMEZONE_ID = 601;
+    private final long CPP_JAVA_TIME_CORRECTION = 3571677;
+    private final int CST_OFFSET = -6 * 60 * 60 * 1000;
+    private final int ADJUSTED_CST_OFFSET = (-6 * 60 * 60 * 1000) - 3600000;
+    private final int AMERICA_CHICAG0_TIMEZONE_ID = 2;
+    private final int DAYLIGHT_SAVINGS_TIME = 2 * 60 * 60 * 1000;
+
 
     private String serverAddress;
     private int serverPort;
@@ -68,7 +73,9 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         StringBuilder builder = new StringBuilder("");
 
         //1. Generate timestamp, then concatenate onto our string
+        //Have to account for
         long currentTime = System.currentTimeMillis();
+        currentTime -= CPP_JAVA_TIME_CORRECTION;
         builder.append(currentTime);
         builder.append(REGULAR_MESSAGE_DELIMITER);
 
@@ -76,24 +83,46 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
 
         //Generate a Gregorian Calendar with the timezone CST (GMT - 6:00)
         // get the supported ids for GMT-06:00 (Central Standard Time)
-        String[] ids = TimeZone.getAvailableIDs();
-        TimeZone tz = TimeZone.getTimeZone("GMT-6");
-//        String id = tz.getID();
-//        int offset = tz.getRawOffset();
-//        SimpleTimeZone CST = new SimpleTimeZone(offset, id);
-//        Calendar calendar = new GregorianCalendar(CST);
-//        Date trialTime = new Date();
-//        calendar.setTime(trialTime);
-        Calendar calendar = new GregorianCalendar(tz);
+        String[] ids = TimeZone.getAvailableIDs(CST_OFFSET);
+        // if no ids were returned, something is wrong. get out.
+        if (ids.length == 0)
+            System.exit(0);
 
+        // begin output
+        System.out.println("Current Time");
 
-        //Extract day, month, year, day_of_week, HH:MM:SS add put it all into a long string
-        //in the order of:              day_of_week Mon Day HH:MM:SS Year
-        //
+        // create a Pacific Standard Time time zone
+        SimpleTimeZone pdt = new SimpleTimeZone(ADJUSTED_CST_OFFSET, ids[AMERICA_CHICAG0_TIMEZONE_ID]);
+
+        // set up rules for Daylight Saving Time
+        pdt.setStartRule(Calendar.APRIL, 1, Calendar.SUNDAY, DAYLIGHT_SAVINGS_TIME);
+        pdt.setEndRule(Calendar.OCTOBER, -1, Calendar.SUNDAY, DAYLIGHT_SAVINGS_TIME);
+
+        // create a GregorianCalendar with the Pacific Daylight time zone
+        // and the current date and time
+        Calendar calendar = new GregorianCalendar(pdt);
+        Date trialTime = new Date();
+        calendar.setTime(trialTime);
+
+        //Extract day, month, year, day_of_week, HH:MM:SS add put it all into
+        //a big string in the format of:    day_of_week Mon Day HH:MM:SS Year
+        int year = calendar.get(Calendar.YEAR);
+        String month = intToMonth(calendar.get(Calendar.MONTH));   //In android, Jan = 0
+        int day_of_month = calendar.get(Calendar.DATE);
+        String day_of_week = intToWeek(calendar.get(Calendar.DAY_OF_WEEK));
+        String military_hour = formatHMS(calendar.get(Calendar.HOUR_OF_DAY));
+        String min = formatHMS(calendar.get(Calendar.MINUTE));
+        String sec = formatHMS(calendar.get(Calendar.SECOND));
+
+        //Append onto a StringBuilder
         StringBuilder dateBuilder = new StringBuilder("");
-
-
-        String dummy = "Wed Jan 25 00:23:17 2017";
+        dateBuilder.append(day_of_week + " ");      //add the space, as it's our delimiter
+        dateBuilder.append(month + "  ");           //add the double space, because cpp formatted it really weirdly
+        dateBuilder.append(day_of_month + " ");
+        dateBuilder.append(military_hour + ":");
+        dateBuilder.append(min + ":");
+        dateBuilder.append(sec + " ");
+        dateBuilder.append(year);
         builder.append(REGULAR_MESSAGE_DELIMITER);
 
         //3. Add on message
@@ -173,7 +202,6 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         response.retrieveResponse(newMessage[0]);
     }
 
-
     public String intToMonth(int id){
         switch(id){
             case 0: return "Jan";
@@ -190,6 +218,27 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
             case 11: return "Dec";
             default: return "error";
         }
+    }
+
+    public String intToWeek(int id){
+        switch(id){
+            case 1: return "Sun";
+            case 2: return "Mon";
+            case 3: return "Tues";
+            case 4: return "Wed";
+            case 5: return "Thu";
+            case 6: return "Fri";
+            case 7: return "Sat";
+            default: return "error";
+        }
+    }
+
+    public String formatHMS(int value){
+        if (value < 10){
+            return "0" + value;
+        }
+
+        return "" + value;
     }
 
 
