@@ -3,11 +3,14 @@ package com.example.bryan.secureandroidclient;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -47,10 +50,10 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         from MessagesFragment into here. Normally, you would need a reference, but
         somehow it works.
      */
-    public ClientOutgoingAsyncTask(String address, int port, String m){
+    public ClientOutgoingAsyncTask(String address, int port, String mess){
         serverAddress = address;
         serverPort = port;
-        message = m;
+        message = mess;
     }
 
     /*
@@ -67,10 +70,9 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
             socket = new Socket(serverAddress, serverPort);
 
             Log.i(TAG, "ClientOutgoingAsyncTask: established connection");
-            OutputStream out = socket.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(out);
             MessageItem formattedMessage = formatMessage(message);
-            dos.writeChars(formattedMessage.getRawMessage());
+            PrintWriter printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+            printWriter.println(formattedMessage.getRawMessage());
             publishProgress(formattedMessage);
 
         }
@@ -150,7 +152,7 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
             System.exit(0);
 
         // create a Pacific Standard Time time zone
-        SimpleTimeZone pdt = new SimpleTimeZone(ADJUSTED_CST_OFFSET, ids[AMERICA_CHICAG0_TIMEZONE_ID]);
+        SimpleTimeZone pdt = new SimpleTimeZone(CST_OFFSET, ids[AMERICA_CHICAG0_TIMEZONE_ID]);
 
         // set up rules for Daylight Saving Time
         pdt.setStartRule(Calendar.APRIL, 1, Calendar.SUNDAY, DAYLIGHT_SAVINGS_TIME);

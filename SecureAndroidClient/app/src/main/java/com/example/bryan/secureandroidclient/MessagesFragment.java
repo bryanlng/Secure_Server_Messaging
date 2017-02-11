@@ -63,7 +63,6 @@ public class MessagesFragment extends Fragment {
         //this message is called
 
         if(adapter != null){
-            Log.i(TAG, "MessageFragment addMessageToListView(), adding message: " + mItem.getRawMessage());
             ArrayList<MessageItem> messages = adapter.getMessageArrayList();
             messages.add(mItem);
             adapter.notifyDataSetChanged();

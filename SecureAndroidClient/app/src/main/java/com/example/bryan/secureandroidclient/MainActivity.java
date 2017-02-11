@@ -90,7 +90,6 @@ public class MainActivity extends ActionBarActivity implements AsyncResponseToMa
         we need to be inside the context of an Activity, not an onTouchListener
      */
     public void startOutgoingTask(String message){
-        Log.i(TAG, "startOutgoingTask(), message to be sent: " + message);
         ClientOutgoingAsyncTask client = new ClientOutgoingAsyncTask(address, port, message);
         client.response = this;
         client.execute();
