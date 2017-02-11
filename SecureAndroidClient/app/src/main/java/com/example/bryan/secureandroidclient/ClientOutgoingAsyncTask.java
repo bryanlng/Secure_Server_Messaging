@@ -54,6 +54,67 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     }
 
     /*
+         Creates a new Socket connection, then listens for messages
+         Once a message arrives, write it to a temp buffer, then sends it
+         to publishProgress so that it can be added to the official messages ArrayList
+     */
+    @Override
+    protected Void doInBackground(Void... arg0){
+        Log.i(TAG, "inside doInBackground");
+        Socket socket = null;
+        try{
+
+            socket = new Socket(serverAddress, serverPort);
+
+            Log.i(TAG, "ClientOutgoingAsyncTask: established connection");
+            OutputStream out = socket.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(out);
+            MessageItem formattedMessage = formatMessage(message);
+            dos.writeChars(formattedMessage.getRawMessage());
+            publishProgress(formattedMessage);
+
+        }
+        catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            Log.i(TAG, "UnknownHostException: " + e.toString());
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            Log.i(TAG, "IOException: " + e.toString());
+        }
+        finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+
+                }
+                catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    /*
+        Called on the main UI thread,
+
+        This message is called after publishProgress(), which was called
+        in doInBackground(). Usually, results are passed in onPostExecute().
+        However, since we're stuck in a while loop in doInBackground() reading
+        messages, the only way to pass messages is through this method, combined
+        with the main UI's overridden retrieveResponse()
+     */
+    @Override
+    protected void onProgressUpdate(MessageItem... newMessage){
+        Log.i(TAG, "ClientOutgoingAsyncTask onProgressUpdate()");
+        response.retrieveResponse(newMessage[0]);
+    }
+
+    /*
 	Given a regular message, generates a formatted version with metatdata included
 	that can be parsed by the server
 
@@ -74,7 +135,7 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
 
         //1. Generate timestamp, then concatenate onto our string
         //Have to account for
-        long currentTime = System.currentTimeMillis();
+        Long currentTime = System.currentTimeMillis();
         currentTime -= CPP_JAVA_TIME_CORRECTION;
         builder.append(currentTime);
         builder.append(REGULAR_MESSAGE_DELIMITER);
@@ -87,9 +148,6 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         // if no ids were returned, something is wrong. get out.
         if (ids.length == 0)
             System.exit(0);
-
-        // begin output
-        System.out.println("Current Time");
 
         // create a Pacific Standard Time time zone
         SimpleTimeZone pdt = new SimpleTimeZone(ADJUSTED_CST_OFFSET, ids[AMERICA_CHICAG0_TIMEZONE_ID]);
@@ -137,69 +195,8 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         char c = 0;
         builder.append(c);
 
+        Log.i(TAG, "outgoing task formatMessage() raw message: " + builder.toString());
         return new MessageItem(builder.toString(),currentTime, dateBuilder.toString() ,message, name, false);
-    }
-
-    /*
-         Creates a new Socket connection, then listens for messages
-         Once a message arrives, write it to a temp buffer, then sends it
-         to publishProgress so that it can be added to the official messages ArrayList
-     */
-    @Override
-    protected Void doInBackground(Void... arg0){
-        Log.i(TAG, "inside doInBackground");
-        Socket socket = null;
-        try{
-
-            socket = new Socket(serverAddress, serverPort);
-
-            OutputStream out = socket.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(out);
-//            MessageItem formattedMessage = formatMessage(message);
-//            dos.writeChars(formattedMessage.getRawMessage());
-//            publishProgress(formattedMessage);
-
-            String temp = "1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::bryan:::::::";
-            dos.writeChars(temp);
-
-        }
-        catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Log.i(TAG, "UnknownHostException: " + e.toString());
-        }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Log.i(TAG, "IOException: " + e.toString());
-        }
-        finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-
-                }
-                catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
-    }
-
-    /*
-        Called on the main UI thread,
-
-        This message is called after publishProgress(), which was called
-        in doInBackground(). Usually, results are passed in onPostExecute().
-        However, since we're stuck in a while loop in doInBackground() reading
-        messages, the only way to pass messages is through this method, combined
-        with the main UI's overridden retrieveResponse()
-     */
-    @Override
-    protected void onProgressUpdate(MessageItem... newMessage){
-        response.retrieveResponse(newMessage[0]);
     }
 
     public String intToMonth(int id){

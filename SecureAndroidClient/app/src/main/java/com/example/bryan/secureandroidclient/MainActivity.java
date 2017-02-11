@@ -52,10 +52,11 @@ public class MainActivity extends ActionBarActivity implements AsyncResponseToMa
 
                 if(event.getAction() == MotionEvent.ACTION_UP) {
                     if(event.getRawX() >= (chatbox.getRight() - chatbox.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-
+                        Log.i(TAG, "Send button was touched!");
                         //Start the AsyncTask to send outgoing messages, and give it the current text on the EditText
                         //If the message is empty, prompt user to type in input
                         String message = chatbox.getText().toString();
+                        Log.i(TAG, "message from EditText, to be sent: " + message);
                         if(message.equals("")){
                             Log.i(TAG, "showAlertDialog with message: " + message);
                             AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext()); //getActivity().getApplicationContext());
@@ -71,9 +72,7 @@ public class MainActivity extends ActionBarActivity implements AsyncResponseToMa
                         }
                         else{
                             //Start the AsyncTask to listen for incoming messages
-//                            ClientOutgoingAsyncTask client = new ClientOutgoingAsyncTask(address, port, message);
-//                            client.response = this;
-//                            client.execute();
+                            startOutgoingTask(message);
                         }
 
                         return true;
@@ -83,6 +82,18 @@ public class MainActivity extends ActionBarActivity implements AsyncResponseToMa
             }
         });
 
+    }
+
+    /*
+        Starts a ClientOutgoingAsyncTask, which allows the client to send messages to the server
+        Had to be placed in a method outside, or else "client.response = this;" will fail, since
+        we need to be inside the context of an Activity, not an onTouchListener
+     */
+    public void startOutgoingTask(String message){
+        Log.i(TAG, "startOutgoingTask(), message to be sent: " + message);
+        ClientOutgoingAsyncTask client = new ClientOutgoingAsyncTask(address, port, message);
+        client.response = this;
+        client.execute();
     }
 
     /*
@@ -102,7 +113,7 @@ public class MainActivity extends ActionBarActivity implements AsyncResponseToMa
      */
     @Override
     public void retrieveResponse(MessageItem message){
-        Log.i(TAG, "retrieveResponse(): Adding message: " + message);
+        Log.i(TAG, "MainActivity retrieveResponse(): Adding message: " + message.getRawMessage());
         messagesFragment.addMessageToListView(message);
     }
 
