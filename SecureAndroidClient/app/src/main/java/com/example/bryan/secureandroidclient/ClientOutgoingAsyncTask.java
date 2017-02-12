@@ -26,22 +26,21 @@ import java.util.TimeZone;
  * Created by Bryan on 2/3/2017.
  */
 public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> {
-    private final String TAG = "SecureAndroidClient";
-    private String name = "bryan";
-    private final int MAX_MESSAGE_SIZE = 25600;
-    private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
-    private final long CPP_JAVA_TIME_CORRECTION = 3571677;
-    private final int CST_OFFSET = -6 * 60 * 60 * 1000;
-    private final int ADJUSTED_CST_OFFSET = (-6 * 60 * 60 * 1000) - 3600000;
-    private final int AMERICA_CHICAG0_TIMEZONE_ID = 2;
-    private final int DAYLIGHT_SAVINGS_TIME = 2 * 60 * 60 * 1000;
-
+    private final String TAG                          =                      "SecureAndroidClient";
+    private String       name                         =                      "bryan";
+    private final int    MAX_MESSAGE_SIZE             =                      25600;
+    private final String REGULAR_MESSAGE_DELIMITER    =                      ":::::::";
+    private final long   CPP_JAVA_TIME_CORRECTION     =                      3571677;
+    private final int    CST_OFFSET                   =                      -6 * 60 * 60 * 1000;
+    private final int    ADJUSTED_CST_OFFSET          =                      (-6 * 60 * 60 * 1000) - 3600000;
+    private final int    AMERICA_CHICAG0_TIMEZONE_ID  =                       2;
+    private final int    DAYLIGHT_SAVINGS_TIME        =                       2 * 60 * 60 * 1000;
 
     private String serverAddress;
     private int serverPort;
     private String message;
 
-    public AsyncResponseToMainActivity response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
+    public AsyncResponse response = null;   //Used to pass the message from publishProgress() --> adapter's retrieveResponse()
 
     /*
         Constructor

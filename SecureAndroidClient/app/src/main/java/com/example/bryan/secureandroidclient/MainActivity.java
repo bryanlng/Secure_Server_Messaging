@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,10 +19,16 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity implements AsyncResponseToMainActivity{
-    private final String TAG = "SecureAndroidClient";
-    private final String address = "wleungtx.no-ip.biz";
-    private final int port = 9999;
+public class MainActivity extends ActionBarActivity implements AsyncResponse{
+    private final String TAG            = "SecureAndroidClient";
+    private final String address        = "wleungtx.no-ip.biz";
+    private final int    port           = 9999;
+    public  final int    TASK_STARTED   = 0;
+    public  final int    TASK_FAILED    = -1;
+    public  final int    TASK_COMPLETE = 1;
+
+    private Handler mHandler;           // An object that manages Messages in a Thread
+
 
     private MessagesFragment messagesFragment;
     private EditText chatbox;
@@ -96,7 +103,7 @@ public class MainActivity extends ActionBarActivity implements AsyncResponseToMa
     }
 
     /*
-        Overridden method from the AsyncResponseToMainActivity interface
+        Overridden method from the AsyncResponse interface
         A copy of AsyncResponseToFragment's retreiveResponse(), but I had to be clever
         in being able to get the message to the ListAdapter.
 
@@ -139,4 +146,5 @@ public class MainActivity extends ActionBarActivity implements AsyncResponseToMa
 
         return super.onOptionsItemSelected(item);
     }
+
 }

@@ -25,15 +25,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-
-/**
- */
-public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseToFragment {
-    private final String TAG = "SecureAndroidClient";
-    private final long MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
-    private final long CPP_JAVA_TIME_CORRECTION = 3571677;
-    private final String address = "wleungtx.no-ip.biz";
-    private final int port = 9999;
+public class CustomListViewAdapter extends BaseAdapter { //implements AsyncResponseToFragment {
+    private final String    TAG                      = "SecureAndroidClient";
+    private final long      MILLISECONDS_IN_A_DAY    = 1000 * 60 * 60 * 24;
+    private final long      CPP_JAVA_TIME_CORRECTION = 3571677;
+    private final String    address                  = "wleungtx.no-ip.biz";
+    private final int       port                     = 9999;
 
     private Context context;
     private ArrayList<MessageItem> messages = new ArrayList<MessageItem>();
@@ -119,21 +116,6 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
 //        date.setText(unformatted_date);
 
         return view;
-    }
-
-    /*
-        Overridden method from the AsyncResponseToFragment interface
-        Adds the message to the official message ArrayList. getView() will
-        soon be called, which will allow the message to be shown above.
-
-        Call notifyDataSetChanged() to notify ListView to refresh its data,
-        by calling getView()
-     */
-    @Override
-    public void retrieveResponse(MessageItem message){
-        Log.i(TAG, "retrieveResponse(): Adding message: " + message);
-        messages.add(message);
-        notifyDataSetChanged();
     }
 
     /*
@@ -244,5 +226,21 @@ public class CustomListViewAdapter extends BaseAdapter implements AsyncResponseT
 
         }
     }
+
+    /*
+    Overridden method from the AsyncResponseToFragment interface
+    Adds the message to the official message ArrayList. getView() will
+    soon be called, which will allow the message to be shown above.
+
+    Call notifyDataSetChanged() to notify ListView to refresh its data,
+    by calling getView()
+ */
+//    @Override
+//    public void retrieveResponse(MessageItem message){
+//        Log.i(TAG, "retrieveResponse(): Adding message: " + message);
+//        messages.add(message);
+//        notifyDataSetChanged();
+//    }
+
 
 }
