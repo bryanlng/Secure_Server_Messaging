@@ -1,7 +1,10 @@
 package com.example.bryan.secureandroidclient;
 
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -38,6 +41,7 @@ public class IncomingMessageRunnable implements Runnable {
     @Override
     public void run(){
         Log.i(TAG, "IncomingMessageRunnable run()");
+//        Log.i(TAG, "Inside IncomingMessageRunnable: Are we on the main thread?: " + (Looper.myLooper() == Looper.getMainLooper()));
         for (int i = 0; i < 4; i++) {
             try {
                 TimeUnit.SECONDS.sleep(2);
@@ -45,19 +49,23 @@ public class IncomingMessageRunnable implements Runnable {
                 e.printStackTrace();
             }
             if (i == 2) {
-                mUiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i(TAG,"I am at the middle of background task, posted because i == 2");
-                    }
-                });
+                Message m = Message.obtain();
+                Bundle b = new Bundle();
+                b.putString("test", "ggg");
+                m.setData(b);
+
+                Log.i(TAG, "IncomingMessageRunnable run(): sending test message: ggg");
+
+                mUiHandler.sendMessageAtFrontOfQueue(m);
+
+//                mUiHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Log.i(TAG,"I am at the middle of background task, posted because i == 2");
+//
+//                    }
+//                });
             }
         }
-        mUiHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "I am at the middle of background task, posted outside of for loop");
-            }
-        });
     }
 }

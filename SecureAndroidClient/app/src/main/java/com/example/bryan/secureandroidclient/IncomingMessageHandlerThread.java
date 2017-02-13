@@ -2,15 +2,17 @@ package com.example.bryan.secureandroidclient;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
+import android.util.Log;
 
 /**
  * Created by Bryan on 2/12/2017.
  */
-public class IncomingHandlerThread extends HandlerThread {
-
+public class IncomingMessageHandlerThread extends HandlerThread {
+    private final String TAG            = "SecureAndroidClient";
     private Handler mWorkerHandler;
 
-    public IncomingHandlerThread(String name) {
+    public IncomingMessageHandlerThread(String name) {
         super(name);
     }
 

@@ -33,8 +33,8 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
     private MessagesFragment messagesFragment;
     private EditText chatbox;
-    private Handler mUiHandler = new Handler();
-    private IncomingHandlerThread mWorkerThread;
+    private IncomingMessageHandler messageHandler;
+    private IncomingMessageHandlerThread mWorkerThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +53,14 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
         //Initialize chatbox
         chatbox = (EditText)findViewById(R.id.chatbox);
 
+//        Log.i(TAG, "Inside MainActivity: Are we on the main thread?: " + (Looper.myLooper() == Looper.getMainLooper()));
+
         //Initialize Handler
-        mWorkerThread = new IncomingHandlerThread("myWorkerThread");
-        IncomingMessageRunnable task = new IncomingMessageRunnable(mUiHandler);
+        messageHandler = new IncomingMessageHandler(messagesFragment);
+
+        //Initialize thread to handle incoming messages
+        mWorkerThread = new IncomingMessageHandlerThread("handler");
+        IncomingMessageRunnable task = new IncomingMessageRunnable(messageHandler);
         mWorkerThread.start();
         mWorkerThread.prepareHandler();
         mWorkerThread.postTask(task);
@@ -133,6 +138,12 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     public void retrieveResponse(MessageItem message){
         Log.i(TAG, "MainActivity retrieveResponse(): Adding message: " + message.getRawMessage());
         messagesFragment.addMessageToListView(message);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mWorkerThread.quit();
+        super.onDestroy();
     }
 
 
