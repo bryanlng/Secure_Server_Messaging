@@ -134,8 +134,8 @@ public class CustomListViewAdapter extends BaseAdapter { //implements AsyncRespo
             -(Month) (Day), (Year)
 
         Ex of date_formatted:
-            Thu Feb  2 23:56:31 2017
-            FOr som
+            Thu Feb  2 23:56:31 2017            //day < 10
+            Mon Feb 13 14:33:02 2017            //day > 10
      */
     public String formatDate(String date, Long timestamp){
 //        Log.i(TAG, "formatDate(), with raw date: " + date);
@@ -145,12 +145,32 @@ public class CustomListViewAdapter extends BaseAdapter { //implements AsyncRespo
 
         String day_of_week = items[0];
         String month = items[1];
-        int day_of_month = Integer.parseInt(items[3]);
 
-        String[] hms = items[4].split(":");
-        int hour = Integer.parseInt(hms[0]);
-        int min = Integer.parseInt(hms[1]);
-        int year = Integer.parseInt(items[5]);
+        int day_of_month,hour,min,year;
+        //For some odd reason, if the day > 10, c++ will add a space, completely throwing off our delimiter
+        //as well as the rest of the elements. If not, c++ won't add a space. So we have to account for that
+        String space_or_int = items[2];
+
+        //Case 1: Day < 10
+        if(space_or_int.equals("")){
+            day_of_month = Integer.parseInt(items[3]);
+
+            String[] hms = items[4].split(":");
+            hour = Integer.parseInt(hms[0]);
+            min = Integer.parseInt(hms[1]);
+            year = Integer.parseInt(items[5]);
+        }
+
+        //Case 2: Day > 10
+        else{
+            day_of_month = Integer.parseInt(items[2]);
+
+            String[] hms = items[3].split(":");
+            hour = Integer.parseInt(hms[0]);
+            min = Integer.parseInt(hms[1]);
+            year = Integer.parseInt(items[4]);
+        }
+
 
         //2. Go through the 4 cases
         //Find how far the time is from the current time

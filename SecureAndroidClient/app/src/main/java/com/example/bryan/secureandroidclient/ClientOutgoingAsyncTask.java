@@ -176,12 +176,20 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         //Append onto a StringBuilder
         StringBuilder dateBuilder = new StringBuilder("");
         dateBuilder.append(day_of_week + " ");      //add the space, as it's our delimiter
-        dateBuilder.append(month + "  ");           //add the double space, because cpp formatted it really weirdly
-        dateBuilder.append(day_of_month + " ");
+        dateBuilder.append(month + " ");
+
+        //it's stupid, but we have to follow c++'s silly date formatting. Add a space if the date < 10
+        if(day_of_month < 10){
+            dateBuilder.append(day_of_month + "  ");
+        }
+        else{
+            dateBuilder.append(day_of_month + " ");
+        }
         dateBuilder.append(military_hour + ":");
         dateBuilder.append(min + ":");
         dateBuilder.append(sec + " ");
         dateBuilder.append(year);
+        builder.append(dateBuilder.toString());
         builder.append(REGULAR_MESSAGE_DELIMITER);
 
         //3. Add on message
