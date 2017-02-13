@@ -1,6 +1,11 @@
 package com.example.bryan.secureandroidclient;
 
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Bryan on 2/11/2017.
@@ -10,37 +15,17 @@ import android.graphics.Bitmap;
  *
  */
 public class IncomingMessageRunnable implements Runnable {
-    // Constants for indicating the state of the decode
-    public static final int STATE_FAILED = -1;
-    public static final int STATE_STARTED = 0;
-    public static final int STATE_COMPLETED = 1;
-
-    private IncomingMessageTask parentTask;
-
-    interface IncomingMessageRunnableMethods{
-        /**
-         * Sets the actions for each state of the IncomingMessageRunnable instance.
-         * @param state The state being handled.
-         */
-        void handleRunnableState(int state);
-
-        /**
-         * Sets the MessageItem for the IncomingMessageTask, given to it by the
-         * IncomingMessageRunnable
-         * @param m The MessageItem being given to the IncomingMessageTask
-         */
-        void setMessageItem(MessageItem m);
-    }
-
-
-
+    private final String TAG = "SecureAndroidClient";
+    private Handler mUiHandler;
     /*
         Constructor
-        Takes in a reference to the IncomingMessageTask which created it
+        Takes in a reference to the IncomingMessageT
+        ask which created it
         We need this reference, because we need to give it our result
      */
-    public IncomingMessageRunnable(IncomingMessageTask p){
-        parentTask = p;
+    public IncomingMessageRunnable(Handler h){
+        Log.i(TAG, "IncomingMessageRunnable constructor");
+        mUiHandler = h;
     }
 
     /*
@@ -48,38 +33,31 @@ public class IncomingMessageRunnable implements Runnable {
            Once a message arrives, write it to a temp buffer, then sends it
            to publishProgress so that it can be added to the official messages ArrayList
 
-           (what doInBackGround() from ClientIncomingAsyncTask did)
+           Basically, what doInBackGround() from ClientIncomingAsyncTask did
      */
+    @Override
     public void run(){
-        //dummy values for a MessageItem
-//        -Ex:
-//        1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::bryan:::::::
-        String delimiter = ":::::::";
-        StringBuilder b = new StringBuilder("");
-
-        Long ts = new Long(1485328997);
-        b.append(ts);
-        b.append(delimiter);
-
-        String date = "Wed Jan 25 00:23:17 2017";
-        b.append(date);
-        b.append(delimiter);
-
-        String m = "kkkk";
-        b.append(m);
-        b.append(delimiter);
-
-        String s = "bryan";
-        b.append(s);
-        b.append(delimiter);
-
-        MessageItem messageItem = new MessageItem(b.toString(), ts, date, m, s, true);
-
-        //Set IncomingMessageTask's MessageItem to be the generated MessageItem
-        parentTask.setMessageItem(messageItem);
-
-        //Report a status of "completed"
-
-
+        Log.i(TAG, "IncomingMessageRunnable run()");
+        for (int i = 0; i < 4; i++) {
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (i == 2) {
+                mUiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG,"I am at the middle of background task, posted because i == 2");
+                    }
+                });
+            }
+        }
+        mUiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "I am at the middle of background task, posted outside of for loop");
+            }
+        });
     }
 }

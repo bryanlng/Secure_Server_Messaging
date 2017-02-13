@@ -6,6 +6,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +20,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.lang.ref.WeakReference;
+
 
 public class MainActivity extends ActionBarActivity implements AsyncResponse{
     private final String TAG            = "SecureAndroidClient";
@@ -27,11 +31,10 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     public  final int    TASK_FAILED    = -1;
     public  final int    TASK_COMPLETE = 1;
 
-    private Handler mHandler;           // An object that manages Messages in a Thread
-
-
     private MessagesFragment messagesFragment;
     private EditText chatbox;
+    private Handler mUiHandler = new Handler();
+    private IncomingHandlerThread mWorkerThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,14 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
         //Initialize chatbox
         chatbox = (EditText)findViewById(R.id.chatbox);
+
+        //Initialize Handler
+        mWorkerThread = new IncomingHandlerThread("myWorkerThread");
+        IncomingMessageRunnable task = new IncomingMessageRunnable(mUiHandler);
+        mWorkerThread.start();
+        mWorkerThread.prepareHandler();
+        mWorkerThread.postTask(task);
+
 
         //Initialize send button for the chatbox, which is implemented as android:drawableRight
         //If the send button is pressed, an AsyncTask to send outgoing messages is started and executed
@@ -90,6 +101,7 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
         });
 
     }
+
 
     /*
         Starts a ClientOutgoingAsyncTask, which allows the client to send messages to the server
@@ -148,3 +160,5 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     }
 
 }
+
+
