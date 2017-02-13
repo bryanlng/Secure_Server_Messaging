@@ -21,7 +21,11 @@ public class IncomingMessageHandler extends Handler {
     @Override
     public void handleMessage(Message inputMessage) {
         Bundle b = inputMessage.getData();
-        String s = b.getString("test");
-        Log.i(TAG, "IncomingMessageHandler handleMessage(): Received test message: " + s);
+        MessageItem m = b.getParcelable("test2");
+        if(b != null){
+            Log.i(TAG, "IncomingMessageHandler handleMessage(): Received test message: " + m.getRawMessage());
+        }
+//        String s = b.getString("test");
+//        Log.i(TAG, "IncomingMessageHandler handleMessage(): Received test message: " + s);
     }
 }

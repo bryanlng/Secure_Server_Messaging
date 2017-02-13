@@ -49,14 +49,42 @@ public class IncomingMessageRunnable implements Runnable {
                 e.printStackTrace();
             }
             if (i == 2) {
-                Message m = Message.obtain();
-                Bundle b = new Bundle();
-                b.putString("test", "ggg");
-                m.setData(b);
+                Message a_message = Message.obtain();
+                Bundle bundle = new Bundle();
+//                b.putString("test", "ggg");
+                //dummy values for a MessageItem
+//        -Ex:
+//        1485328997:::::::Wed Jan 25 00:23:17 2017:::::::kkkk:::::::bryan:::::::
+                String delimiter = ":::::::";
+                StringBuilder b = new StringBuilder("");
 
-                Log.i(TAG, "IncomingMessageRunnable run(): sending test message: ggg");
+                Long ts = new Long(1485328997);
+                b.append(ts);
+                b.append(delimiter);
 
-                mUiHandler.sendMessageAtFrontOfQueue(m);
+                String date = "Wed Jan 25 00:23:17 2017";
+                b.append(date);
+                b.append(delimiter);
+
+                String m = "kkkk";
+                b.append(m);
+                b.append(delimiter);
+
+                String s = "bryan";
+                b.append(s);
+                b.append(delimiter);
+
+                MessageItem messageItem = new MessageItem(b.toString(), ts, date, m, s, true);
+                bundle.putParcelable("test2", messageItem);
+
+                Log.i(TAG, "IncomingMessageRunnable run(): sending test messageItem");
+                a_message.setData(bundle);
+                mUiHandler.sendMessageAtFrontOfQueue(a_message);
+                Log.i(TAG, "IncomingMessageRunnable run(): sending test messageItem: " + messageItem.getRawMessage());
+//                m.setData(b);
+//                Log.i(TAG, "IncomingMessageRunnable run(): sending test message: ggg");
+//                mUiHandler.sendMessageAtFrontOfQueue(m);
+
 
 //                mUiHandler.post(new Runnable() {
 //                    @Override
