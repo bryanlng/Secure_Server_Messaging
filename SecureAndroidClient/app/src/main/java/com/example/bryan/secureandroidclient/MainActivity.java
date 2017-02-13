@@ -27,9 +27,6 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     private final String TAG            = "SecureAndroidClient";
     private final String address        = "wleungtx.no-ip.biz";
     private final int    port           = 9999;
-    public  final int    TASK_STARTED   = 0;
-    public  final int    TASK_FAILED    = -1;
-    public  final int    TASK_COMPLETE = 1;
 
     private MessagesFragment messagesFragment;
     private EditText chatbox;
@@ -60,7 +57,7 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
         //Initialize thread to handle incoming messages
         mWorkerThread = new IncomingMessageHandlerThread("handler");
-        IncomingMessageRunnable task = new IncomingMessageRunnable(messageHandler);
+        IncomingMessageRunnable task = new IncomingMessageRunnable(messageHandler, address, port);
         mWorkerThread.start();
         mWorkerThread.prepareHandler();
         mWorkerThread.postTask(task);

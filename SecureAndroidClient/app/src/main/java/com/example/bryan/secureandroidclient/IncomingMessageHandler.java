@@ -10,6 +10,7 @@ import android.util.Log;
  */
 public class IncomingMessageHandler extends Handler {
     private final String TAG = "SecureAndroidClient";
+    private final String MESSAGE_ITEM_PARCELABLE_KEY = "mess_item_key";
     private MessagesFragment messagesFragment;
 
     public IncomingMessageHandler(MessagesFragment m){ messagesFragment = m;  }
@@ -20,10 +21,11 @@ public class IncomingMessageHandler extends Handler {
      */
     @Override
     public void handleMessage(Message inputMessage) {
-        Bundle b = inputMessage.getData();
-        MessageItem m = b.getParcelable("test2");
-        if(b != null){
-            Log.i(TAG, "IncomingMessageHandler handleMessage(): Received test message: " + m.getRawMessage());
+        Bundle bundle = inputMessage.getData();
+        MessageItem messageItem = bundle.getParcelable(MESSAGE_ITEM_PARCELABLE_KEY);
+        if(bundle != null){
+            Log.i(TAG, "IncomingMessageHandler handleMessage(): Received test message: " + messageItem.getRawMessage());
+            messagesFragment.addMessageToListView(messageItem);
         }
 //        String s = b.getString("test");
 //        Log.i(TAG, "IncomingMessageHandler handleMessage(): Received test message: " + s);

@@ -47,7 +47,6 @@ public class ClientIncomingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
     private final String TAG = "SecureAndroidClient";
     private final int MAX_MESSAGE_SIZE = 25600;
     private final String REGULAR_MESSAGE_DELIMITER = ":::::::";
-
     private String serverAddress;
     private int serverPort;
 
