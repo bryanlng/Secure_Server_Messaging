@@ -81,7 +81,7 @@ public class IncomingMessageRunnable implements Runnable {
              *  3) Call publishProgress(), which will send the message back to the adapter
              *     to be displayed
              *  4) Clean the buffer using Arrays.fill
-             *x
+             *
              * notice: inputStream.read() will block if no data return
 			 */
                 while ((bytesRead = inputStream.read(buffer)) != -1) {

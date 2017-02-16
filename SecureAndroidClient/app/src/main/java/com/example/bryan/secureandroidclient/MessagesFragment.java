@@ -1,6 +1,7 @@
 package com.example.bryan.secureandroidclient;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -17,6 +18,11 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 
@@ -25,6 +31,7 @@ import java.util.ArrayList;
 public class MessagesFragment extends Fragment {
     private final String TAG = "SecureAndroidClient";
     private final String SAVED_INS_STATE_KEY = "messages";
+    private final String MESSAGE_LOG_FILENAME = "C:\\cygwin64\\home\\Bryan\\secure_server\\SecureAndroidClient\\app\\src\\main\\client_message_log.txt";
     private ListView messagesListView;
     private CustomListViewAdapter adapter;
     private ArrayList<MessageItem> messages;
@@ -79,4 +86,87 @@ public class MessagesFragment extends Fragment {
         savedInstanceState.putParcelableArrayList(SAVED_INS_STATE_KEY, messages);
         super.onSaveInstanceState(savedInstanceState);
     }
+
+    @Override
+    public void onPause(){
+        Log.i(TAG, "onPause()");
+        super.onPause();
+    }
+
+    /*
+        Save all the MessageItems from messages into the appropriate file
+        Similar to what the server does, for every MessageItem, it writes the entire raw message
+        into 1 line of the file
+     */
+    @Override
+    public void onStop(){
+        Log.i(TAG, "onStop()");
+
+        File file;
+        FileOutputStream stream = null;
+        try {
+            file = new File(MESSAGE_LOG_FILENAME);
+            stream = new FileOutputStream(file);
+
+            
+            stream.write("text-to-write".getBytes());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            try{
+                stream.close();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+//        try{
+//
+//            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+//                    getActivity().openFileOutput(MESSAGE_LOG_FILENAME, Context.MODE_APPEND));
+//            for(MessageItem m: messages){
+//                Log.i(TAG, "writing message: " + m.getRawMessage());
+//                outputStreamWriter.write(m.getRawMessage());
+//            }
+//            outputStreamWriter.close();
+//        }
+//        catch (IOException e) {
+//            Log.e("Exception", "File write failed: " + e.toString());
+//        }
+
+
+
+
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView(){
+        Log.i(TAG, "onDestroyView()");
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.i(TAG, "onDestroy()");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach(){
+        Log.i(TAG, "onDetach()");
+        super.onDetach();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        Log.i(TAG, "onActivityCreated()");
+        super.onActivityCreated(savedInstanceState);
+    }
+
 }
