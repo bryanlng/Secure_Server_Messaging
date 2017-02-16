@@ -65,8 +65,11 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
         Log.i(TAG, "inside doInBackground");
         Socket socket = null;
         try{
-
-            socket = new Socket(serverAddress, serverPort);
+            socket = EstablishedSocketConnection.getSharedSocket();
+            if(socket == null){
+                socket = new Socket(serverAddress, serverPort);
+                EstablishedSocketConnection.setSharedSocket(socket);
+            }
 
             Log.i(TAG, "ClientOutgoingAsyncTask: established connection");
             MessageItem formattedMessage = formatMessage(message);
@@ -85,18 +88,17 @@ public class ClientOutgoingAsyncTask extends AsyncTask<Void, MessageItem, Void> 
             e.printStackTrace();
             Log.i(TAG, "IOException: " + e.toString());
         }
-        finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-
-                }
-                catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
+//        finally {
+//            if (socket != null) {
+//                try {
+//                    socket.close();
+//                }
+//                catch (IOException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
         return null;
     }
 
