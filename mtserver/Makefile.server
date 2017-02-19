@@ -16,3 +16,7 @@ $(TARGET): $(OBJECTS)
 
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
+
+clear_text:
+	rm -rf master_log.txt
+	rm -rf timestamp.txt

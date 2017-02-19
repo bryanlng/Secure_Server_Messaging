@@ -17,3 +17,6 @@ $(TARGET): $(OBJECTS)
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
 
+clear_text:
+	rm -rf client_name.txt
+	rm -rf client_timestamp.txt

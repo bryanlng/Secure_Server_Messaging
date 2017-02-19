@@ -108,7 +108,7 @@ public class MessagesFragment extends Fragment {
             file = new File(MESSAGE_LOG_FILENAME);
             stream = new FileOutputStream(file);
 
-            
+
             stream.write("text-to-write".getBytes());
         }
         catch(Exception e){
