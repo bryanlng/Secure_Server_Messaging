@@ -238,20 +238,4 @@ public class CustomListViewAdapter extends BaseAdapter { //implements AsyncRespo
         }
     }
 
-    /*
-    Overridden method from the AsyncResponseToFragment interface
-    Adds the message to the official message ArrayList. getView() will
-    soon be called, which will allow the message to be shown above.
-
-    Call notifyDataSetChanged() to notify ListView to refresh its data,
-    by calling getView()
- */
-//    @Override
-//    public void retrieveResponse(MessageItem message){
-//        Log.i(TAG, "retrieveResponse(): Adding message: " + message);
-//        messages.add(message);
-//        notifyDataSetChanged();
-//    }
-
-
 }
