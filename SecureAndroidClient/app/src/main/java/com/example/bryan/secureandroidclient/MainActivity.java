@@ -4,8 +4,13 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
@@ -32,6 +37,33 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     private EditText chatbox;
     private IncomingMessageHandler messageHandler;
     private IncomingMessageHandlerThread mWorkerThread;
+    private SocketService socketService;
+    private boolean mBound = false;
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        // Bind to SocketService
+        Intent intent = new Intent(this, SocketService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // Called when the connection with the service is established
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // Because we have bound to an explicit
+            // service that is running in our own process, we can
+            // cast its IBinder to a concrete class and directly access it.
+            socketService = ((SocketService.SocketBinder)service).getService();
+            mBound = true;
+        }
+
+        // Called when the connection with the service disconnects unexpectedly
+        public void onServiceDisconnected(ComponentName className) {
+            Log.e(TAG, "onServiceDisconnected");
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +85,17 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 //        Log.i(TAG, "Inside MainActivity: Are we on the main thread?: " + (Looper.myLooper() == Looper.getMainLooper()));
 
         //Initialize Handler
-        messageHandler = new IncomingMessageHandler(messagesFragment);
-
+//        messageHandler = new IncomingMessageHandler(messagesFragment);
         //Initialize thread to handle incoming messages
-        mWorkerThread = new IncomingMessageHandlerThread("handler");
-        IncomingMessageRunnable task = new IncomingMessageRunnable(messageHandler, address, port);
-        mWorkerThread.start();
-        mWorkerThread.prepareHandler();
-        mWorkerThread.postTask(task);
+//        mWorkerThread = new IncomingMessageHandlerThread("handler");
+//        IncomingMessageRunnable task = new IncomingMessageRunnable(messageHandler, address, port);
+//        mWorkerThread.start();
+//        mWorkerThread.prepareHandler();
+//        mWorkerThread.postTask(task);
+
+        //Binding the activity to the Socket Service to perform client-server operations
+        startService(new Intent(MainActivity.this,SocketService.class));
+        doBindService();
 
 
         //Initialize send button for the chatbox, which is implemented as android:drawableRight
@@ -137,10 +172,29 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
         messagesFragment.addMessageToListView(message);
     }
 
+    private void doBindService() {
+        bindService(new Intent(MainActivity.this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mBound = true;
+        if(socketService != null){
+            socketService.IsBoundable();
+        }
+    }
+
+
+    private void doUnbindService() {
+        if (mBound) {
+            // Detach our existing connection.
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+
     @Override
     protected void onDestroy() {
-        mWorkerThread.quit();
+//        mWorkerThread.quit();
         super.onDestroy();
+        doUnbindService();
     }
 
 
@@ -166,6 +220,8 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 }
 

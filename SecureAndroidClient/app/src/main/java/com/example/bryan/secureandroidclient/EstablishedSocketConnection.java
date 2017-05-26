@@ -15,4 +15,13 @@ public class EstablishedSocketConnection {
 
     public static Socket getSharedSocket(){return sharedSocket;}
     public static void setSharedSocket(Socket s){sharedSocket = s;}
+    public static void closeSharedSocket() {
+        try {
+            sharedSocket.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        sharedSocket = null;
+    }
 }

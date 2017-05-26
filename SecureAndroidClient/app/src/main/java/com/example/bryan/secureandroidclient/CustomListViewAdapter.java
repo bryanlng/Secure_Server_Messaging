@@ -43,11 +43,6 @@ public class CustomListViewAdapter extends BaseAdapter { //implements AsyncRespo
         messages = m;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        //Start the AsyncTask to listen for incoming messages
-//        ClientIncomingAsyncTask client = new ClientIncomingAsyncTask(address, port);
-//        client.response = this;
-//        client.execute();
-
     }
 
     public ArrayList<MessageItem> getMessageArrayList(){
@@ -114,8 +109,6 @@ public class CustomListViewAdapter extends BaseAdapter { //implements AsyncRespo
         String unformatted_date = messages.get(position).getDateFormatted();
         String formatted_date = formatDate(unformatted_date, timestamp);
         date.setText(formatted_date);
-//        String unformatted_date = messages.get(position).getDateFormatted();
-//        date.setText(unformatted_date);
 
         return view;
     }
