@@ -35,8 +35,6 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
     private MessagesFragment messagesFragment;
     private EditText chatbox;
-    private IncomingMessageHandler messageHandler;
-    private IncomingMessageHandlerThread mWorkerThread;
     private SocketService socketService;
     private boolean mBound = false;
 
@@ -44,13 +42,19 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     protected void onStart(){
         super.onStart();
         // Bind to SocketService
-        Intent intent = new Intent(this, SocketService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+//        Log.i(TAG, "onStart(), binding to SocketService now");
+//        mBound = true;
+//        Intent intent = new Intent(this, SocketService.class);
+//        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    /*
+        Called when the connection with the service is established
+        A ServiceConnection is an "Interface for monitoring the state of an application service"
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
-        // Called when the connection with the service is established
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.i(TAG, "onServiceConnected()");
             // Because we have bound to an explicit
             // service that is running in our own process, we can
             // cast its IBinder to a concrete class and directly access it.
@@ -60,8 +64,9 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
         // Called when the connection with the service disconnects unexpectedly
         public void onServiceDisconnected(ComponentName className) {
-            Log.e(TAG, "onServiceDisconnected");
+            Log.i(TAG, "onServiceDisconnected()");
             mBound = false;
+            socketService = null;
         }
     };
 
@@ -69,6 +74,9 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.i(TAG, "MainActivity onCreate(), Thread name: " + Thread.currentThread().getName());
+
 
         //Initialize MessagesFragment
         FragmentManager fragmentManager = getFragmentManager();
@@ -79,22 +87,16 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
         ft.commit();
         fragmentManager.executePendingTransactions();
 
+        //Pass this instance of MessageFragment to a static class "middleman", so that it can be
+        //referenced later inside IncomingMessageRunnable, for the Socket connection.
+        LinkSocketServiceToMessageFragment.setMessageFragment(messagesFragment);
+
         //Initialize chatbox
         chatbox = (EditText)findViewById(R.id.chatbox);
 
-//        Log.i(TAG, "Inside MainActivity: Are we on the main thread?: " + (Looper.myLooper() == Looper.getMainLooper()));
-
-        //Initialize Handler
-//        messageHandler = new IncomingMessageHandler(messagesFragment);
-        //Initialize thread to handle incoming messages
-//        mWorkerThread = new IncomingMessageHandlerThread("handler");
-//        IncomingMessageRunnable task = new IncomingMessageRunnable(messageHandler, address, port);
-//        mWorkerThread.start();
-//        mWorkerThread.prepareHandler();
-//        mWorkerThread.postTask(task);
-
-        //Binding the activity to the Socket Service to perform client-server operations
-        startService(new Intent(MainActivity.this,SocketService.class));
+        //Start the SocketService. This should result in a call to SocketService's onStartCommand()
+        Intent intent = new Intent(this, SocketService.class);
+        startService(intent);
         doBindService();
 
 
@@ -139,6 +141,27 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
     }
 
+    /*
+        Calls bindService(), which connects the Activity to our SocketService
+
+        "If a component starts the service by calling startService() (which results in a call to onStartCommand()),
+        the service continues to run until it stops itself with stopSelf() or another component stops it by calling stopService()."
+     */
+    private void doBindService() {
+        Log.i(TAG, "doBindService()");
+        bindService(new Intent(MainActivity.this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mBound = true;
+    }
+
+    private void doUnbindService() {
+        Log.i(TAG, "doUnbindService()");
+        if (mBound) {
+            // Detach our existing connection.
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
 
     /*
         Starts a ClientOutgoingAsyncTask, which allows the client to send messages to the server
@@ -171,24 +194,6 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
         Log.i(TAG, "MainActivity retrieveResponse(): Adding message: " + message.getRawMessage());
         messagesFragment.addMessageToListView(message);
     }
-
-    private void doBindService() {
-        bindService(new Intent(MainActivity.this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
-        mBound = true;
-        if(socketService != null){
-            socketService.IsBoundable();
-        }
-    }
-
-
-    private void doUnbindService() {
-        if (mBound) {
-            // Detach our existing connection.
-            unbindService(mConnection);
-            mBound = false;
-        }
-    }
-
 
     @Override
     protected void onDestroy() {
