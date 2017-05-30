@@ -55,9 +55,7 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i(TAG, "onServiceConnected()");
-            // Because we have bound to an explicit
-            // service that is running in our own process, we can
-            // cast its IBinder to a concrete class and directly access it.
+            // Because we have bound to an explicit service that is running in our own process, we can cast its IBinder to a concrete class and directly access it.
             socketService = ((SocketService.SocketBinder)service).getService();
             mBound = true;
         }
