@@ -102,27 +102,27 @@ public class MessagesFragment extends Fragment {
     public void onStop(){
         Log.i(TAG, "onStop()");
 
-        File file;
-        FileOutputStream stream = null;
-        try {
-            file = new File(MESSAGE_LOG_FILENAME);
-            stream = new FileOutputStream(file);
-
-
-            stream.write("text-to-write".getBytes());
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-
-        finally {
-            try{
-                stream.close();
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-        }
+//        File file;
+//        FileOutputStream stream = null;
+//        try {
+//            file = new File(MESSAGE_LOG_FILENAME);
+//            stream = new FileOutputStream(file);
+//
+//
+//            stream.write("text-to-write".getBytes());
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//        }
+//
+//        finally {
+//            try{
+//                stream.close();
+//            }
+//            catch(Exception e){
+//                e.printStackTrace();
+//            }
+//        }
 
 //        try{
 //

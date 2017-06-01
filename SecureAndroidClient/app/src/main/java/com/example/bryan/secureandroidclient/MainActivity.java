@@ -32,6 +32,7 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
     private final String TAG            = "SecureAndroidClient";
     private final String address        = "wleungtx.no-ip.biz";
     private final int    port           = 9999;
+    private final String FRAGMENT_TAG   = "MessageFragment";
 
     private MessagesFragment messagesFragment;
     private EditText chatbox;
@@ -75,15 +76,20 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
         Log.i(TAG, "MainActivity onCreate(), Thread name: " + Thread.currentThread().getName());
 
-
-        //Initialize MessagesFragment
+        //Initialize MessagesFragment, see if a Fragment already exists (coming out of a configuration change)
         FragmentManager fragmentManager = getFragmentManager();
-        messagesFragment = new MessagesFragment();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, messagesFragment);
-        ft.addToBackStack(null);
-        ft.commit();
-        fragmentManager.executePendingTransactions();
+        messagesFragment = (MessagesFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+
+        //If it doesn't, then create it and start it up
+        if(messagesFragment == null){
+            Log.i(TAG, "messagesFragment is NULL, so it must be first time");
+            messagesFragment = new MessagesFragment();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.fragment_container, messagesFragment, FRAGMENT_TAG);
+            ft.addToBackStack(null);
+            ft.commit();
+            fragmentManager.executePendingTransactions();
+        }
 
         //Pass this instance of MessageFragment to a static class "middleman", so that it can be
         //referenced later inside IncomingMessageRunnable, for the Socket connection.
@@ -146,13 +152,13 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
         the service continues to run until it stops itself with stopSelf() or another component stops it by calling stopService()."
      */
     private void doBindService() {
-        Log.i(TAG, "doBindService()");
+        Log.i(TAG, "MainActivity doBindService()");
         bindService(new Intent(MainActivity.this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
         mBound = true;
     }
 
     private void doUnbindService() {
-        Log.i(TAG, "doUnbindService()");
+        Log.i(TAG, "MainActivity doUnbindService()");
         if (mBound) {
             // Detach our existing connection.
             unbindService(mConnection);
@@ -195,8 +201,8 @@ public class MainActivity extends ActionBarActivity implements AsyncResponse{
 
     @Override
     protected void onDestroy() {
-//        mWorkerThread.quit();
         super.onDestroy();
+        Log.i(TAG, "MainActivity onDestroy()");
         doUnbindService();
     }
 

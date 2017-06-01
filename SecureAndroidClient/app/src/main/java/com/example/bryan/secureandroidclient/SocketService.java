@@ -123,6 +123,8 @@ public class SocketService extends Service {
      */
     @Override
     public void onDestroy() {
+        Log.i(TAG, "SocketService onDestroy()");
+
         // Stop the thread.
         workerThread.interrupt();
 
