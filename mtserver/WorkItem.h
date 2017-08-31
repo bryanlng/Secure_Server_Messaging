@@ -11,6 +11,9 @@
 	given Threads.
 */
 
+#ifndef __WorkItem_h__
+#define __WorkItem_h__
+
 #include "tcpacceptor.h"
 class WorkItem
 {
@@ -23,3 +26,5 @@ public:
 
 	TCPStream* getStream() { return m_stream; }
 };
+
+#endif

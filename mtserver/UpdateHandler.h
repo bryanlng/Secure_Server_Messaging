@@ -1,8 +1,7 @@
-#ifndef __MessageHandler_h__
-#define __MessageHandler_h__
+#ifndef __UpdateHandler_h__
+#define __UpdateHandler_h__
 
 #include "ConnectionHandler.h"
-
 /*
 	Class that represents the Message Handler
 	Takes a message and broadcasts it to all the Consumer Threads that:
@@ -21,14 +20,14 @@
 	   by calling each Consumer Thread's send_message()
 
 */
-class MessageHandler : public Thread
+class UpdateHandler : public Thread
 {
 	private:
 		vector<ConnectionHandler*>& connections;
 		wqueue<MessageItem*>& m_queue;
 
 	public:
-		MessageHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n);
+		UpdateHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n);
 		void* run();
 		std::string readTimestampFile();
 		void readMasterLog(std::vector<std::string>& messages, long long ts);

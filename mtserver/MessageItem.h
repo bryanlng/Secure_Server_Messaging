@@ -32,6 +32,8 @@
 		-If it's just a regular message, time_of_last_received = -1
 		-Else, time_of_last_received != -1
 */
+#ifndef __MessageItem_h__
+#define __MessageItem_h__
 
 class MessageItem
 {
@@ -75,3 +77,5 @@ class MessageItem
 		}
 
 };
+
+#endif

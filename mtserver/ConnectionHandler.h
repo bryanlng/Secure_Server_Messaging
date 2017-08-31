@@ -1,3 +1,7 @@
+#ifndef __ConnectionHandler_h__
+#define __ConnectionHandler_h__
+
+
 #include "WorkItem.h"
 #include "wqueue.h"
 #include "thread.h"
@@ -49,3 +53,5 @@ class ConnectionHandler : public Thread
 		void send_message(MessageItem* message_item);
 		~ConnectionHandler();
 };
+
+#endif

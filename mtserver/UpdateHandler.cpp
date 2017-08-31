@@ -1,11 +1,11 @@
-#include "MessageHandler.h"
+#include "UpdateHandler.h"
 #define NEWLINE_ASCII 10
 
 /*
 	Constructor
 	set_name() is a method from Thread
 */
-MessageHandler::MessageHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n)
+UpdateHandler::UpdateHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n)
 	: connections(connects), m_queue(queue)
 {
 	set_name(n);
@@ -15,13 +15,13 @@ MessageHandler::MessageHandler(vector<ConnectionHandler*>& connects, wqueue<Mess
 	Function:
 	1. Consumer threads remove and grab a MessageItem from the message queue
 	   If there's no MessageItems in the message queue (like in the beginning),
-	   then the MessageHandler blocks.
+	   then the UpdateHandler blocks.
 	2. Then, "broadcast" the message to every Consumer thread that:
 		  1) Currently have a connection (TCPStream* object)
 		  2) Isn't the sender of the message
 	   by calling each Consumer Thread's send_message()
 */
-void* MessageHandler::run() {
+void* UpdateHandler::run() {
 	// Remove 1 item at a time and process it. Blocks if no items are 
 	// available to process.
 	for (int i = 0;; i++) {
@@ -137,7 +137,7 @@ void* MessageHandler::run() {
 	This function was originally implemented in ThreadSafeFile 
 	as a case in read(), but I moved it here.
 */
-std::string MessageHandler::readTimestampFile() {
+std::string UpdateHandler::readTimestampFile() {
 	//First, read in 1 line of input backwards, one char at a time
 	//We'll know it's a next line when the second NL line feed (new line)
 	//shows up, which has an ascii value of 10.
@@ -188,7 +188,7 @@ std::string MessageHandler::readTimestampFile() {
 	This function was originally implemented in ThreadSafeFile as a case in read(),
 	but I moved it here.
 */
-void MessageHandler::readMasterLog(std::vector<std::string>& messages, long long ts) {
+void UpdateHandler::readMasterLog(std::vector<std::string>& messages, long long ts) {
 	std::string delimiter = ":::::::";
 	std::string line;
 	std::ifstream file("master_log.txt");
@@ -224,7 +224,7 @@ void MessageHandler::readMasterLog(std::vector<std::string>& messages, long long
 	This function was originally implemented in ThreadSafeFile as write(), 
 	but I moved it here.
 */
-void MessageHandler::write(std::string filename, std::string item) {
+void UpdateHandler::write(std::string filename, std::string item) {
 	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
 	if (file.is_open()) {
 		std::string nl = "\n";

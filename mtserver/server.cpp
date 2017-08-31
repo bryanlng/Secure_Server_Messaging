@@ -48,8 +48,9 @@ Previous stuff that is all included in ConnectionHandler.h, which MessageHandler
 
 #include <sstream>
 #include <fstream>
-#include "thread.h"
+#include "ConnectionHandler.h"
 #include "MessageHandler.h"
+#include "UpdateHandler.h"
 
 int main(int argc, char** argv)
 {
@@ -82,8 +83,8 @@ int main(int argc, char** argv)
 	}
 	
 	// Create the queues and consumer (worker) threads
-	vector<ConnectionHandler*> connections;
-    wqueue<WorkItem*>  work_queue;			//work queue 1, manages the Consumer Threads
+	vector<ConnectionHandler*> connections;	//work queue 1, manages the Consumer Threads
+    wqueue<WorkItem*>  work_queue;			
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
 	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
 
@@ -96,6 +97,10 @@ int main(int argc, char** argv)
 	string update_id = "update_handler";
 	MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
 	updater->start();
+
+	// test
+	UpdateHandler* test = new UpdateHandler(connections, update_queue, update_id);
+	test->start();
 
 	// Create the Consumer Threads, which take in and accept Connections. Then start them
 	// Also, add these Consumer Threads to the list of consumer threads

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class MessagesFragment extends Fragment {
     private final String TAG = "SecureAndroidClient";
     private final String SAVED_INS_STATE_KEY = "messages";
-    private final String MESSAGE_LOG_FILENAME = "C:\\cygwin64\\home\\Bryan\\secure_server\\SecureAndroidClient\\app\\src\\main\\client_message_log.txt";
+    private final String MESSAGE_LOG_FILENAME = "/home/Bryan/secure_server/SecureAndroidClient/app/src/main/client_message_log.txt";
     private ListView messagesListView;
     private CustomListViewAdapter adapter;
     private ArrayList<MessageItem> messages;
@@ -102,27 +102,35 @@ public class MessagesFragment extends Fragment {
     public void onStop(){
         Log.i(TAG, "onStop()");
 
-//        File file;
-//        FileOutputStream stream = null;
-//        try {
+        final String dir = System.getProperty("user.dir");
+        Log.i(TAG, "current dir = " + dir);
+
+        File file;
+        FileOutputStream stream = null;
+        try {
 //            file = new File(MESSAGE_LOG_FILENAME);
-//            stream = new FileOutputStream(file);
-//
-//
+            file = new File(".");
+            String[] names = file.list();
+            for(String a: names){
+                Log.i(TAG, "file name: " + a);
+            }
+//            stream = new FileOutputStream();
+
+
 //            stream.write("text-to-write".getBytes());
-//        }
-//        catch(Exception e){
-//            e.printStackTrace();
-//        }
-//
-//        finally {
-//            try{
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            try{
 //                stream.close();
-//            }
-//            catch(Exception e){
-//                e.printStackTrace();
-//            }
-//        }
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
 
 //        try{
 //
