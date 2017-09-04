@@ -20,8 +20,7 @@
 	   by calling each Consumer Thread's send_message()
 
 */
-class UpdateHandler : public Thread
-{
+class UpdateHandler : public Thread {
 	private:
 		vector<ConnectionHandler*>& connections;
 		wqueue<MessageItem*>& m_queue;
@@ -31,7 +30,6 @@ class UpdateHandler : public Thread
 		void* run();
 		std::string readTimestampFile();
 		void readMasterLog(std::vector<std::string>& messages, long long ts);
-		void write(std::string filename, std::string item);
 };
 
 #endif

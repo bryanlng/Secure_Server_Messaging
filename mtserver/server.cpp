@@ -94,13 +94,14 @@ int main(int argc, char** argv)
 	messenger->start();
 
 	// Create the second Message Thread, which is responsible for updating a client who's really behind
+	//string update_id = "update_handler";
+	//MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
+	//updater->start();
+		
+	// Create the second Message Thread, which is responsible for updating a client who's really behind
 	string update_id = "update_handler";
-	MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
+	UpdateHandler* updater = new UpdateHandler(connections, update_queue, update_id);
 	updater->start();
-
-	// test
-	UpdateHandler* test = new UpdateHandler(connections, update_queue, update_id);
-	test->start();
 
 	// Create the Consumer Threads, which take in and accept Connections. Then start them
 	// Also, add these Consumer Threads to the list of consumer threads

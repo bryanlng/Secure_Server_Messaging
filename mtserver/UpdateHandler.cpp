@@ -29,98 +29,64 @@ void* UpdateHandler::run() {
 		MessageItem* item = m_queue.remove();
 		std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
 
-		//Case 1: MessageItem is an update request
-		if (item->isUpdateRequest()) {
-			std::cout << "Incoming update request!!" << std::endl;
+		std::cout << "Incoming update request!!" << std::endl;
 
-			//Part 1: Reading from timestamp.txt
-			std::string latest_ts = readTimestampFile();
-			std::cout << "Message from read(): " << latest_ts << std::endl;
+		//Part 1: Reading from timestamp.txt
+		std::string latest_ts = readTimestampFile();
+		std::cout << "Message from read(): " << latest_ts << std::endl;
 
-			//If Timestamp and master log are NOT empty, check if the client is behind.
-			//If the client is behind, send the messages it missed back to the client.
-			if (latest_ts.compare("")) {
-				std::cout << "NOT empty Master log and timestamp" << std::endl;
-				//Convert timestamp into a long
-				long long latest_timestamp = atoll(latest_ts.c_str());
+		//If Timestamp and master log are NOT empty, check if the client is behind.
+		//If the client is behind, send the messages it missed back to the client.
+		if (latest_ts.compare("")) {
+			std::cout << "NOT empty Master log and timestamp" << std::endl;
+			//Convert timestamp into a long
+			long long latest_timestamp = atoll(latest_ts.c_str());
 
-				std::cout << "item->getTimeOfLastReceived(): " << item->getTimeOfLastReceived() << std::endl;
-				std::cout << "latest_timestamp: " << latest_timestamp << std::endl;
+			std::cout << "item->getTimeOfLastReceived(): " << item->getTimeOfLastReceived() << std::endl;
+			std::cout << "latest_timestamp: " << latest_timestamp << std::endl;
 
-				//Only send messages back to the sender if its timestamp is
-				//behind the server's latest timestamp
-				if (item->getTimeOfLastReceived() < latest_timestamp) {
+			//Only send messages back to the sender if its timestamp is
+			//behind the server's latest timestamp
+			if (item->getTimeOfLastReceived() < latest_timestamp) {
 
-					//Part 2: Reading from master log
-					std::vector<std::string> messages;
-					readMasterLog(messages, item->getTimeOfLastReceived());
+				//Part 2: Reading from master log
+				std::vector<std::string> messages;
+				readMasterLog(messages, item->getTimeOfLastReceived());
 
-					//Supporting fields for finding the ConnectionHandler* of the sender
-					ConnectionHandler* client;
-					string sender = item->getThreadID();
-					bool senderFound = false;
-					std::cout << "Sender of message: " << sender << std::endl;
+				//Supporting fields for finding the ConnectionHandler* of the sender
+				ConnectionHandler* client;
+				string sender = item->getThreadID();
+				bool senderFound = false;
+				std::cout << "Sender of message: " << sender << std::endl;
 
-					//Find the ConnectionHandler* of the sender and stop when we find it
-					std::vector<ConnectionHandler*>::const_iterator c_iterator = connections.begin();
-					while (!senderFound && c_iterator != connections.end()) {
-						ConnectionHandler* connection = *c_iterator;
-						std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
-						if (!sender.compare(connection->thread_name())) {
-							client = connection;
-							senderFound = true;
-						}
-
-						++c_iterator;
+				//Find the ConnectionHandler* of the sender and stop when we find it
+				std::vector<ConnectionHandler*>::const_iterator c_iterator = connections.begin();
+				while (!senderFound && c_iterator != connections.end()) {
+					ConnectionHandler* connection = *c_iterator;
+					std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
+					if (!sender.compare(connection->thread_name())) {
+						client = connection;
+						senderFound = true;
 					}
 
-					//Parse each string --> MessageItem, then send each message back to the client
-					std::vector<std::string>::const_iterator m_iterator;
-					for (m_iterator = messages.begin(); m_iterator != messages.end(); ++m_iterator) {
-						std::string raw_message = *m_iterator;
-						//std::cout << "Message to send back to client: " << raw_message << std::endl;
-
-						MessageItem* message_item = new MessageItem(raw_message);
-						client->send_message(message_item);
-
-						delete message_item;
-					}
-
-				} 
-			}
-			
-
-		}
-
-		//Else, Case 2: MessageItem contains an actual message, and needs to be requested
-		else {
-			//Broadcast message by relaying the MessageItem to each of the other connections
-			std::vector<ConnectionHandler*>::const_iterator iterator;
-			string sender = item->getThreadID();
-			std::cout << "Sender of message: " << sender << std::endl;
-			for (iterator = connections.begin(); iterator != connections.end(); ++iterator) {
-				ConnectionHandler* connection = *iterator;
-				std::cout << "Name of current connection: " << connection->thread_name() << std::endl;
-
-				//Broadcast to everyone who has a connection AND is not the sender of the message
-				if (connection->hasAConnection() && sender.compare(connection->thread_name())) {
-					connection->send_message(item);
+					++c_iterator;
 				}
-			}
 
-			//Update master log with the new message
-			std::string message = item->getRawMessage();
-			write("master_log.txt", message);
+				//Parse each string --> MessageItem, then send each message back to the client
+				std::vector<std::string>::const_iterator m_iterator;
+				for (m_iterator = messages.begin(); m_iterator != messages.end(); ++m_iterator) {
+					std::string raw_message = *m_iterator;
+					//std::cout << "Message to send back to client: " << raw_message << std::endl;
 
-			//Update timestamp file for the most recent timestamp
-			std::stringstream sstm;
-			sstm << item->getTimestamp();
-			std::string timestamp = sstm.str();
-			write("timestamp.txt", timestamp);
+					MessageItem* message_item = new MessageItem(raw_message);
+					client->send_message(message_item);
 
+					delete message_item;
+				}
+
+			} 
 		}
-		
-
+	
 		//Free fields
 		delete item;
 
@@ -210,26 +176,6 @@ void UpdateHandler::readMasterLog(std::vector<std::string>& messages, long long 
 
 		}
 
-		file.close();
-	}
-}
-
-/*
-	Given a timestamp ts, puts all messages [whose timestamp is greater than ts]
-	into a vector of strings.
-
-	This function automatically puts a newline at the end of each message, so 
-	we don't have to do it manually outside of the function
-
-	This function was originally implemented in ThreadSafeFile as write(), 
-	but I moved it here.
-*/
-void UpdateHandler::write(std::string filename, std::string item) {
-	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
-	if (file.is_open()) {
-		std::string nl = "\n";
-		file << item;
-		file << nl;
 		file.close();
 	}
 }

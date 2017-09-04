@@ -45,7 +45,7 @@ void* ClientSender::run() {
 		if (!nameCreatedAlready) {
 			std::string name;
 			std::cout << "Type in a name: ";
-			std::cin >> name;
+			std::getline(std::cin, name);
 
 			std::ofstream n_file("client_name.txt", std::ofstream::app);		//app = append
 			if (n_file.is_open()) {
@@ -61,7 +61,8 @@ void* ClientSender::run() {
 
 		std::string message;
 		std::cout << "Type in a message: ";
-		std::cin >> message;
+		std::getline(std::cin, message);
+		std::cout << "Message that was typed: " << message << "\n";
 
 		//If user wants to quit, exit the program
 		if (!message.compare("quit")) {
@@ -75,7 +76,7 @@ void* ClientSender::run() {
 		}
 		else {
 			std::string formatted = formatMessage(sender, message, ":::::::");
-			//std::cout << "Formatted message: " << formatted << std::endl;
+			std::cout << "Formatted message: " << formatted << std::endl;
 			stream->send(formatted.c_str(), formatted.size());
 		}
 
