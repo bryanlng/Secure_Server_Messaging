@@ -21,36 +21,30 @@ ConnectionHandler::ConnectionHandler(wqueue<WorkItem*>& queue, wqueue<MessageIte
 	ConnectionHandler blocks.
 */
 void* ConnectionHandler::run() {
-	// Remove 1 item at a time and process it. Blocks if no items are 
-	// available to process.
+	// Remove 1 item at a time and process it. Blocks if no items are available to process.
 	for (int i = 0;; i++) {
-		std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
 		WorkItem* item = w_queue.remove();
-		std::cout << thread_name() << ", loop " << i << " - got one item..." << std::endl;
+
+		//Grab the TCPStream object from the WorkItem, and set it to the Stream field, so that send_message() can be called from a different Context later.
 		TCPStream* stream = item->getStream();
 		setStream(stream);
 		connected = true;
 
-		// 1. Parse contents into their fields ==> then put into a MessageItem object
-		// Delimiter will be: :::::::
-		// Delimiter will not be seen by the user
-
-		//Fields for receiving the message
-		char* input;
-		input = (char*)malloc(sizeof(char) * MAX_MESSAGE_SIZE);
-		int len;
-
-		//Upon receiving a message, parse it, then put contents into a MessageItem
+		// 1. Upon receiving a message, parse it, then put contents into a MessageItem
+		// Delimiter for a regular message will be ":::::::", delimiter for a timestamp message will be "::Timestamp::"
 		//Format of message from client:
 		/*
 			Case 1. Timestamp/update message
-			timestamp <special delimiter>
+			timestamp::Timestamp::
 
 			Case 2. Regular message
-			timestamp <delimiter> date_formatted <delimiter> message <delimiter> name <delimiter>
-
+			timestamp:::::::date_formatted:::::::message:::::::name:::::::
 		*/
+
 		MessageItem* message_item;
+		char* input;
+		input = (char*)malloc(sizeof(char) * MAX_MESSAGE_SIZE);
+		int len;
 		while ((len = stream->receive(input, MAX_MESSAGE_SIZE - 1) > 0)) {
 			std::cout << "Raw message received from client: " << input << std::endl;
 			string raw(input);
@@ -61,14 +55,14 @@ void* ConnectionHandler::run() {
 			long long timestamp = -1;
 			string date_formatted;
 			string message;
-			string sender;		//name of sender
+			string sender;		
 
 			//Fields for parsing the string
 			int delimiter_pos = 0;
 			int which_one = 0;
 			string current_item;
 
-			//First check if the message is the "timestamp" message
+			//First check if the message is an update request
 			string delimiter = "::Timestamp::";
 			if ((delimiter_pos = raw.find(delimiter)) != std::string::npos) {
 				current_item = raw.substr(0, delimiter_pos);
@@ -102,16 +96,13 @@ void* ConnectionHandler::run() {
 							break;
 					}
 
-					//update fields
+					//update fields for next iteration
 					int next_index = delimiter_pos + delimiter.length();
 					raw = raw.substr(next_index, raw.size());
 					++which_one;
 				}
 
 			}
-
-			std::cout << "Timestamp: " << timestamp << std::endl;
-			std::cout << "time_of_last_received: " << time_of_last_received << std::endl;
 
 			//Create a new message item
 			message_item = new MessageItem(raw_message, time_of_last_received, timestamp, date_formatted, message, sender, thread_name());
@@ -184,8 +175,6 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 		std::stringstream sstm;
 		sstm << message_item->getTimeOfLastReceived() << "::Timestamp::";	//special delimiter added so client knows
 		message = sstm.str();
-
-		//std::cout << "send_message(): Updated timestamp being sent: " << message << std::endl;
 	}
 
 	//Case 2: Regular message
@@ -197,9 +186,7 @@ void ConnectionHandler::send_message(MessageItem* message_item) {
 	//Convert message from string --> c-style string, since send() only accepts a char*
 	char * buffer = new char[message.length() + 1];
 	const char* c_string = message.c_str();
-	std::strcpy(buffer, c_string);
-	
-	printf("message being sent, in char* form: %s\n", buffer);
+	std::strcpy(buffer, c_string);	
 
 	//Send message, then free temp buffer
 	stream->send(buffer, message.size()+1);	//+1 to include the null char at the end

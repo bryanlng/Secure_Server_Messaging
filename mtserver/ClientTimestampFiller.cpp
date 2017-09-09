@@ -6,12 +6,9 @@ ClientTimestampFiller::ClientTimestampFiller(wqueue<long long>& queue, std::stri
 }
 
 void* ClientTimestampFiller::run() {
-	// Remove 1 item at a time and process it. Blocks if no items are 
-	// available to process.
+	// Remove 1 item at a time and process it. Blocks if no items are available to process.
 	for (int i = 0;; i++) {
-		std::cout << thread_name() << ", loop " << i << " - waiting for item..." << std::endl;
 		long long timestamp = m_queue.remove();
-		std::cout << thread_name() << ", loop " << i << " - got one item: " << timestamp << std::endl;
 
 		//Update client_timestamp.txt with the timestamp
 		std::ofstream file;

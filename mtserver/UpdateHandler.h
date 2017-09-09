@@ -3,21 +3,23 @@
 
 #include "ConnectionHandler.h"
 /*
-	Class that represents the Message Handler
-	Takes a message and broadcasts it to all the Consumer Threads that:
-		1) Currently have a connection (TCPStream* object)
-		2) Isn't the sender of the message
+	Class that represents the Update Handler
+	Reads from the master log, and sends messages to the user (represented by a ConnectionHandler)
+	who is behind
 
 	The server creates only 1 of these at the beginning.
 
 	Function:
-	1. Consumer threads remove and grab a MessageItem from the message queue
+	1. Consumer threads remove and grab a MessageItem from the update queue
 	   If there's no MessageItems in the message queue (like in the beginning),
-	   then the MessageHandler blocks.
-	2. Then, "broadcast" the message to every Consumer thread that:
-		  1) Currently have a connection (TCPStream* object)
-		  2) Isn't the sender of the message
-	   by calling each Consumer Thread's send_message()
+	   then the UpdateHandler blocks.
+	2. Then, compare the timestamp from the MessageItem to the server's most up to date timestamp, located in timestamp.txt
+		1) If the server's timestamp.txt isn't empty
+			If the receieved timestamp < server's latest timestamp
+				1) Find the ConnectionHandler* that represents the sender (who we're going to send the missed messages back to)
+				2) Read all messages from the master log whose timestamp > received timestamp
+				3) Send all messages back to the sender
+		2) Else, do nothing
 
 */
 class UpdateHandler : public Thread {

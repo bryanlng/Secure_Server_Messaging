@@ -27,8 +27,18 @@ static void* runThread(void* arg)
     return ((Thread*)arg)->run();
 }
 
+/**
+ * Constructor for the Thread class. By default, sets the values of
+   thread id(m_tid), if the thread is detatched (m_running), and if the thread is
+   detached (m_detached) all to 0.
+ */
 Thread::Thread() : m_tid(0), m_running(0), m_detached(0){}
 
+/**
+ * Destructor for the Thread class.
+   If the Thread is running but not detached, calls pthread_detach to detatch the Thread
+   If the Thread is running, calls pthread_cancel to cancel the thread
+ */
 Thread::~Thread()
 {
     if (m_running == 1 && m_detached == 0) {
@@ -39,6 +49,9 @@ Thread::~Thread()
     }
 }
 
+/**
+  * Starts the Thread by calling pthread_create
+ */
 int Thread::start()
 {
     int result = pthread_create(&m_tid, NULL, runThread, this);

@@ -15,4 +15,13 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
 
 clean:
-	rm -rf $(OBJECTS) $(TARGET) master_log.txt client_name.txt client_timestamp.txt
+	rm -rf $(OBJECTS) $(TARGET)
+
+clear_all:
+	rm -rf master_log.txt timestamp.txt client_name.txt client_timestamp.txt
+
+clear_server:
+	rm -rf master_log.txt timestamp.txt
+
+clear_client:
+	rm -rf client_name.txt client_timestamp.txt

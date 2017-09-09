@@ -2,10 +2,15 @@
    main.cpp
 
    Multithreaded work queue based example server in C++.
-  
-   ------------------------------------------
+   This server takes in multiple incoming connections, and relays the messages sent by them
+   to each other. Think of this as the "backend" of a group chat in a messenging app.
 
-   Copyright (c) 2013 Vic Hargrave
+   ------------------------------------------
+   
+   Base implementation by Vic Hargrave. Original implementation only takes in connections, and does nothing else.
+   This implementation relays messages sent by each Connection to each other. In addition, messages are logged
+   inside a "master_log". Also, this implementation features an "update" feature, which allows a client to recieve
+   messages that were sent while the client was "offline".
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,36 +23,8 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-   (long unsigned int)self()
-   //stream->send(input, len);
-   //char input[25600];
-   //for (iterator = connections.begin(); iterator != connections.end(); ++iterator) {
-   //
-   //}
-   http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
-   http://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char
-   http://stackoverflow.com/questions/17818099/how-to-check-if-a-file-exists-before-creating-a-new-file
-   http://stackoverflow.com/questions/3903587/how-to-check-if-a-stdstring-is-set-or-not
-   http://www.cplusplus.com/doc/tutorial/files/
 */
 
-/*
-Previous stuff that is all included in ConnectionHandler.h, which MessageHandler includes
-#include <stdio.h>
-#include <stdlib.h>
-#include <cstdlib>
-#include <string>
-#include <iostream>
-#include <list>
-#include "wqueue.h"
-#include "MessageItem.h"
-#include "tcpacceptor.h"
-#include "ConnectionHandler.h"
-*/
-
-#include <sstream>
-#include <fstream>
 #include "ConnectionHandler.h"
 #include "MessageHandler.h"
 #include "UpdateHandler.h"
@@ -88,26 +65,20 @@ int main(int argc, char** argv)
 	wqueue<MessageItem*> message_queue;		//work queue 2, manages the actual messages
 	wqueue<MessageItem*> update_queue;		//work queue 3, for catching up on old messages
 
-	// Create the first Message Thread, which is responsible for broadcasting messages
+	// Create the Message Handler (also a Thread), which is responsible for broadcasting messages
 	string message_id = "message_handler";
 	MessageHandler* messenger = new MessageHandler(connections, message_queue, message_id);
 	messenger->start();
-
-	// Create the second Message Thread, which is responsible for updating a client who's really behind
-	//string update_id = "update_handler";
-	//MessageHandler* updater = new MessageHandler(connections, update_queue, update_id);
-	//updater->start();
 		
-	// Create the second Message Thread, which is responsible for updating a client who's really behind
+	// Create the Update Handler (also a Thread), which is responsible for updating a client who's really behind
 	string update_id = "update_handler";
 	UpdateHandler* updater = new UpdateHandler(connections, update_queue, update_id);
 	updater->start();
 
-	// Create the Consumer Threads, which take in and accept Connections. Then start them
+	// Create and start the Consumer Threads, which take in and accept Connections.
 	// Also, add these Consumer Threads to the list of consumer threads
     for (int i = 0; i < workers; i++) {
 		std::stringstream sstm;
-		sstm << "thread" << i;
 		std::string name = sstm.str();
         ConnectionHandler* handler = new ConnectionHandler(work_queue, message_queue, update_queue, name);
         if (!handler) {

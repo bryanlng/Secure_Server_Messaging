@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sstream>
+#include <fstream>
 #define NEW_LINE_VAL 10
 /*
 	Class that represents a "Consumer Thread"

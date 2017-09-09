@@ -33,7 +33,7 @@ void* ClientSender::run() {
 		file.close();
 	}
 	
-	//Send update message
+	//Send update message, to check if there were messages that we missed 
 	std::string time_message = formatMessage("", "", "::Timestamp::");
 	stream->send(time_message.c_str(), time_message.size());
 
