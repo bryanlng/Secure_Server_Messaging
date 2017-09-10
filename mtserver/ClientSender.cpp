@@ -131,7 +131,8 @@ std::string ClientSender::formatMessage(std::string sender, std::string message,
 		//If the client's log file doesn't exist, send a default message of 0::Timestamp::. That way, the client will be forced to update, as any timestamp on the master_log on the server must be greater than 0
 		std::string latest_ts = readLatestTimestamp();
 		std::cout << "client latest timestamp from client_log: " << latest_ts << std::endl;
-		if (latest_ts.compare("")) {
+		if (!latest_ts.compare("")) {
+			std::cout << "client log doesn't exist: " << latest_ts << std::endl;
 			return "0::Timestamp::";
 		}
 		else {

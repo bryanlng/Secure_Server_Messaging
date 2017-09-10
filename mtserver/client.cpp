@@ -63,8 +63,9 @@
    http://stackoverflow.com/questions/1662909/undefined-reference-to-pthread-create-in-linux
 */
 
-#include "ClientTimestampFiller.h"
 #include "tcpconnector.h"
+#include "ClientSender.h"
+#include "ClientReceiver.h"
 #include <iostream>
 #include <sstream>
 #include <ctime>
@@ -77,7 +78,6 @@
 int main(int argc, char** argv)
 {
 	//Given example:	 ./client 9999 localhost
-	//Testing purposes:  ./client 9999 localhost <message>
     if (argc != 3) {
         printf("usage: %s <port> <ip>\n", argv[0]);
         exit(1);

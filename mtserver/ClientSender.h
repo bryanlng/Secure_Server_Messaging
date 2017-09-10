@@ -1,3 +1,6 @@
+#ifndef __ClientSender_h__
+#define __ClientSender_h__
+
 #include "thread.h"
 #include "tcpacceptor.h"
 #include "wqueue.h"
@@ -36,3 +39,4 @@ class ClientSender : public Thread {
 		~ClientSender();
 
 };
+#endif

@@ -1,3 +1,5 @@
+#ifndef __ClientReceiver_h__
+#define __ClientReceiver_h__
 #include "ClientSender.h"
 
 /*
@@ -18,3 +20,4 @@ class ClientReceiver : public Thread{
 		void write(std::string filename, std::string item);
 		~ClientReceiver();
 };
+#endif
