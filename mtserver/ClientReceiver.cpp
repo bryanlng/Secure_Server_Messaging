@@ -17,13 +17,14 @@ ClientReceiver::ClientReceiver(TCPStream* s) : stream(s){}
 */
 void* ClientReceiver::run() {
 
+	int i = 1;
 	int len;
 	char input[MAX_MESSAGE_SIZE];
 
 	//Receive messages
 	while ((len = stream->receive(input, sizeof(input)) > 0)) {
-		
-		//std::cout << "Raw message received from server: " << input << std::endl;
+		std::cout << "Iteration " << i << std::endl;
+		////std::cout << "Raw message received from server: " << input << std::endl;
 		printf("Raw message received from server: %s\n", input);
 		std::string raw(input);
 
@@ -83,6 +84,7 @@ void* ClientReceiver::run() {
 			//"Erase" the char array, so our next message doesn't come in with bits of the previous message
 			memset(input, 0, MAX_MESSAGE_SIZE);
 
+			++i;
 		}	
 
 	}

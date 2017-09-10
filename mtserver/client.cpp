@@ -108,10 +108,10 @@ int main(int argc, char** argv)
 		ClientSender* sender = new ClientSender(stream);
 		sender->start();
 
-		ClientReceiver* receiver = new ClientReceiver(stream);
-		receiver->start();
-
-
+		for (int i = 0; i < 5; i++) {
+			ClientReceiver* receiver = new ClientReceiver(stream);
+			receiver->start();
+		}
 
 		sleep(UINT_MAX);		//Need to get this thread to not be active
 								//unfortunately jank code, but it works				

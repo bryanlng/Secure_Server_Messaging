@@ -19,6 +19,7 @@
 #include <string.h>
 #include <sstream>
 #include <fstream>
+#include <chrono>
 #define NEW_LINE_VAL 10
 /*
 	Class that represents a "Consumer Thread"
