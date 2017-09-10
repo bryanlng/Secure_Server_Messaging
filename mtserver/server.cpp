@@ -44,19 +44,13 @@ int main(int argc, char** argv)
         ip = argv[3];
     }
  
-	//Check if the files for the master log and the most recent timestamp exist
-	//If they don't, create them right now
+	//Check if the file for the master log ("master_log.txt") exists. If it doesn't, create it right now
 	ofstream master_log;
 	ofstream timestamp;
 	if (!std::ifstream("master_log.txt")) {
 		std::cout << "Created master_log.txt b/c it didn't exist" << std::endl;
 		master_log.open("master_log.txt");
 		master_log.close();
-	}
-	if (!std::ifstream("timestamp.txt")) {
-		std::cout << "Created timestamp.txt b/c it didn't exist" << std::endl;
-		timestamp.open("timestamp.txt");
-		timestamp.close();
 	}
 	
 	// Create the queues and consumer (worker) threads

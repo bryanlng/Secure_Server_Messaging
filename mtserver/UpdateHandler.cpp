@@ -16,8 +16,8 @@ UpdateHandler::UpdateHandler(vector<ConnectionHandler*>& connects, wqueue<Messag
 	1. Consumer threads remove and grab a MessageItem from the update queue
 	   If there's no MessageItems in the message queue (like in the beginning),
 	   then the UpdateHandler blocks.
-	2. Then, compare the timestamp from the MessageItem to the server's most up to date timestamp, located in timestamp.txt
-		1) If the server's timestamp.txt isn't empty
+	2. Then, compare the timestamp from the MessageItem to the server's most up to date timestamp, which is the timestamp of the latest (last) line in master_log.txt
+		1) If the server's master log isn't empty
 			If the receieved timestamp < server's latest timestamp
 				1) Find the ConnectionHandler* that represents the sender (who we're going to send the missed messages back to)
 				2) Read all messages from the master log whose timestamp > received timestamp
@@ -30,17 +30,14 @@ void* UpdateHandler::run() {
 	for (int i = 0;; i++) {
 		MessageItem* item = m_queue.remove();
 
-		//Part 1: Reading from timestamp.txt
-		std::string latest_ts = readTimestampFile();
-
-		//If timestamp.txt and master log are NOT empty, check if the client is behind.
-		//If the client is behind, send the messages it missed back to the client.
+		//If the master log is NOT empty, check if the client is behind.
+		std::string latest_ts = readTimestamp();
 		if (latest_ts.compare("")) {
 
-			//Convert timestamp into a long long
+			//Get the server's latest timestamp
 			long long latest_timestamp = atoll(latest_ts.c_str());
 
-			//Only send messages back to the sender if its timestamp is behind the server's latest timestamp
+			//If the client is behind, send the messages it missed back to the client.
 			if (item->getTimeOfLastReceived() < latest_timestamp) {
 
 				//Part 2: Reading from master log
@@ -86,23 +83,17 @@ void* UpdateHandler::run() {
 }
 
 /*
-	Reads the last line of timestamp.txt,
-	then returns it
-
-	This function was originally implemented in ThreadSafeFile 
-	as a case in read(), but I moved it here.
+	Reads the last line of master_log.txt, extracts the timestamp part out of it, 
+	then returns the timestamp in the form of a string
 */
-std::string UpdateHandler::readTimestampFile() {
-	//First, read in 1 line of input backwards, one char at a time
-	//We'll know it's a next line when the second NL line feed (new line)
-	//shows up, which has an ascii value of 10.
+std::string UpdateHandler::readTimestamp() {
 	std::string raw;
 	char c;
 	int num_new_lines = 0;
 	bool still_one_line = true;
 	int i = 1;
 
-	std::ifstream file("timestamp.txt", std::ios::ate);
+	std::ifstream file("master_log.txt", std::ios::ate);
 	std::streampos size = file.tellg();
 	while (still_one_line && i < size + 1) {
 		file.seekg(-i, std::ios::end);
@@ -128,11 +119,11 @@ std::string UpdateHandler::readTimestampFile() {
 
 	//Then, reverse the string, so it's in the correct order
 	std::reverse(raw.begin(), raw.end());
-	std::cout << "read timestamp: " << raw << std::endl;
 
-	file.close();
-
-	return raw;
+	//std::cout << "last line: " << raw << std::endl;
+	std::string timestamp = extractTimestamp(raw);
+	//std::cout << "extracted timestamp: " << timestamp << std::endl;
+	return timestamp;
 }
 
 /*
@@ -163,4 +154,11 @@ void UpdateHandler::readMasterLog(std::vector<std::string>& messages, long long 
 
 		file.close();
 	}
+}
+
+
+std::string UpdateHandler::extractTimestamp(std::string line) {
+	std::string delimiter = ":::::::";
+	int delimiter_pos = line.find(delimiter);
+	return line.substr(0, delimiter_pos);
 }
