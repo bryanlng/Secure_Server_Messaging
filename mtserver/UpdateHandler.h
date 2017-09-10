@@ -30,7 +30,7 @@ class UpdateHandler : public Thread {
 	public:
 		UpdateHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n);
 		void* run();
-		std::string readTimestamp();
+		std::string readLatestTimestamp();
 		std::string extractTimestamp(std::string line);
 		void readMasterLog(std::vector<std::string>& messages, long long ts);
 };

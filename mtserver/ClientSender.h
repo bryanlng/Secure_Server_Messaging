@@ -29,8 +29,10 @@ class ClientSender : public Thread {
 	public:
 		ClientSender(TCPStream* s);
 		void* run();
+		void write(std::string filename, std::string item);
+		std::string readLatestTimestamp();
+		std::string extractTimestamp(std::string line);
 		std::string formatMessage(std::string sender, std::string message, std::string delimiter);
-		std::string readTimestampFile();
 		~ClientSender();
 
 };

@@ -31,7 +31,7 @@ void* UpdateHandler::run() {
 		MessageItem* item = m_queue.remove();
 
 		//If the master log is NOT empty, check if the client is behind.
-		std::string latest_ts = readTimestamp();
+		std::string latest_ts = readLatestTimestamp();
 		if (latest_ts.compare("")) {
 
 			//Get the server's latest timestamp
@@ -86,7 +86,7 @@ void* UpdateHandler::run() {
 	Reads the last line of master_log.txt, extracts the timestamp part out of it, 
 	then returns the timestamp in the form of a string
 */
-std::string UpdateHandler::readTimestamp() {
+std::string UpdateHandler::readLatestTimestamp() {
 	std::string raw;
 	char c;
 	int num_new_lines = 0;

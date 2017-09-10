@@ -1,7 +1,7 @@
 #include "ClientReceiver.h"
 #define MAX_MESSAGE_SIZE 25600
 
-ClientReceiver::ClientReceiver(TCPStream* s, wqueue<long long>& queue) : stream(s), m_queue(queue) {}
+ClientReceiver::ClientReceiver(TCPStream* s) : stream(s){}
 
 /*
 	Receives incoming messages from the server
@@ -77,11 +77,9 @@ void* ClientReceiver::run() {
 			std::cout << "From: " << sender << std::endl;
 			std::cout << "Sent at: " << date_formatted << std::endl;
 
-			//Add the message to ClientTimestampFiller, who will write to 
-			//client_timestamp.txt for us so that all our messages can get in
-			m_queue.add(timestamp);
+			//Append the message onto the client's log of messages
+			write("client_log.txt", input);
 		
-
 			//"Erase" the char array, so our next message doesn't come in with bits of the previous message
 			memset(input, 0, MAX_MESSAGE_SIZE);
 
@@ -94,6 +92,16 @@ void* ClientReceiver::run() {
 
 	//should never get here
 	return NULL;
+}
+
+void ClientReceiver::write(std::string filename, std::string item) {
+	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
+	if (file.is_open()) {
+		std::string nl = "\n";
+		file << item;
+		file << nl;
+		file.close();
+	}
 }
 
 /*

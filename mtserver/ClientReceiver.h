@@ -11,10 +11,10 @@ http://stackoverflow.com/questions/39931468/what-does-mean-when-used-in-a-g-argu
 class ClientReceiver : public Thread{
 	private:
 		TCPStream* stream;
-		wqueue<long long>& m_queue;
 
 	public:
-		ClientReceiver(TCPStream* s, wqueue<long long>& queue);
+		ClientReceiver(TCPStream* s);
 		void* run();
+		void write(std::string filename, std::string item);
 		~ClientReceiver();
 };

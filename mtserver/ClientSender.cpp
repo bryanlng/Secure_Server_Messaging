@@ -35,6 +35,7 @@ void* ClientSender::run() {
 	
 	//Send update message, to check if there were messages that we missed 
 	std::string time_message = formatMessage("", "", "::Timestamp::");
+	std::cout << "Update message that was sent: " << time_message << "\n";
 	stream->send(time_message.c_str(), time_message.size());
 
 	
@@ -78,6 +79,9 @@ void* ClientSender::run() {
 			std::string formatted = formatMessage(sender, message, ":::::::");
 			std::cout << "Formatted message: " << formatted << std::endl;
 			stream->send(formatted.c_str(), formatted.size());
+
+			//Write the message to the client's log
+			write("client_log.txt", formatted);
 		}
 
 		
@@ -124,14 +128,21 @@ std::string ClientSender::formatMessage(std::string sender, std::string message,
 	if (!delimiter.compare("::Timestamp::")) {
 
 		//Read from client's timestamp file
-		std::string latest_ts = readTimestampFile();
-		std::cout << "client latest timestamp from read(): " << latest_ts << std::endl;
+		//If the client's log file doesn't exist, send a default message of 0::Timestamp::. That way, the client will be forced to update, as any timestamp on the master_log on the server must be greater than 0
+		std::string latest_ts = readLatestTimestamp();
+		std::cout << "client latest timestamp from client_log: " << latest_ts << std::endl;
+		if (latest_ts.compare("")) {
+			return "0::Timestamp::";
+		}
+		else {
+			//Extract the message, without the \n at the end
+			std::string no_nl = latest_ts.substr(0, latest_ts.find("\n"));
 
-		//Extract the message, without the \n at the end
-		std::string no_nl = latest_ts.substr(0, latest_ts.find("\n"));
+			//Append on the delimiter
+			return no_nl + delimiter;
+		}
 
-		//Append on the delimiter
-		return no_nl + delimiter;
+
 	}
 
 	//Case 2: Regular message
@@ -177,29 +188,22 @@ std::string ClientSender::formatMessage(std::string sender, std::string message,
 }
 
 /*
-	Reads the last line of client_timestamp.txt,
-	then returns it
-
-	This function was originally in ThreadSafeFile's read(),
-	but I moved it here.
+Reads the last line of master_log.txt, extracts the timestamp part out of it,
+then returns the timestamp in the form of a string
 */
-std::string ClientSender::readTimestampFile() {
-	//First, read in 1 line of input backwards, one char at a time
-	//We'll know it's a next line when the second NL line feed (new line)
-	//shows up, which has an ascii value of 10.
+std::string ClientSender::readLatestTimestamp() {
 	std::string raw;
 	char c;
 	int num_new_lines = 0;
 	bool still_one_line = true;
 	int i = 1;
 
-	std::ifstream file("client_timestamp.txt", std::ios::ate);
+	std::ifstream file("client_log.txt", std::ios::ate);
 	std::streampos size = file.tellg();
 	while (still_one_line && i < size + 1) {
 		file.seekg(-i, std::ios::end);
 		file.get(c);
-		//printf("%c, ", c);
-		//printf("int rep: %d\n", c);
+
 		//If we encounter a newline char, increment
 		if (c == NEWLINE_ASCII) {
 			++num_new_lines;
@@ -221,15 +225,27 @@ std::string ClientSender::readTimestampFile() {
 	//Then, reverse the string, so it's in the correct order
 	std::reverse(raw.begin(), raw.end());
 
-	std::cout << "read timestamp: " << raw << std::endl;
-	
-	//Close file
-	file.close();
-
-	return raw;
+	//std::cout << "last line: " << raw << std::endl;
+	std::string timestamp = extractTimestamp(raw);
+	//std::cout << "extracted timestamp: " << timestamp << std::endl;
+	return timestamp;
 }
 
+void ClientSender::write(std::string filename, std::string item) {
+	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
+	if (file.is_open()) {
+		std::string nl = "\n";
+		file << item;
+		file << nl;
+		file.close();
+	}
+}
 
+std::string ClientSender::extractTimestamp(std::string line) {
+	std::string delimiter = ":::::::";
+	int delimiter_pos = line.find(delimiter);
+	return line.substr(0, delimiter_pos);
+}
 
 /*
 	Destructor

@@ -83,19 +83,11 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-	//If the client's timestamp file hasn't been created yet, 
-	//create it, and give it the value 0, so that it MUST pull
-	//from the server
+	//If the client's log file hasn't been created yet, create it
 	ofstream t_file;
-	if (!std::ifstream("client_timestamp.txt")) {
-		std::cout << "Created client_timestamp.txt b/c it didn't exist" << std::endl;
-		t_file.open("client_timestamp.txt");
-
-		std::string nl = "\n";
-		long long millis = 0;
-		t_file << millis;
-		t_file << nl;
-
+	if (!std::ifstream("client_log.txt")) {
+		std::cout << "Created client_log.txt b/c it didn't exist" << std::endl;
+		t_file.open("client_log.txt");
 		t_file.close();
 	}
 
@@ -113,15 +105,10 @@ int main(int argc, char** argv)
 
 	//If there's a connection, create the 2 Threads to send and receive messages
 	if (stream) {
-		wqueue<long long>  m_queue;
-		std::string name = "timestamp_filler";
-		ClientTimestampFiller* timestamp_filler = new ClientTimestampFiller(m_queue,name);
-		timestamp_filler->start();
-
 		ClientSender* sender = new ClientSender(stream);
 		sender->start();
 
-		ClientReceiver* receiver = new ClientReceiver(stream, m_queue);
+		ClientReceiver* receiver = new ClientReceiver(stream);
 		receiver->start();
 
 
