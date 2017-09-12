@@ -72,7 +72,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-
 #define MAX_MESSAGE_SIZE 25600
 
 int main(int argc, char** argv)
@@ -103,7 +102,7 @@ int main(int argc, char** argv)
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
 
-	//If there's a connection, create the 2 Threads to send and receive messages
+	//If there's a connection, create 1 ClientSender threads to send messages, and 5 ClientReceiver threads to receive messages
 	if (stream) {
 		ClientSender* sender = new ClientSender(stream);
 		sender->start();

@@ -1,5 +1,8 @@
 # Secure_Server_Messaging
 
+# Coming soon! Updates will arrive by 9/14/17. As of now, this project is almost complete
+
+
 # Build
 1. cd into the mtserver directory
 2. Build the server application by typing 'make'
