@@ -41,12 +41,6 @@ void* MessageHandler::run() {
 		//Update master log with the new message
 		std::string message = item->getRawMessage();
 		write("master_log.txt", message);
-
-		//Update timestamp file for the most recent timestamp
-		std::stringstream sstm;
-		sstm << item->getTimestamp();
-		std::string timestamp = sstm.str();
-		write("timestamp.txt", timestamp);
 	
 		//Free fields
 		delete item;
@@ -58,20 +52,14 @@ void* MessageHandler::run() {
 }
 
 /*
-	Given a timestamp ts, puts all messages [whose timestamp is greater than ts]
-	into a vector of strings.
-
-	This function automatically puts a newline at the end of each message, so 
-	we don't have to do it manually outside of the function
-
-	This function was originally implemented in ThreadSafeFile as write(), 
-	but I moved it here.
+	Appends a line of data (all the data from a MessageItem*) to the end of 
+	the specified file. This file will most always be the server's master log
 */
-void MessageHandler::write(std::string filename, std::string item) {
+void MessageHandler::write(std::string filename, std::string line) {
 	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
 	if (file.is_open()) {
 		std::string nl = "\n";
-		file << item;
+		file << line;
 		file << nl;
 		file.close();
 	}

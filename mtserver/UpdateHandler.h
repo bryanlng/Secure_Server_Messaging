@@ -9,14 +9,13 @@
 	1. Consumer threads remove and grab a MessageItem from the update queue
 	   If there's no MessageItems in the message queue (like in the beginning),
 	   then the UpdateHandler blocks.
-	2. Then, compare the timestamp from the MessageItem to the server's most up to date timestamp, located in timestamp.txt
+	2. Then, compare the timestamp from the MessageItem to the server's most up to date timestamp, located in timestamp.txt.
 		1) If the server's timestamp.txt isn't empty
-			If the receieved timestamp < server's latest timestamp
+			1) If the receieved timestamp < server's latest timestamp
 				1) Find the ConnectionHandler* that represents the sender (who we're going to send the missed messages back to)
 				2) Read all messages from the master log whose timestamp > received timestamp
 				3) Send all messages back to the sender
 		2) Else, do nothing
-
 */
 #ifndef __UpdateHandler_h__
 #define __UpdateHandler_h__
@@ -45,7 +44,7 @@ class UpdateHandler : public Thread {
 			   If there's no MessageItems in the message queue (like in the beginning),
 			   then the UpdateHandler blocks.
 			2. Then, compare the timestamp from the MessageItem to the server's most up to date timestamp, which is the timestamp of the latest (last) line in master_log.txt
-				1) If the server's master log isn't empty
+			1) If the server's master log isn't empty
 					If the receieved timestamp < server's latest timestamp
 						1) Find the ConnectionHandler* that represents the sender (who we're going to send the missed messages back to)
 						2) Read all messages from the master log whose timestamp > received timestamp

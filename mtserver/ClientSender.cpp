@@ -232,20 +232,21 @@ std::string ClientSender::readLatestTimestamp() {
 	return timestamp;
 }
 
-void ClientSender::write(std::string filename, std::string item) {
-	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
-	if (file.is_open()) {
-		std::string nl = "\n";
-		file << item;
-		file << nl;
-		file.close();
-	}
-}
-
 std::string ClientSender::extractTimestamp(std::string line) {
 	std::string delimiter = ":::::::";
 	int delimiter_pos = line.find(delimiter);
 	return line.substr(0, delimiter_pos);
+}
+
+
+void ClientSender::write(std::string filename, std::string line) {
+	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
+	if (file.is_open()) {
+		std::string nl = "\n";
+		file << line;
+		file << nl;
+		file.close();
+	}
 }
 
 /*

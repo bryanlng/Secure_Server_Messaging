@@ -2,15 +2,13 @@
 #define MAX_MESSAGE_SIZE 25600
 
 ClientReceiver::ClientReceiver(TCPStream* s) : stream(s){}
-
 /*
 	Receives incoming messages from the server
 
-	Steps:
-		-Extract the timestamp, date, and message.
-		-Afterwards, update client_timestamp.txt with the extracted timestamp, so
-		 that it has the most updated timestamp
-		-Then, display the message
+	Function:
+		1) Extract the timestamp, date, and message.
+		2) Then, display the message
+		3) Afterwards, update client_log.txt with the raw message.
 		-Format:
 			timestamp <delimiter> date_formatted <delimiter> message <delimiter>
 			Ex: 1485288373:Tue Jan 24 13:06:13 2017:df:
@@ -23,8 +21,6 @@ void* ClientReceiver::run() {
 
 	//Receive messages
 	while ((len = stream->receive(input, sizeof(input)) > 0)) {
-		std::cout << "Iteration " << i << std::endl;
-		////std::cout << "Raw message received from server: " << input << std::endl;
 		printf("Raw message received from server: %s\n", input);
 		std::string raw(input);
 
@@ -96,11 +92,11 @@ void* ClientReceiver::run() {
 	return NULL;
 }
 
-void ClientReceiver::write(std::string filename, std::string item) {
+void ClientReceiver::write(std::string filename, std::string line) {
 	std::ofstream file(filename.c_str(), std::ofstream::app);		//app = append
 	if (file.is_open()) {
 		std::string nl = "\n";
-		file << item;
+		file << line;
 		file << nl;
 		file.close();
 	}
