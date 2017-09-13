@@ -24,7 +24,7 @@ clean:
 html: Doxyfile *.h *.c++
 	doxygen Doxyfile
 
-TestServer: ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
+TestServer: ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ../tcpsockets/tcpacceptor.h ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
 	$(CC) $(CFLAGS) $(GCOVFLAGS) $(TARGET).cpp -o $(TARGET) $(LDFLAGS)
 	
 val_cov: TestServer
