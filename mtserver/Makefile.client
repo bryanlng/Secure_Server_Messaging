@@ -19,4 +19,4 @@ clean:
 
 clear_all:
 	rm -rf client_name.txt
-	rm -rf client_timestamp.txt
+	rm -rf client_log.txt 

@@ -17,7 +17,7 @@ $(TARGET): $(OBJECTS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
-
+	
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
 	
@@ -33,7 +33,4 @@ Doxyfile:
 	doxygen -g
 	
 clear_all:
-	rm -rf master_log.txt 
-	rm -rf client_log.txt 
-	rm -rf client_name.txt
-	
+	rm -rf master_log.txt	
