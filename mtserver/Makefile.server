@@ -20,6 +20,15 @@ $(TARGET): $(OBJECTS)
 	
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
+	rm -f  *.bin
+	rm -f  *.db
+	rm -f  *.gcda
+	rm -f  *.gcno
+	rm -f  *.gcov
+	rm -f  *.plist
+	rm -rf *.dSYM
+	rm -rf html
+	rm -rf latex
 	
 html: Doxyfile ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ../tcpsockets/tcpacceptor.h ../tcpsockets/tcpconnector.h ../tcpsockets/tcpstream.h ../wqueue/wqueue.h ../threads/thread.h ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpconnector.cpp ../tcpsockets/tcpstream.cpp ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
 	doxygen Doxyfile

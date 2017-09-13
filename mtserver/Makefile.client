@@ -16,6 +16,15 @@ $(TARGET): $(OBJECTS)
 
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
+	rm -f  *.bin
+	rm -f  *.db
+	rm -f  *.gcda
+	rm -f  *.gcno
+	rm -f  *.gcov
+	rm -f  *.plist
+	rm -rf *.dSYM
+	rm -rf html
+	rm -rf latex
 
 clear_all:
 	rm -rf client_name.txt
