@@ -21,7 +21,7 @@ $(TARGET): $(OBJECTS)
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
 	
-html: Doxyfile *.h *.c++
+html: Doxyfile ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
 	doxygen Doxyfile
 
 TestServer: ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ../tcpsockets/tcpacceptor.h ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
