@@ -1,6 +1,6 @@
 CC		= g++
 CFLAGS		= -c -Wall -std=c++11 -std=gnu++11
-LDFLAGS		= -lpthread
+LDFLAGS		= -lgtest -lgtest_main -lpthread
 SOURCES		= server.cpp ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp ../threads/thread.cpp ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpstream.cpp
 INCLUDES	= -I../threads -I../wqueue -I../tcpsockets
 OBJECTS		= $(SOURCES:.cpp=.o)
@@ -16,17 +16,20 @@ $(TARGET): $(OBJECTS)
 	$(CC)  $(OBJECTS) -o $@ $(LDFLAGS)
 
 .cpp.o:
-	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) $(GCOVFLAGS) $(INCLUDES) $< -o $@
 	
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
 	
 html: Doxyfile *.h *.c++
 	doxygen Doxyfile
+
+TestServer: ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
+	$(CC) $(CFLAGS) $(GCOVFLAGS) $(TARGET).c++ -o $(TARGET) $(LDFLAGS)	
 	
-val_cov: $(TARGET)
-	$(VALGRIND) ./$(TARGET)                                        >  val_cov.tmp 2>&1
-	$(GCOV) -b $(TARGET).c++ | grep -A 5 "File 'server'" >> val_cov.tmp
+val_cov: TestServer
+	$(VALGRIND) ./TestServer                                       >  val_cov.tmp 2>&1
+	$(GCOV) -b TestServer.c++ | grep -A 5 "File 'TestServer.c++'" >> val_cov.tmp
 	cat val_cov.tmp
 
 Doxyfile:
