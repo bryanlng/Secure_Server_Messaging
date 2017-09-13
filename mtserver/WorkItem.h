@@ -1,4 +1,4 @@
-/*
+/*!
 	NOTICE:
 	This file is from the original implementation by Vic
 	Hargrave.
@@ -18,7 +18,7 @@
 class WorkItem
 {
 private:
-	TCPStream* m_stream;	/*!<	 */
+	TCPStream* m_stream;	/*!<Object representing the data stream of a "connection"> */
 
 public:
 	/**

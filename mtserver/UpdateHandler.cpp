@@ -6,7 +6,7 @@
 	set_name() is a method from Thread
 */
 UpdateHandler::UpdateHandler(vector<ConnectionHandler*>& connects, wqueue<MessageItem*>& queue, std::string n)
-	: connections(connects), m_queue(queue)
+	: connections(connects), update_queue(queue)
 {
 	set_name(n);
 }
@@ -22,13 +22,12 @@ UpdateHandler::UpdateHandler(vector<ConnectionHandler*>& connects, wqueue<Messag
 				1) Find the ConnectionHandler* that represents the sender (who we're going to send the missed messages back to)
 				2) Read all messages from the master log whose timestamp > received timestamp
 				3) Send all messages back to the sender
-		2) Else, do nothing
-		
+		2) Else, do nothing		
 */
 void* UpdateHandler::run() {
 	// Remove 1 item at a time and process it. Blocks if no items are available to process.
 	for (int i = 0;; i++) {
-		MessageItem* item = m_queue.remove();
+		MessageItem* item = update_queue.remove();
 
 		//If the master log is NOT empty, check if the client is behind.
 		std::string latest_ts = readLatestTimestamp();
@@ -136,7 +135,6 @@ void UpdateHandler::readMasterLog(std::vector<std::string>& messages, long long 
 	std::ifstream file("master_log.txt");
 	if (file.is_open()) {
 		while (getline(file, line)) {	////getline() grabs the string up to "\n"
-			//std::cout << "Masterlog current line: " << line << std::endl;
 
 			//Extract the current timestamp out of the message
 			int delimiter_pos = line.find(delimiter);

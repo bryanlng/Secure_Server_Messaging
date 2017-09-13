@@ -1,4 +1,4 @@
-/*
+/*!
 	Object to hold all the metadata of the message, as well as the message itself.
 	
 	After parsing incoming messages, the server stuffs all the data into a 
