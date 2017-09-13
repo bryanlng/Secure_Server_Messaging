@@ -1,0 +1,125 @@
+\hypertarget{classConnectionHandler}{\section{Connection\+Handler Class Reference}
+\label{classConnectionHandler}\index{Connection\+Handler@{Connection\+Handler}}
+}
+
+
+{\ttfamily \#include $<$Connection\+Handler.\+h$>$}
+
+
+
+Inheritance diagram for Connection\+Handler\+:
+
+
+Collaboration diagram for Connection\+Handler\+:
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classConnectionHandler_aa06718737afb02ce7cb90fb0c07cabae}{Connection\+Handler} (wqueue$<$ \hyperlink{classWorkItem}{Work\+Item} $\ast$ $>$ \&queue, wqueue$<$ \hyperlink{classMessageItem}{Message\+Item} $\ast$ $>$ \&message\+\_\+queue, wqueue$<$ \hyperlink{classMessageItem}{Message\+Item} $\ast$ $>$ \&\hyperlink{classConnectionHandler_a9a424cc085ebe9c63765301e7806ed87}{update\+\_\+queue}, std\+::string n)
+\item 
+void $\ast$ \hyperlink{classConnectionHandler_a42c8bfcbdddff428100c87a4aa67ada9}{run} ()
+\item 
+T\+C\+P\+Stream $\ast$ \hyperlink{classConnectionHandler_af02c497781dfc7e554fc6908c6f038c4}{get\+Stream} ()
+\item 
+void \hyperlink{classConnectionHandler_a3e8e752ca9149117f53450b42a0eb651}{set\+Stream} (T\+C\+P\+Stream $\ast$s)
+\item 
+bool \hyperlink{classConnectionHandler_a252aa95de7e20905061cff63e02e0792}{has\+A\+Connection} ()
+\item 
+void \hyperlink{classConnectionHandler_af172623847cb33710a525641c9378b7a}{send\+\_\+message} (\hyperlink{classMessageItem}{Message\+Item} $\ast$message\+\_\+item)
+\item 
+\hyperlink{classConnectionHandler_ad4d4b0f75c8704d0d94f1ff3b8b6d331}{$\sim$\+Connection\+Handler} ()
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+wqueue$<$ \hyperlink{classWorkItem}{Work\+Item} $\ast$ $>$ \& \hyperlink{classConnectionHandler_a0bbfb37868698592cfda52d432a24c9f}{w\+\_\+queue}
+\item 
+wqueue$<$ \hyperlink{classMessageItem}{Message\+Item} $\ast$ $>$ \& \hyperlink{classConnectionHandler_a281ce1f9f8a5aedf8181f28953077e5e}{m\+\_\+queue}
+\item 
+wqueue$<$ \hyperlink{classMessageItem}{Message\+Item} $\ast$ $>$ \& \hyperlink{classConnectionHandler_a9a424cc085ebe9c63765301e7806ed87}{update\+\_\+queue}
+\item 
+T\+C\+P\+Stream $\ast$ \hyperlink{classConnectionHandler_a88dc9dd9599e3ea4a13bd107e97aa7b1}{stream}
+\item 
+bool \hyperlink{classConnectionHandler_abc3c5dba01741721b0b6455fa4d99e3a}{connected}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classConnectionHandler_aa06718737afb02ce7cb90fb0c07cabae}{\index{Connection\+Handler@{Connection\+Handler}!Connection\+Handler@{Connection\+Handler}}
+\index{Connection\+Handler@{Connection\+Handler}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{Connection\+Handler}]{\setlength{\rightskip}{0pt plus 5cm}Connection\+Handler\+::\+Connection\+Handler (
+\begin{DoxyParamCaption}
+\item[{wqueue$<$ {\bf Work\+Item} $\ast$ $>$ \&}]{queue, }
+\item[{wqueue$<$ {\bf Message\+Item} $\ast$ $>$ \&}]{message\+\_\+queue, }
+\item[{wqueue$<$ {\bf Message\+Item} $\ast$ $>$ \&}]{update\+\_\+queue, }
+\item[{std\+::string}]{n}
+\end{DoxyParamCaption}
+)}}\label{classConnectionHandler_aa06718737afb02ce7cb90fb0c07cabae}
+\hypertarget{classConnectionHandler_ad4d4b0f75c8704d0d94f1ff3b8b6d331}{\index{Connection\+Handler@{Connection\+Handler}!````~Connection\+Handler@{$\sim$\+Connection\+Handler}}
+\index{````~Connection\+Handler@{$\sim$\+Connection\+Handler}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{$\sim$\+Connection\+Handler}]{\setlength{\rightskip}{0pt plus 5cm}Connection\+Handler\+::$\sim$\+Connection\+Handler (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classConnectionHandler_ad4d4b0f75c8704d0d94f1ff3b8b6d331}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classConnectionHandler_af02c497781dfc7e554fc6908c6f038c4}{\index{Connection\+Handler@{Connection\+Handler}!get\+Stream@{get\+Stream}}
+\index{get\+Stream@{get\+Stream}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{get\+Stream}]{\setlength{\rightskip}{0pt plus 5cm}T\+C\+P\+Stream $\ast$ Connection\+Handler\+::get\+Stream (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classConnectionHandler_af02c497781dfc7e554fc6908c6f038c4}
+\hypertarget{classConnectionHandler_a252aa95de7e20905061cff63e02e0792}{\index{Connection\+Handler@{Connection\+Handler}!has\+A\+Connection@{has\+A\+Connection}}
+\index{has\+A\+Connection@{has\+A\+Connection}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{has\+A\+Connection}]{\setlength{\rightskip}{0pt plus 5cm}bool Connection\+Handler\+::has\+A\+Connection (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classConnectionHandler_a252aa95de7e20905061cff63e02e0792}
+\hypertarget{classConnectionHandler_a42c8bfcbdddff428100c87a4aa67ada9}{\index{Connection\+Handler@{Connection\+Handler}!run@{run}}
+\index{run@{run}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ Connection\+Handler\+::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classConnectionHandler_a42c8bfcbdddff428100c87a4aa67ada9}
+\hypertarget{classConnectionHandler_af172623847cb33710a525641c9378b7a}{\index{Connection\+Handler@{Connection\+Handler}!send\+\_\+message@{send\+\_\+message}}
+\index{send\+\_\+message@{send\+\_\+message}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{send\+\_\+message}]{\setlength{\rightskip}{0pt plus 5cm}void Connection\+Handler\+::send\+\_\+message (
+\begin{DoxyParamCaption}
+\item[{{\bf Message\+Item} $\ast$}]{message\+\_\+item}
+\end{DoxyParamCaption}
+)}}\label{classConnectionHandler_af172623847cb33710a525641c9378b7a}
+\hypertarget{classConnectionHandler_a3e8e752ca9149117f53450b42a0eb651}{\index{Connection\+Handler@{Connection\+Handler}!set\+Stream@{set\+Stream}}
+\index{set\+Stream@{set\+Stream}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{set\+Stream}]{\setlength{\rightskip}{0pt plus 5cm}void Connection\+Handler\+::set\+Stream (
+\begin{DoxyParamCaption}
+\item[{T\+C\+P\+Stream $\ast$}]{s}
+\end{DoxyParamCaption}
+)}}\label{classConnectionHandler_a3e8e752ca9149117f53450b42a0eb651}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classConnectionHandler_abc3c5dba01741721b0b6455fa4d99e3a}{\index{Connection\+Handler@{Connection\+Handler}!connected@{connected}}
+\index{connected@{connected}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{connected}]{\setlength{\rightskip}{0pt plus 5cm}bool Connection\+Handler\+::connected\hspace{0.3cm}{\ttfamily [private]}}}\label{classConnectionHandler_abc3c5dba01741721b0b6455fa4d99e3a}
+\hypertarget{classConnectionHandler_a281ce1f9f8a5aedf8181f28953077e5e}{\index{Connection\+Handler@{Connection\+Handler}!m\+\_\+queue@{m\+\_\+queue}}
+\index{m\+\_\+queue@{m\+\_\+queue}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{m\+\_\+queue}]{\setlength{\rightskip}{0pt plus 5cm}wqueue$<${\bf Message\+Item}$\ast$$>$\& Connection\+Handler\+::m\+\_\+queue\hspace{0.3cm}{\ttfamily [private]}}}\label{classConnectionHandler_a281ce1f9f8a5aedf8181f28953077e5e}
+\hypertarget{classConnectionHandler_a88dc9dd9599e3ea4a13bd107e97aa7b1}{\index{Connection\+Handler@{Connection\+Handler}!stream@{stream}}
+\index{stream@{stream}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{stream}]{\setlength{\rightskip}{0pt plus 5cm}T\+C\+P\+Stream$\ast$ Connection\+Handler\+::stream\hspace{0.3cm}{\ttfamily [private]}}}\label{classConnectionHandler_a88dc9dd9599e3ea4a13bd107e97aa7b1}
+\hypertarget{classConnectionHandler_a9a424cc085ebe9c63765301e7806ed87}{\index{Connection\+Handler@{Connection\+Handler}!update\+\_\+queue@{update\+\_\+queue}}
+\index{update\+\_\+queue@{update\+\_\+queue}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{update\+\_\+queue}]{\setlength{\rightskip}{0pt plus 5cm}wqueue$<${\bf Message\+Item}$\ast$$>$\& Connection\+Handler\+::update\+\_\+queue\hspace{0.3cm}{\ttfamily [private]}}}\label{classConnectionHandler_a9a424cc085ebe9c63765301e7806ed87}
+\hypertarget{classConnectionHandler_a0bbfb37868698592cfda52d432a24c9f}{\index{Connection\+Handler@{Connection\+Handler}!w\+\_\+queue@{w\+\_\+queue}}
+\index{w\+\_\+queue@{w\+\_\+queue}!Connection\+Handler@{Connection\+Handler}}
+\subsubsection[{w\+\_\+queue}]{\setlength{\rightskip}{0pt plus 5cm}wqueue$<${\bf Work\+Item}$\ast$$>$\& Connection\+Handler\+::w\+\_\+queue\hspace{0.3cm}{\ttfamily [private]}}}\label{classConnectionHandler_a0bbfb37868698592cfda52d432a24c9f}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ConnectionHandler_8h}{Connection\+Handler.\+h}\item 
+\hyperlink{ConnectionHandler_8cpp}{Connection\+Handler.\+cpp}\end{DoxyCompactItemize}

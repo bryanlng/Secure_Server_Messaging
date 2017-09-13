@@ -1,0 +1,74 @@
+\hypertarget{classMessageHandler}{\section{Message\+Handler Class Reference}
+\label{classMessageHandler}\index{Message\+Handler@{Message\+Handler}}
+}
+
+
+{\ttfamily \#include $<$Message\+Handler.\+h$>$}
+
+
+
+Inheritance diagram for Message\+Handler\+:
+
+
+Collaboration diagram for Message\+Handler\+:
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classMessageHandler_a3fbae921d31070e699fdc781febdd468}{Message\+Handler} (vector$<$ \hyperlink{classConnectionHandler}{Connection\+Handler} $\ast$ $>$ \&connects, wqueue$<$ \hyperlink{classMessageItem}{Message\+Item} $\ast$ $>$ \&queue, std\+::string n)
+\item 
+void $\ast$ \hyperlink{classMessageHandler_a83fd9c104a2dd1a831130ec7a93719ab}{run} ()
+\item 
+void \hyperlink{classMessageHandler_afc85c0584117622926805f559f19bd06}{write} (std\+::string filename, std\+::string item)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+vector$<$ \hyperlink{classConnectionHandler}{Connection\+Handler} $\ast$ $>$ \& \hyperlink{classMessageHandler_afa53d2ec50ed4c6d9db5b47d1d10ee21}{connections}
+\item 
+wqueue$<$ \hyperlink{classMessageItem}{Message\+Item} $\ast$ $>$ \& \hyperlink{classMessageHandler_a38e2fbf09216eacac420ef29c91b546f}{m\+\_\+queue}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classMessageHandler_a3fbae921d31070e699fdc781febdd468}{\index{Message\+Handler@{Message\+Handler}!Message\+Handler@{Message\+Handler}}
+\index{Message\+Handler@{Message\+Handler}!Message\+Handler@{Message\+Handler}}
+\subsubsection[{Message\+Handler}]{\setlength{\rightskip}{0pt plus 5cm}Message\+Handler\+::\+Message\+Handler (
+\begin{DoxyParamCaption}
+\item[{vector$<$ {\bf Connection\+Handler} $\ast$ $>$ \&}]{connects, }
+\item[{wqueue$<$ {\bf Message\+Item} $\ast$ $>$ \&}]{queue, }
+\item[{std\+::string}]{n}
+\end{DoxyParamCaption}
+)}}\label{classMessageHandler_a3fbae921d31070e699fdc781febdd468}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classMessageHandler_a83fd9c104a2dd1a831130ec7a93719ab}{\index{Message\+Handler@{Message\+Handler}!run@{run}}
+\index{run@{run}!Message\+Handler@{Message\+Handler}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ Message\+Handler\+::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classMessageHandler_a83fd9c104a2dd1a831130ec7a93719ab}
+\hypertarget{classMessageHandler_afc85c0584117622926805f559f19bd06}{\index{Message\+Handler@{Message\+Handler}!write@{write}}
+\index{write@{write}!Message\+Handler@{Message\+Handler}}
+\subsubsection[{write}]{\setlength{\rightskip}{0pt plus 5cm}void Message\+Handler\+::write (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{filename, }
+\item[{std\+::string}]{item}
+\end{DoxyParamCaption}
+)}}\label{classMessageHandler_afc85c0584117622926805f559f19bd06}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classMessageHandler_afa53d2ec50ed4c6d9db5b47d1d10ee21}{\index{Message\+Handler@{Message\+Handler}!connections@{connections}}
+\index{connections@{connections}!Message\+Handler@{Message\+Handler}}
+\subsubsection[{connections}]{\setlength{\rightskip}{0pt plus 5cm}vector$<${\bf Connection\+Handler}$\ast$$>$\& Message\+Handler\+::connections\hspace{0.3cm}{\ttfamily [private]}}}\label{classMessageHandler_afa53d2ec50ed4c6d9db5b47d1d10ee21}
+\hypertarget{classMessageHandler_a38e2fbf09216eacac420ef29c91b546f}{\index{Message\+Handler@{Message\+Handler}!m\+\_\+queue@{m\+\_\+queue}}
+\index{m\+\_\+queue@{m\+\_\+queue}!Message\+Handler@{Message\+Handler}}
+\subsubsection[{m\+\_\+queue}]{\setlength{\rightskip}{0pt plus 5cm}wqueue$<${\bf Message\+Item}$\ast$$>$\& Message\+Handler\+::m\+\_\+queue\hspace{0.3cm}{\ttfamily [private]}}}\label{classMessageHandler_a38e2fbf09216eacac420ef29c91b546f}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{MessageHandler_8h}{Message\+Handler.\+h}\item 
+\hyperlink{MessageHandler_8cpp}{Message\+Handler.\+cpp}\end{DoxyCompactItemize}
