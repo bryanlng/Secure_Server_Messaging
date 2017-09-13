@@ -25,7 +25,7 @@ html: Doxyfile *.h *.c++
 	doxygen Doxyfile
 
 TestServer: ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ../tcpsockets/tcpacceptor.h ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
-	$(CC) $(CFLAGS) $(GCOVFLAGS) $(INCLUDES) $(OBJECTS) $(TARGET).cpp -o TestServer $(LDFLAGS)
+	$(CC) $(CFLAGS) $(GCOVFLAGS) TestServer.cpp -o TestServer $(LDFLAGS)
 	
 val_cov: TestServer
 	$(VALGRIND) ./TestServer                                       >  val_cov.tmp 2>&1
