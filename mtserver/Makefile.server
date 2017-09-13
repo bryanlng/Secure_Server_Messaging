@@ -1,14 +1,14 @@
-CC		= g++
-CFLAGS		= -c -Wall -std=c++11 -std=gnu++11
-LDFLAGS		= -lgtest -lgtest_main -lpthread
-SOURCES		= server.cpp ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp ../threads/thread.cpp ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpstream.cpp
-INCLUDES	= -I../threads -I../wqueue -I../tcpsockets
-OBJECTS		= $(SOURCES:.cpp=.o)
-GCOV		= gcov
-GCOVFLAGS 	= -fprofile-arcs -ftest-coverage
-VALGRIND 	= valgrind
-DOXYGEN 	= doxygen
-TARGET		= server
+CC		:= g++
+CFLAGS		:= -c -Wall -std=c++11 -std=gnu++11
+LDFLAGS		:= -lpthread
+SOURCES		:= server.cpp ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp ../threads/thread.cpp ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpstream.cpp
+INCLUDES	:= -I../threads -I../wqueue -I../tcpsockets
+OBJECTS		:= $(SOURCES:.cpp=.o)
+GCOV		:= gcov
+GCOVFLAGS 	:= -fprofile-arcs -ftest-coverage
+VALGRIND 	:= valgrind
+DOXYGEN 	:= doxygen
+TARGET		:= server
 
 all: $(SOURCES) $(TARGET)
 
