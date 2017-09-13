@@ -30,7 +30,7 @@ clean:
 	rm -rf html
 	rm -rf latex
 	
-html: Doxyfile ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ../tcpsockets/tcpacceptor.h ../tcpsockets/tcpconnector.h ../tcpsockets/tcpstream.h ../wqueue/wqueue.h ../threads/thread.h ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpconnector.cpp ../tcpsockets/tcpstream.cpp ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
+html: Doxyfile ClientReceiver.h ClientSender.h ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ../tcpsockets/tcpacceptor.h ../tcpsockets/tcpconnector.h ../tcpsockets/tcpstream.h ../wqueue/wqueue.h ../threads/thread.h ../tcpsockets/tcpacceptor.cpp ../tcpsockets/tcpconnector.cpp ../tcpsockets/tcpstream.cpp ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp ClientReceiver.cpp ClientSender.cpp client.cpp
 	doxygen Doxyfile
 
 TestServer: ConnectionHandler.h MessageHandler.h UpdateHandler.h MessageItem.h WorkItem.h ../tcpsockets/tcpacceptor.h ConnectionHandler.cpp MessageHandler.cpp UpdateHandler.cpp server.cpp
