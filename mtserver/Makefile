@@ -7,6 +7,7 @@ coverage:
 	
 docs:
 	make -f Makefile.server html
+	make -f Makefile.client html
 	
 clean:
 	make -f Makefile.client clean

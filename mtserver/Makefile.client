@@ -20,3 +20,10 @@ clean:
 clear_all:
 	rm -rf client_name.txt
 	rm -rf client_log.txt 
+
+html: Doxyfile ClientReceiver.h ClientSender.h ClientReceiver.cpp ClientSender.cpp client.cpp
+	doxygen Doxyfile
+	
+Doxyfile:
+	doxygen -g
+
