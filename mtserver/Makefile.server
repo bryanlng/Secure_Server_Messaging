@@ -16,7 +16,7 @@ $(TARGET): $(OBJECTS)
 	$(CC)  $(OBJECTS) -o $@ $(LDFLAGS)
 
 .cpp.o:
-	$(CC) $(CFLAGS) $(GCOVFLAGS) $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
 	
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
