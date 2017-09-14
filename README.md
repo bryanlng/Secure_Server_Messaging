@@ -1,5 +1,6 @@
 # Secure_Server_Messaging
 ![C++](https://img.shields.io/badge/c%2B%2B-11%20-blue.svg)
+![Java](https://img.shields.io/badge/java-1.8-orange.svg)
 [![Build Status](https://img.shields.io/travis/bryanlng/Secure_Server_Messaging/master.svg)](https://travis-ci.org/bryanlng/Secure_Server_Messaging)
 [![GitHub Issues](https://img.shields.io/github/issues/bryanlng/Secure_Server_Messaging.svg)](https://github.com/bryanlng/Secure_Server_Messaging/issues)
 
