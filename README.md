@@ -22,7 +22,7 @@ On a Ubuntu environment, these requirements can be fulfilled using the following
 5. Valgrind:	`sudo apt-get install valgrind`
 ### Build
 1. Clone the repository by typing in `git clone https://github.com/bryanlng/Secure_Server_Messaging.git` 
-2. `cd` into the mtserver directory
+2. `cd` into the mtserver directory by typing
 2. Build the server application by typing `make`
 3. Run the server application by typing ```./server <ports> <port #> <port_address>
    Example: ./server 5 9999 localhost```
@@ -31,14 +31,23 @@ On a Ubuntu environment, these requirements can be fulfilled using the following
 5. Run the android client by doing the following:
 	1) Open up the project in Android studio
 	2) Press the green arrow at the top that says "run app" to compile and run the application
+
+## Documentation
+### Forenote
+As of now, there's only documentation for the server. Further documentation for the front-end Android application will come after I finish a few more crucial elements to it. That being said...
+
+### Generating documentation for the server
+1. `cd` into the mtserver directory
+2. Build the server documentation by typing `make docs`
+3. `cd` into the html directory
+4. Open the file `index.html` in a browser.
 	
 ## Special acknowledgements:
 All credit for the base code for the server's design (Multithreaded Work Queue Based Server) goes to Vic Hargrave.
 I simply built upon the following code, re-engineering it to fit my purpose.
 
-Base code can be found on the following webstes.
-
-1. https://github.com/vichargrave/mtserver
-2. https://github.com/vichargrave/threads
-3. https://github.com/vichargrave/wqueue
-4. https://github.com/vichargrave/tcpsockets
+Base code can be found on the following sites.
+1. <a href = "https://github.com/vichargrave/mtserver">Original mtserver implementation</a>
+2. <a href = "https://github.com/vichargrave/threads">Original thread implementation</a>
+3. <a href = "https://github.com/vichargrave/wqueue">Original work queue implementation</a>
+4. <a href = "https://github.com/vichargrave/tcpsockets">Original TCP Socket implementation</a>
