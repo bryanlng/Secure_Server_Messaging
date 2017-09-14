@@ -5,6 +5,8 @@
 
 ## Description
 
+
+
 ## Installation
 ### Requirements
 This project runs on the following tools
@@ -20,6 +22,7 @@ On a Ubuntu environment, these requirements can be fulfilled using the following
 3. GCov:	`sudo apt-get install gcovr`
 4. GMock:	`sudo apt-get install google-mock`
 5. Valgrind:	`sudo apt-get install valgrind`
+
 ### Build
 1. Clone the repository by typing in `git clone https://github.com/bryanlng/Secure_Server_Messaging.git` 
 2. `cd` into the mtserver directory by typing
@@ -41,7 +44,12 @@ As of now, there's only documentation for the server. Further documentation for 
 2. Build the server documentation by typing `make docs`
 3. `cd` into the html directory
 4. Open the file `index.html` in a browser.
-	
+
+## Upcoming features
+1. Make front-end Android application fully functional.
+2. Modify tcpsockets file to use SSL
+3. Implement mocking for more in-depth testing of features
+
 ## Special acknowledgements:
 All credit for the base code for the server's design (Multithreaded Work Queue Based Server) goes to Vic Hargrave.
 I simply built upon the following code, re-engineering it to fit my purpose.
