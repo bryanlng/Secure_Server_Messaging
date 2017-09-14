@@ -1,4 +1,7 @@
-/*
+/*!
+   
+   This class is from the base implementation by Vic Hargrave
+   
    thread.h
 
    Header for a Java style thread class in C++.
@@ -29,10 +32,28 @@
 class Thread
 {
   public:
-    Thread();
+	/**
+	 * Constructor for thread class
+	   By default, sets the values of thread id(m_tid), if the thread is detatched (m_running), 
+	   and if the thread is detached (m_detached) all to 0.
+	*/
+    Thread();	
+
+	/**
+	 * Destructor for thread class
+	   If the Thread is running but not detached, calls pthread_detach to detatch the Thread
+	   If the Thread is running, calls pthread_cancel to cancel the thread
+	*/
     virtual ~Thread();
 
+	/**
+	 * Starts the Thread by calling pthread_create()	   
+	*/
     int start();
+
+	/**
+	 *
+	*/
     int join();
     int detach();
     pthread_t self();
@@ -42,10 +63,10 @@ class Thread
     virtual void* run() = 0;
     
   private:
-    pthread_t  m_tid;
-    int        m_running;
-    int        m_detached;
-	std::string	   name;
+    pthread_t  m_tid;			/*!<id of thread*> */
+    int        m_running;		/*!<Whether the thread is running or not> */
+    int        m_detached;		/*!<Whether the thread is detached or not> */
+	std::string	   name;		/*!<The name of the thread> */
 };
 
 #endif

@@ -69,7 +69,7 @@ class UpdateHandler : public Thread {
 
 		/**
 		* Given 1 line from the Master Log, this function extracts out the timestamp
-		@param the line from the Master log to extract the timestamp from
+		@param line from the Master log to extract the timestamp from
 		@return the extracted timestamp
 		*/
 		std::string extractTimestamp(std::string line);

@@ -69,7 +69,7 @@ class ClientSender : public Thread {
 		/**
 		* Given 1 line from the client Log, this function extracts out the timestamp
 		  This method is identical to readLatestTimestamp() in UpdateHandler.h, except we're reading out of the client's log, versus the server's master log.
-		 @param the line from the Master log to extract the timestamp from
+		 @param line from the Master log to extract the timestamp from
 		 @return the extracted timestamp
 		*/
 		std::string extractTimestamp(std::string line);

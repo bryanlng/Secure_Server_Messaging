@@ -10,7 +10,7 @@
 
 	Format of message:
 	Case 1: Regular message
-		-timestamp <delimiter> date_formatted <delimiter> message <delimiter> sender <delimiter>
+		-timestamp delimiter date_formatted delimiter message delimiter sender delimiter
 		-thread_id is ignored, as that field is taken from the thread itself
 		-Delimiter:  :::::::
 		-time_of_last_received = -1

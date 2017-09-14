@@ -61,6 +61,9 @@ int Thread::start()
     return result;
 }
 
+/**
+ * Joins a thread to another, if 
+*/
 int Thread::join()
 {
     int result = -1;
