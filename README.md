@@ -5,7 +5,22 @@
 
 ## Description
 
-## Build
+## Installation
+### Requirements
+This project runs on the following tools
+1. <a href = "http://www.stack.nl/~dimitri/doxygen/index.html">Doxygen 1.183</a>
+2. <a href = "https://github.com/google/googletest">GTest (coming soon!)</a>
+3. <a href = "https://gcc.gnu.org/onlinedocs/gcc/Gcov.html">Gcov (coming soon!)</a>
+4. <a href = "https://github.com/google/googletest/tree/master/googlemock">Google Mock (coming soon!)</a>
+5. <a href = "http://valgrind.org/">Valgrind (coming soon!)</a>
+
+On a Ubuntu environment, these requirements can be fulfilled using the following sudo apt-get commands:
+1. Doxygen:	`sudo apt-get install doxygen`	
+2. GTest:	`sudo apt-get install libgtest-dev`
+3. GCov:	`sudo apt-get install gcovr`
+4. GMock:	`sudo apt-get install google-mock`
+5. Valgrind:	`sudo apt-get install valgrind`
+### Build
 1. Clone the repository by typing in `git clone https://github.com/bryanlng/Secure_Server_Messaging.git` 
 2. `cd` into the mtserver directory
 2. Build the server application by typing `make`
