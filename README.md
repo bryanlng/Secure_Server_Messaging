@@ -1,9 +1,11 @@
 # Secure_Server_Messaging
 
 # Coming soon! Updates will arrive by 9/14/17. As of now, this project is almost complete
+![C++](https://img.shields.io/badge/c%2B%2B-11%20-blue.svg)
+[![Build Status](https://img.shields.io/travis/bryanlng/Secure_Server_Messaging/master.svg)](https://travis-ci.org/bryanlng/Secure_Server_Messaging)
+[![GitHub Issues](https://img.shields.io/github/issues/bryanlng/Secure_Server_Messaging.svg)](https://github.com/bryanlng/Secure_Server_Messaging/issues)
 
-
-# Build
+## Build
 1. cd into the mtserver directory
 2. Build the server application by typing 'make'
 3. Run the server application by typing './server #ports port# port_address'
@@ -14,7 +16,7 @@
 	1) Open up the project in Android studio
 	2) Press the green arrow at the top that says "run app" to compile and run the application
 	
-#Special acknowledgements:
+## Special acknowledgements:
 All credit for the base code for the server's design (Multithreaded Work Queue Based Server) goes to Vic Hargrave.
 I simply built upon the following code, re-engineering it to fit my purpose.
 
