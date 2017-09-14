@@ -35,7 +35,7 @@ class ClientReceiver : public Thread{
 			2) Then, display the message
 			3) Afterwards, update client_log.txt with the raw message.
 			-Format:
-			timestamp <delimiter> date_formatted <delimiter> message <delimiter>
+			timestamp delimiter date_formatted delimiter message delimiter
 			Ex: 1485288373:Tue Jan 24 13:06:13 2017:df:		  
 		*/
 		void* run();

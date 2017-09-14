@@ -22,7 +22,7 @@ class MessageHandler : public Thread {
 	public:
 		/**
 		 *Constructor for a MessageHandler.
-		 @param Vector that holds all the current "clients", represented as ConnectionHandler*
+		 @param connects that holds all the current "clients", represented as ConnectionHandler*
 		 @param queue reference to the message queue, which holds messages pending to be processed
 		 @param n the name of the thread
 		*/
