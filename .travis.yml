@@ -1,20 +1,19 @@
+sudo: false
+
 language: cpp
 
 compiler:
     - gcc
 
-sudo: false
-
 addons:
   apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
-      - libboost-dev
       - doxygen
       - g++-5
       - libgtest-dev
       - valgrind
-    sources:
-      - ubuntu-toolchain-r-test
 
 install:
     - pwd
@@ -32,18 +31,7 @@ install:
 before_script:
     - uname -a
     - printenv
-    - make versions
-
-branches:
-  only:
-    - dev
 
 script:
     - date
     - ls -al
-    - make travis
-
-notifications:
-  email:
-    on_success: never
-    on_failure: always
