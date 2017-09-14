@@ -4,8 +4,14 @@
 [![GitHub Issues](https://img.shields.io/github/issues/bryanlng/Secure_Server_Messaging.svg)](https://github.com/bryanlng/Secure_Server_Messaging/issues)
 
 ## Description
+A small-scale messenging application built using C++ and Java.
 
+## Features
+The application consists of 2 parts:
+1. Minimalistic android GUI
+2. Multi-threaded C++ Server backend
 
+## Note: This project is almost complete, there's still a few kinks that I have to fix
 
 ## Installation
 ### Requirements
@@ -30,7 +36,7 @@ On a Ubuntu environment, these requirements can be fulfilled using the following
 3. Run the server application by typing ```./server <ports> <port #> <port_address>
    Example: ./server 5 9999 localhost```
 4. Run the c++ client application by typing ```./client <port #> <port_address>
-   Example: ./client 5 9999 localhost```
+   Example: ./client 9999 localhost```
 5. Run the android client by doing the following:
 	1) Open up the project in Android studio
 	2) Press the green arrow at the top that says "run app" to compile and run the application
